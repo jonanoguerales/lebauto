@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     "km0",
     "financiación vehículos eléctricos",
     "ayudas movilidad eléctrica",
+    "concesionario de coches eléctricos",
   ],
   openGraph: {
     title:
