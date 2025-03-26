@@ -21,10 +21,12 @@ export async function fetchFilteredCars(searchParams: any): Promise<Car[]> {
     query = query.in("color", colors);
   }
   if (typeof searchParams.location === "string") {
-    const locations = searchParams.location
-      .split(",")
-      .map((v: string) => v.trim());
+    const locations = searchParams.location.split(",").map((v: string) => v.trim());
     query = query.in("location", locations);
+  }
+  if (typeof searchParams.bodyType === "string") {
+    const bodyTypes = searchParams.bodyType.split(",").map((v: string) => v.trim());
+    query = query.in("body_type", bodyTypes);
   }
   if (typeof searchParams.minPrice === "string") {
     query = query.gte("price", Number(searchParams.minPrice));
@@ -43,6 +45,18 @@ export async function fetchFilteredCars(searchParams: any): Promise<Car[]> {
   }
   if (typeof searchParams.maxKm === "string") {
     query = query.lte("mileage", Number(searchParams.maxKm));
+  }
+  if (typeof searchParams.doorFrom === "string") {
+    query = query.gte("doors", Number(searchParams.doorFrom));
+  }
+  if (typeof searchParams.doorTo === "string") {
+    query = query.lte("doors", Number(searchParams.doorTo));
+  }
+  if (typeof searchParams.seatFrom === "string") {
+    query = query.gte("seats", Number(searchParams.seatFrom));
+  }
+  if (typeof searchParams.seatTo === "string") {
+    query = query.lte("seats", Number(searchParams.seatTo));
   }
 
   const { data: cars, error } = await query;

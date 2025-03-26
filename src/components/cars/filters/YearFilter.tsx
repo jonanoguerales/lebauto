@@ -52,7 +52,6 @@ export function YearFilter({ config }: YearFilterProps) {
                   setMinYear(e.target.value);
                   debouncedValidateMinYear(e.target.value);
                 }}
-                className="mt-1"
               />
             </div>
             <div>
@@ -66,7 +65,6 @@ export function YearFilter({ config }: YearFilterProps) {
                   setMaxYear(e.target.value);
                   debouncedValidateMaxYear(e.target.value);
                 }}
-                className="mt-1"
               />
             </div>
           </div>

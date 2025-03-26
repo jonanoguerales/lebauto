@@ -17,6 +17,7 @@ export interface Car {
   engineDisplacement?: number; 
   color: string;
   doors: number;
+  seats: number;
   electricRange?: number; 
   batteryCapacity?: number; 
   chargingTime?: number; 
@@ -32,34 +33,28 @@ export interface Car {
 }
 
 
-export interface CatalogClientProps {
+export interface CatalogClientProps extends FiltersData {
   allCars: Car[]
   initialCars: Car[]
-  brand?: string | string[]
-  model?: string | string[]
-  fuel?: string;
-  color?: string;
-  location?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  minYear?: string;
-  maxYear?: string;
-  minKm?: string;
-  maxKm?: string;
 }
 
 export interface FilterState {
-  brands: string[]
-  models: string[]
-  colors: string[]
-  fuels: string[]
-  locations: string[]
-  minPrice: number
-  maxPrice: number
-  minYear: number
-  maxYear: number
-  minKm: number
-  maxKm: number
+  brand?: string[];
+  model?: string[];
+  fuel?: string[];
+  location?: string[];
+  color?: string[];
+  bodyType?: string[]; 
+  doorFrom?: number;   
+  doorTo?: number;     
+  seatFrom?: number;   
+  seatTo?: number;     
+  minPrice?: number;
+  maxPrice?: number;
+  minYear?: number;
+  maxYear?: number;
+  minKm?: number;
+  maxKm?: number;
 }
 
 export interface CarImage {
@@ -81,22 +76,27 @@ export interface CarFeature {
 export interface FiltersData {
   brand?: string[];
   model?: string[];
-  color?: string[];
   fuel?: string[];
   location?: string[];
+  color?: string[];
+  bodyType?: string[];  
+  doorFrom?: number;    
+  doorTo?: number;      
+  seatFrom?: number;    
+  seatTo?: number;     
   minPrice?: number;
   maxPrice?: number;
   minYear?: number;
   maxYear?: number;
   minKm?: number;
   maxKm?: number;
-};
+}
 
 // Claves que son array de string
-export type ArrayFilterKey = "brand" | "model" | "fuel" | "location" | "color";
+export type ArrayFilterKey = "brand" | "model" | "fuel" | "location" | "color" | "bodyType";
 
 // Claves que son numéricas
-export type NumberFilterKey = "minPrice" | "maxPrice" | "minYear" | "maxYear" | "minKm" | "maxKm";
+export type NumberFilterKey = "minPrice" | "maxPrice" | "minYear" | "maxYear" | "minKm" | "maxKm" | "doorFrom" | "doorTo" | "seatFrom" | "seatTo";
 
 // Union de todas las claves
 export type FilterKey = ArrayFilterKey | NumberFilterKey;

@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 import CarCardGrid from "@/components/cars/CarCardGrid";
 import { fetchElectricVehicles } from "@/supabase/supabase";
 import type { Car } from "@/lib/definitions";
-import { CarCardSkeleton } from "@/components/cars/CarSkeleton";
+import { CarCardSkeleton } from "@/components/cars/skeleton/CarSkeleton";
 
 export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);

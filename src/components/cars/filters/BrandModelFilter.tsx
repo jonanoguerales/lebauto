@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CarIcon, ChevronDown, ChevronRight, Search, X } from "lucide-react";
+import { CarIcon, ChevronDown, ChevronRight, ListTodo, Search, X } from "lucide-react";
 import { FiltersData } from "@/lib/definitions";
 
 interface BrandModelFilterProps {
@@ -52,7 +52,10 @@ export function BrandModelFilter({ config }: BrandModelFilterProps) {
     <AccordionItem value="marca">
       <AccordionTrigger className="py-3">
         <div className="flex items-center gap-2">
+          <div>
           <CarIcon className="h-5 w-5" />
+          <ListTodo className="h-4 w-4 -mt-1 ml-[2px]" />
+          </div>
           <span>Marca y modelo</span>
         </div>
       </AccordionTrigger>

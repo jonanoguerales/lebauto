@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import CatalogClient from "@/components/cars/CatalogClient";
-import { fetchFilteredCars } from "@/supabase/fetchFilteredCars";
-import { fetchCars } from "@/supabase/supabase";
+import { Suspense } from "react";
+import CatalogPageSkeleton from "@/components/cars/skeleton/CatalogPageSkeleton";
+import LoadingContent from "./LoadingContent";
 
 export const revalidate = 60;
 
@@ -16,28 +16,13 @@ export default async function CatalogPage({
 }: {
   searchParams: any;
 }) {
-  const params = await Promise.resolve(searchParams);
-  const filteredCars = await fetchFilteredCars(params);
-  const allCars = await fetchCars();
 
-/*   if (!filteredCars) {
-    return <div>Cargando vehículos...</div>;
-  } */
   return (
-    <CatalogClient
-      allCars={allCars}
-      initialCars={filteredCars}
-      brand={typeof params.brand === "string" ? params.brand : ""}
-      model={typeof params.model === "string" ? params.model : ""}
-      fuel={typeof params.fuel === "string" ? params.fuel : ""}
-      color={typeof params.color === "string" ? params.color : ""}
-      location={typeof params.location === "string" ? params.location : ""}
-      minPrice={typeof params.minPrice === "string" ? params.minPrice : ""}
-      maxPrice={typeof params.maxPrice === "string" ? params.maxPrice : ""}
-      minYear={typeof params.minYear === "string" ? params.minYear : ""}
-      maxYear={typeof params.maxYear === "string" ? params.maxYear : ""}
-      minKm={typeof params.minKm === "string" ? params.minKm : ""}
-      maxKm={typeof params.maxKm === "string" ? params.maxKm : ""}
-    />
+    <div>
+      {/* Otros elementos de la página que quieras mostrar inmediatamente */}
+      <Suspense fallback={<CatalogPageSkeleton />}>
+        <LoadingContent searchParams={searchParams} />
+      </Suspense>
+    </div>
   );
 }

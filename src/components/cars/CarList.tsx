@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useViewStore, useFilterStore } from "@/lib/store";
 import CarCardGrid from "./CarCardGrid";
 import CarCardList from "./CarCardList";
-import { CarCardSkeleton } from "./CarSkeleton";
+import { CarCardSkeleton } from "./skeleton/CarSkeleton";
 import type { Car } from "@/lib/definitions";
 
 interface CarListProps {

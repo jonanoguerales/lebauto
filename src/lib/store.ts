@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import { create } from "zustand"
-import type { Car, FiltersData, FilterStateStore } from "./definitions"
+import { create } from "zustand";
+import type { Car, FiltersData, FilterStateStore } from "./definitions";
 
-type ViewType = "list" | "grid"
+type ViewType = "list" | "grid";
 
 interface ViewState {
-  view: ViewType
-  setView: (view: ViewType) => void
+  view: ViewType;
+  setView: (view: ViewType) => void;
 }
 
 export const useViewStore = create<ViewState>((set) => ({
   view: "list",
   setView: (view) => set({ view }),
-}))
+}));
 
 export const useFilterStore = create<FilterStateStore>((set, get) => ({
   filters: {},
@@ -21,7 +21,7 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
   allCars: [],
   isLoading: false,
 
-  setFilter: (key : keyof FiltersData, value) => {
+  setFilter: (key: keyof FiltersData, value) => {
     set((state) => {
       const newFilters = { ...state.filters };
 
@@ -30,7 +30,8 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
         key === "model" ||
         key === "fuel" ||
         key === "location" ||
-        key === "color"
+        key === "color" ||
+        key === "bodyType"
       ) {
         if (!newFilters[key]) {
           newFilters[key] = [];
@@ -58,7 +59,8 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
         key === "model" ||
         key === "fuel" ||
         key === "location" ||
-        key === "color"
+        key === "color" ||
+        key === "bodyType"
       ) {
         if (value !== undefined) {
           const arr = newFilters[key] as string[];
@@ -109,16 +111,15 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
   applyFilters: () => {
     const { allCars, filters } = get();
     set({ isLoading: true });
-  
+
     setTimeout(() => {
       try {
         if (Object.keys(filters).length === 0) {
           set({ filteredCars: [...allCars], isLoading: false });
           return;
         }
-  
-        let filtered = [...allCars];
 
+        let filtered = [...allCars];
         if ((filters.brand && filters.brand.length > 0) || 
             (filters.model && filters.model.length > 0)) {
           let brandFiltered: Car[] = [];
@@ -136,66 +137,61 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
           const unionSet = new Set([...brandFiltered, ...modelFiltered]);
           filtered = [...unionSet];
         }
-  
+        if (filters.bodyType && filters.bodyType.length > 0) {
+          const bodyTypeSet = new Set(filters.bodyType);
+          filtered = filtered.filter((car) => bodyTypeSet.has(car.bodyType));
+        }
         if (filters.fuel && filters.fuel.length > 0) {
           const fuelSet = new Set(filters.fuel);
           filtered = filtered.filter((car) => fuelSet.has(car.fuel));
         }
-  
         if (filters.location && filters.location.length > 0) {
           const locSet = new Set(filters.location);
-          filtered = filtered.filter(
-            (car) => car.location && locSet.has(car.location)
-          );
+          filtered = filtered.filter((car) => car.location && locSet.has(car.location));
         }
-  
         if (filters.color && filters.color.length > 0) {
           const colorSet = new Set(filters.color);
           filtered = filtered.filter((car) => colorSet.has(car.color));
         }
-  
         if (filters.minPrice !== undefined) {
-          filtered = filtered.filter(
-            (car) => (car.price || 0) >= (filters.minPrice || 0)
-          );
+          filtered = filtered.filter((car) => car.price >= filters.minPrice!);
         }
         if (filters.maxPrice !== undefined) {
-          filtered = filtered.filter(
-            (car) => (car.price || 0) <= (filters.maxPrice || 0)
-          );
+          filtered = filtered.filter((car) => car.price <= filters.maxPrice!);
         }
-
         if (filters.minYear !== undefined) {
-          filtered = filtered.filter(
-            (car) => (car.year || 0) >= (filters.minYear || 0)
-          );
+          filtered = filtered.filter((car) => car.year >= filters.minYear!);
         }
         if (filters.maxYear !== undefined) {
-          filtered = filtered.filter(
-            (car) => (car.year || 0) <= (filters.maxYear || 0)
-          );
+          filtered = filtered.filter((car) => car.year <= filters.maxYear!);
         }
-  
         if (filters.minKm !== undefined) {
-          filtered = filtered.filter(
-            (car) => (car.mileage || 0) >= (filters.minKm || 0)
-          );
+          filtered = filtered.filter((car) => car.mileage >= filters.minKm!);
         }
         if (filters.maxKm !== undefined) {
-          filtered = filtered.filter(
-            (car) => (car.mileage || 0) <= (filters.maxKm || 0)
-          );
+          filtered = filtered.filter((car) => car.mileage <= filters.maxKm!);
         }
-  
+        if (filters.doorFrom !== undefined) {
+          filtered = filtered.filter((car) => car.doors >= filters.doorFrom!);
+        }
+        if (filters.doorTo !== undefined) {
+          filtered = filtered.filter((car) => car.doors <= filters.doorTo!);
+        }
+        if (filters.seatFrom !== undefined) {
+          filtered = filtered.filter((car) => (car as any).seats >= filters.seatFrom!);
+        }
+        if (filters.seatTo !== undefined) {
+          filtered = filtered.filter((car) => (car as any).seats <= filters.seatTo!);
+        }
+
         set({ filteredCars: filtered, isLoading: false });
-  
       } catch (error) {
         console.error("Error applying filters:", error);
         set({ filteredCars: [...allCars], isLoading: false });
       }
     }, 0);
   },
-  
+
   getActiveFiltersCount: () => {
     const { filters } = get();
     let count = 0;
@@ -205,12 +201,9 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
       if (Array.isArray(value)) {
         count += value.length;
       } else if (value !== undefined && value !== null) {
-        count += 1; 
+        count += 1;
       }
     }
     return count;
   },
-  
 }));
-
-

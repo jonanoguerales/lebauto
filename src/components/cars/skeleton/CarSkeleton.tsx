@@ -37,6 +37,27 @@ export function CarCardSkeleton() {
     </div>
   );
 }
+export function CarCardSkeletonList() {
+  return (
+    <div className="flex gap-4 p-4 border rounded-lg shadow-sm animate-pulse">
+      <Skeleton className="h-32 w-48 rounded-lg" />
+      <div className="flex-1 space-y-4">
+        <Skeleton className="h-6 w-1/2 rounded" />
+        <Skeleton className="h-4 w-1/3 rounded" />
+        <Skeleton className="h-4 w-2/3 rounded" />
+        <div className="flex gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-4 w-16 rounded" />
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-6 w-24 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function CarDetailSkeleton() {
   return (

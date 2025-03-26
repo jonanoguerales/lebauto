@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useResponsiveView } from "@/hooks/useResponsiveView";
+import { CarCardSkeleton } from "./skeleton/CarSkeleton";
+import { LoadingVehicles } from "./LoadingCars";
 
 export default function CatalogClient({
   allCars,
@@ -31,6 +33,11 @@ export default function CatalogClient({
   minPrice,
   maxYear,
   minYear,
+  bodyType,
+  doorFrom,
+  doorTo,
+  seatFrom,
+  seatTo,
 }: CatalogClientProps) {
   const { view, setView } = useViewStore();
   const {
@@ -44,12 +51,13 @@ export default function CatalogClient({
   } = useFilterStore();
   const [isOpen, setIsOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("recent");
+  const [showLoader, setShowLoader] = useState(false);
 
   useEffect(() => {
     clearFilters();
 
-    const brandrc = brand?.toString() || "all";
-    const modelrc = model?.toString() || "all";
+    const brandrc = brand?.toString() || "";
+    const modelrc = model?.toString() || "";
     const brandArray = brandrc.split(",").filter(Boolean);
     const modelArray = modelrc.split(",").filter(Boolean);
     if (brand) {
@@ -58,14 +66,20 @@ export default function CatalogClient({
     if (model) {
       modelArray.forEach((m) => setFilter("model", m));
     }
+    const fuelrc = fuel?.toString() || "";
+    const colorrc = color?.toString() || "";
+    const locationrc = location?.toString() || "";
+    const fuelArray = fuelrc.split(",").filter(Boolean);
+    const colorArray = colorrc.split(",").filter(Boolean);
+    const locationArray = locationrc.split(",").filter(Boolean);
     if (fuel) {
-      fuel.split(",").forEach((f) => setFilter("fuel", f));
+      fuelArray.forEach((f) => setFilter("fuel", f));
     }
     if (color) {
-      color.split(",").forEach((c) => setFilter("color", c));
+      colorArray.forEach((c) => setFilter("color", c));
     }
     if (location) {
-      location.split(",").forEach((l) => setFilter("location", l));
+      locationArray.forEach((l) => setFilter("location", l));
     }
     if (maxKm) {
       setFilter("maxKm", maxKm);
@@ -85,10 +99,38 @@ export default function CatalogClient({
     if (minYear) {
       setFilter("minYear", minYear);
     }
+    const bodyTyperc = bodyType?.toString() || "";
+    const bodyArray = bodyTyperc.split(",").filter(Boolean);
+
+    if (bodyType) {
+      bodyArray.forEach((b) => setFilter("bodyType", b));
+    }
+    if (doorFrom) {
+      setFilter("doorFrom", doorFrom);
+    }
+    if (doorTo) {
+      setFilter("doorTo", doorTo);
+    }
+    if (seatFrom) {
+      setFilter("seatFrom", seatFrom);
+    }
+    if (seatTo) {
+      setFilter("seatTo", seatTo);
+    }
 
     setAllCars(allCars);
     setFilteredCars(initialCars);
   }, []);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (isLoading) {
+      timeout = setTimeout(() => setShowLoader(true), 300);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [isLoading]);
 
   useResponsiveView();
 
@@ -190,19 +232,25 @@ export default function CatalogClient({
               <SelectContent>
                 <SelectItem value="recent">Más recientes</SelectItem>
                 <SelectItem value="price-asc">Precio: menor a mayor</SelectItem>
-                <SelectItem value="price-desc">Precio: mayor a menor</SelectItem>
-                <SelectItem value="km-asc">Kilómetros: menor a mayor</SelectItem>
+                <SelectItem value="price-desc">
+                  Precio: mayor a menor
+                </SelectItem>
+                <SelectItem value="km-asc">
+                  Kilómetros: menor a mayor
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <div
-          className={`transition-opacity duration-300 ease-in-out ${
-            isLoading ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          <CarList cars={sortedCars} />
+        <div>
+          {isLoading && showLoader ? (
+            <LoadingVehicles />
+          ) : (
+            <div className="transition-opacity duration-300 ease-in-out opacity-100">
+              <CarList cars={sortedCars} />
+            </div>
+          )}
         </div>
       </section>
     </div>

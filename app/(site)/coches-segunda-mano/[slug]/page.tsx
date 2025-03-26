@@ -4,9 +4,9 @@ import CarGallery from "@/components/cars/CarGallery";
 import CarInfo from "@/components/cars/CarInfo";
 import CarFeatures from "@/components/cars/CarFeatures";
 import CarContact from "@/components/cars/CarContact";
-import { CarCardSkeleton } from "@/components/cars/CarSkeleton";
 import { Suspense } from "react";
 import { fetchCarDetailsBySlug } from "@/supabase/supabase";
+import { CarCardSkeleton } from "@/components/cars/skeleton/CarSkeleton";
 
 export const revalidate = 60;
 

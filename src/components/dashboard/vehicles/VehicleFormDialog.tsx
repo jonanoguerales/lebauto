@@ -62,7 +62,11 @@ const vehicleSchema = z.object({
   doors: z.coerce
     .number()
     .int()
-    .min(1, "El número de puertas debe ser al menos 1"),
+    .min(1, "El número de puertas debe ser al menos 2"),
+  seats: z.coerce
+    .number()
+    .int()
+    .min(1, "El número de asientos debe ser al menos 2"),
   electric_range: z.coerce.number().optional(),
   battery_capacity: z.coerce.number().optional(),
   charging_time: z.coerce.number().optional(),
@@ -111,6 +115,7 @@ export function VehicleFormDialog({
       engine_displacement: 0,
       color: "",
       doors: 5,
+      seats: 5,
       electric_range: 0,
       battery_capacity: 0,
       charging_time: 0,
@@ -146,6 +151,7 @@ export function VehicleFormDialog({
         engine_displacement: vehicle.engineDisplacement || 0,
         color: vehicle.color || "",
         doors: vehicle.doors || 5,
+        seats: vehicle.seats || 5,
         electric_range: vehicle.electricRange || 0,
         battery_capacity: vehicle.batteryCapacity || 0,
         charging_time: vehicle.chargingTime || 0,
@@ -177,6 +183,7 @@ export function VehicleFormDialog({
         engine_displacement: 0,
         color: "",
         doors: 5,
+        seats: 5,
         electric_range: 0,
         battery_capacity: 0,
         charging_time: 0,
@@ -190,7 +197,7 @@ export function VehicleFormDialog({
         features: [],
       });
     }
-  }, [vehicle, form]);
+  }, [open, vehicle, form]);
 
   const onSubmit = (data: VehicleFormValues) => {
     onSave({
@@ -212,6 +219,7 @@ export function VehicleFormDialog({
       engineDisplacement: data.engine_displacement,
       color: data.color,
       doors: data.doors,
+      seats: data.doors,
       electricRange: data.electric_range,
       batteryCapacity: data.battery_capacity,
       chargingTime: data.charging_time,
@@ -315,7 +323,6 @@ export function VehicleFormDialog({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Nuevo">Nuevo</SelectItem>
                             <SelectItem value="Seminuevo">Seminuevo</SelectItem>
                             <SelectItem value="Ocasión">Ocasión</SelectItem>
                             <SelectItem value="KM0">KM0</SelectItem>
@@ -384,6 +391,22 @@ export function VehicleFormDialog({
                   />
                   <FormField
                     control={form.control}
+                    name="seats"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Plazas</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                    control={form.control}
                     name="location"
                     render={({ field }) => (
                       <FormItem>
@@ -395,9 +418,6 @@ export function VehicleFormDialog({
                       </FormItem>
                     )}
                   />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="body_type"
@@ -416,8 +436,9 @@ export function VehicleFormDialog({
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="SUV">SUV</SelectItem>
-                            <SelectItem value="Berlina">Sedán</SelectItem>
-                            <SelectItem value="Cabrio">Hatchback</SelectItem>
+                            <SelectItem value="Berlina">Berlina</SelectItem>
+                            <SelectItem value="Compacto">Compacto</SelectItem>
+                            <SelectItem value="Cabrio">Cabrio</SelectItem>
                             <SelectItem value="Coupe">Coupé</SelectItem>
                             <SelectItem value="Familiar">Familiar</SelectItem>
                             <SelectItem value="Monovolumen">

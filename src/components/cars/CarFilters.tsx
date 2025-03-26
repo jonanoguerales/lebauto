@@ -1,18 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { MapPin, Palette, X, Fuel, Gauge, Calendar1 } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Accordion } from "@/components/ui/accordion";
 import { useFilterStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
@@ -26,6 +18,7 @@ import { KmFilter } from "./filters/KmFilter";
 import { FuelFilter } from "./filters/FuelFilter";
 import { ColorFilter } from "./filters/ColorFilter";
 import { LocationFilter } from "./filters/LocationFilter";
+import { BodyFilter } from "./filters/BodyFilter";
 
 export default function CarFilters({
   isOpen = false,
@@ -41,12 +34,13 @@ export default function CarFilters({
   const {
     filters,
     setFilter,
-    filteredCars,
     removeFilter,
     clearFilters,
     allCars,
+    filteredCars,
   } = useFilterStore();
 
+  // Estados para precio, año, km, etc.
   const [minPrice, setMinPrice] = useState<string>(
     filters.minPrice?.toString() || "0"
   );
@@ -57,13 +51,14 @@ export default function CarFilters({
     filters.minYear?.toString() || "1990"
   );
   const [maxYear, setMaxYear] = useState<string>(
-    filters.maxYear?.toString() || new Date().getFullYear().toString()
+    filters.maxYear?.toString() || currentYear.toString()
   );
   const [minKm, setMinKm] = useState<string>(filters.minKm?.toString() || "0");
   const [maxKm, setMaxKm] = useState<string>(
     filters.maxKm?.toString() || "500000"
   );
 
+  // Estados para marca/modelo
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [expandedBrands, setExpandedBrands] = useState<Record<string, boolean>>(
     {}
@@ -71,6 +66,12 @@ export default function CarFilters({
   const [selectAllModelsState, setSelectAllModelsState] = useState<
     Record<string, boolean>
   >({});
+
+  // Estados para puertas y plazas
+  const [doorFrom, setDoorFrom] = useState<number>(filters.doorFrom || 2);
+  const [doorTo, setDoorTo] = useState<number>(filters.doorTo || 5);
+  const [seatFrom, setSeatFrom] = useState<number>(filters.seatFrom || 2);
+  const [seatTo, setSeatTo] = useState<number>(filters.seatTo || 5);
 
   const lowerSearch = searchTerm.toLowerCase();
 
@@ -124,6 +125,26 @@ export default function CarFilters({
     [allCars]
   );
 
+  const uniqueBodyTypes = [
+    { value: "SUV", label: "SUV", image: "/tipo-carroceria/body-4x4-suv.png" },
+    { value: "Berlina", label: "Berlina", image: "/tipo-carroceria/body-berlina.png" },
+    { value: "Compacto", label: "Compacto", image: "/tipo-carroceria/body-compacto.png" },
+    { value: "Cabrio", label: "Cabrio", image: "/tipo-carroceria/body-cabrio.png" },
+    { value: "Coupe", label: "Coupe", image: "/tipo-carroceria/body-coupe.png" },
+    { value: "Familiar", label: "Familiar", image: "/tipo-carroceria/body-familiar.png" },
+    { value: "Monovolumen", label: "Monovolumen", image: "/tipo-carroceria/body-monovolumen.png" },
+    { value: "Pick-up", label: "Pick-up", image: "/tipo-carroceria/body-pick-up.png" },
+  ];
+  
+
+  const handleBodyTypeChange = (bodyType: string, checked: boolean) => {
+    if (checked) {
+      setFilter("bodyType", bodyType);
+    } else {
+      removeFilter("bodyType", bodyType);
+    }
+  };
+
   useEffect(() => {
     const updateUrl = () => {
       const params = new URLSearchParams();
@@ -131,12 +152,8 @@ export default function CarFilters({
         params.set("brand", filters.brand.join(","));
       if (filters.model && filters.model.length > 0)
         params.set("model", filters.model.join(","));
-      if (filters.color && filters.color.length > 0)
-        params.set("color", filters.color.join(","));
-      if (filters.fuel && filters.fuel.length > 0)
-        params.set("fuel", filters.fuel.join(","));
-      if (filters.location && filters.location.length > 0)
-        params.set("location", filters.location.join(","));
+      if (filters.bodyType && filters.bodyType.length > 0)
+        params.set("bodyType", filters.bodyType.join(","));
       if (filters.minPrice !== undefined)
         params.set("minPrice", filters.minPrice.toString());
       if (filters.maxPrice !== undefined)
@@ -149,11 +166,24 @@ export default function CarFilters({
         params.set("minKm", filters.minKm.toString());
       if (filters.maxKm !== undefined)
         params.set("maxKm", filters.maxKm.toString());
+      if (filters.doorFrom !== undefined)
+        params.set("doorFrom", filters.doorFrom.toString());
+      if (filters.doorTo !== undefined)
+        params.set("doorTo", filters.doorTo.toString());
+      if (filters.seatFrom !== undefined)
+        params.set("seatFrom", filters.seatFrom.toString());
+      if (filters.seatTo !== undefined)
+        params.set("seatTo", filters.seatTo.toString());
+      if (filters.fuel && filters.fuel.length > 0)
+        params.set("fuel", filters.fuel.join(","));
+      if (filters.location && filters.location.length > 0)
+        params.set("location", filters.location.join(","));
+      if (filters.color && filters.color.length > 0)
+        params.set("color", filters.color.join(","));
 
       const newUrl = params.toString()
         ? `/coches-segunda-mano?${params.toString()}`
         : "/coches-segunda-mano";
-
       router.replace(newUrl, { scroll: false });
     };
 
@@ -239,6 +269,10 @@ export default function CarFilters({
     setMaxYear(new Date().getFullYear().toString());
     setMinKm("0");
     setMaxKm("500000");
+    setDoorFrom(2);
+    setDoorTo(5);
+    setSeatFrom(2);
+    setSeatTo(5);
     setSearchTerm("");
     setExpandedBrands({});
     setSelectAllModelsState({});
@@ -285,6 +319,18 @@ export default function CarFilters({
       removeFilter("maxKm");
       setMinKm("0");
       setMaxKm("500000");
+    } else if (type === "bodyType") {
+      removeFilter("bodyType", value);
+    } else if (type === "doors") {
+      removeFilter("doorFrom");
+      removeFilter("doorTo");
+      setDoorFrom(2);
+      setDoorTo(5);
+    } else if (type === "seats") {
+      removeFilter("seatFrom");
+      removeFilter("seatTo");
+      setSeatFrom(2);
+      setSeatTo(5);
     }
   };
 
@@ -339,6 +385,27 @@ export default function CarFilters({
       active.push({
         type: "km",
         value: `Km: ${filters.minKm || 0} - ${filters.maxKm || 500000}`,
+      });
+    }
+    if (filters.bodyType && filters.bodyType.length > 0) {
+      filters.bodyType.forEach((bt) =>
+        active.push({ type: "bodyType", value: bt })
+      );
+    }
+    if (filters.doorFrom !== undefined || filters.doorTo !== undefined) {
+      const doorFromVal = filters.doorFrom ?? 2;
+      const doorToVal = filters.doorTo ?? 5;
+      active.push({
+        type: "doors",
+        value: `Puertas: ${doorFromVal} - ${doorToVal}`,
+      });
+    }
+    if (filters.seatFrom !== undefined || filters.seatTo !== undefined) {
+      const seatFromVal = filters.seatFrom ?? 2;
+      const seatToVal = filters.seatTo ?? 5;
+      active.push({
+        type: "seats",
+        value: `Plazas: ${seatFromVal} - ${seatToVal}`,
       });
     }
     return active;
@@ -474,6 +541,32 @@ export default function CarFilters({
           <PriceFilter config={PriceFilterConfig} />
 
           <YearFilter config={YearFilterConfig} />
+
+          <BodyFilter
+            uniqueBodyTypes={uniqueBodyTypes}
+            filters={filters}
+            doorFrom={doorFrom}
+            doorTo={doorTo}
+            seatFrom={seatFrom}
+            seatTo={seatTo}
+            setDoorFrom={(value) => {
+              setDoorFrom(value);
+              setFilter("doorFrom", value);
+            }}
+            setDoorTo={(value) => {
+              setDoorTo(value);
+              setFilter("doorTo", value);
+            }}
+            setSeatFrom={(value) => {
+              setSeatFrom(value);
+              setFilter("seatFrom", value);
+            }}
+            setSeatTo={(value) => {
+              setSeatTo(value);
+              setFilter("seatTo", value);
+            }}
+            handleBodyTypeChange={handleBodyTypeChange}
+          />
 
           <KmFilter config={KmFilterConfig} />
 
