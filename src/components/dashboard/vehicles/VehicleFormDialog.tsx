@@ -101,7 +101,7 @@ export function VehicleFormDialog({
       brand: "",
       model: "",
       variant: "",
-      condition: "Nuevo",
+      condition: "Seminuevo",
       price: 0,
       location: "",
       year: new Date().getFullYear(),
@@ -219,7 +219,7 @@ export function VehicleFormDialog({
       engineDisplacement: data.engine_displacement,
       color: data.color,
       doors: data.doors,
-      seats: data.doors,
+      seats: data.seats,
       electricRange: data.electric_range,
       batteryCapacity: data.battery_capacity,
       chargingTime: data.charging_time,
@@ -369,9 +369,35 @@ export function VehicleFormDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Color</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ej: Negro" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecciona un color" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Amarillo">Amarillo</SelectItem>
+                            <SelectItem value="Azul">Azul</SelectItem>
+                            <SelectItem value="Beige">Beige</SelectItem>
+                            <SelectItem value="Blanco">Blanco</SelectItem>
+                            <SelectItem value="Gris / Plata">
+                              Gris / Plata
+                            </SelectItem>
+                            <SelectItem value="Marrón">Marrón</SelectItem>
+                            <SelectItem value="Naranja">Naranja</SelectItem>
+                            <SelectItem value="Negro">Negro</SelectItem>
+                            <SelectItem value="Rojo">Rojo</SelectItem>
+                            <SelectItem value="Rosa">Rosa</SelectItem>
+                            <SelectItem value="Verde">Verde</SelectItem>
+                            <SelectItem value="Violeta / Lila">
+                              Violeta / Lila
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -382,9 +408,25 @@ export function VehicleFormDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Puertas</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                          value={String(field.value)}
+                          defaultValue={String(field.value)}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecciona el número de puertas" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                            <SelectItem value="4">4</SelectItem>
+                            <SelectItem value="5">5</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -395,17 +437,36 @@ export function VehicleFormDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Plazas</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                          value={String(field.value)}
+                          defaultValue={String(field.value)}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecciona el número de plazas" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                            <SelectItem value="4">4</SelectItem>
+                            <SelectItem value="5">5</SelectItem>
+                            <SelectItem value="6">6</SelectItem>
+                            <SelectItem value="7">7</SelectItem>
+                            <SelectItem value="8">8</SelectItem>
+                            <SelectItem value="9">9</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField
+                  <FormField
                     control={form.control}
                     name="location"
                     render={({ field }) => (
@@ -502,15 +563,20 @@ export function VehicleFormDialog({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Gasolina">Gasolina</SelectItem>
                             <SelectItem value="Diésel">Diésel</SelectItem>
+                            <SelectItem value="Gasolina">Gasolina</SelectItem>
+                            <SelectItem value="Eléctrico">Eléctrico</SelectItem>
                             <SelectItem value="Híbrido">Híbrido</SelectItem>
                             <SelectItem value="Híbrido enchufable">
                               Híbrido enchufable
                             </SelectItem>
-                            <SelectItem value="Eléctrico">Eléctrico</SelectItem>
-                            <SelectItem value="GLP">GLP</SelectItem>
-                            <SelectItem value="GNC">GNC</SelectItem>
+                            <SelectItem value="Gas licuado (GLP)">
+                              Gas licuado (GLP)
+                            </SelectItem>
+                            <SelectItem value="Gas natural (GNC)">
+                              Gas natural (GNC)
+                            </SelectItem>
+                            <SelectItem value="Otros">Otros</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -535,11 +601,12 @@ export function VehicleFormDialog({
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="Manual">Manual</SelectItem>
-                            <SelectItem value="Automática">
-                              Automática
+                            <SelectItem value="Automático">
+                              Automático
                             </SelectItem>
-                            <SelectItem value="Semiautomática">
-                              Semiautomática
+                            <SelectItem value="CVT">CVT</SelectItem>
+                            <SelectItem value="DSG / Doble embrague">
+                              DSG / Doble embrague
                             </SelectItem>
                           </SelectContent>
                         </Select>

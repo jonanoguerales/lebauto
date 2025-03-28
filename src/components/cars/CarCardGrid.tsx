@@ -19,7 +19,13 @@ export default function CarCardGrid({ car }: CarCardGridProps) {
     >
       <div className="relative">
         <div className="absolute top-2 right-2 z-10">
-          <Image src="/logo.webp" width={32} height={32} alt="Logo empresa" className="rounded-full" />
+          <Image
+            src="/logo.webp"
+            width={32}
+            height={32}
+            alt="Logo empresa"
+            className="rounded-full"
+          />
         </div>
         <div className="relative h-48">
           <Image
@@ -37,7 +43,16 @@ export default function CarCardGrid({ car }: CarCardGridProps) {
 
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold">{car.brand} {car.model}</h3>
+          <h3 className="font-semibold">
+            {car.brand} {car.model}
+          </h3>
+          <Image
+            src={`/distintivos/${car.environmentalTag}.svg`}
+            width={32}
+            height={32}
+            alt="Etiqueta medioambiental"
+            className="rounded-full"
+          />
         </div>
 
         <p className="text-sm text-muted-foreground mb-4">{car.variant}</p>
@@ -57,8 +72,12 @@ export default function CarCardGrid({ car }: CarCardGridProps) {
 
         <div className="border-t pt-4">
           <div className="flex justify-between items-baseline mb-2">
-            <p className="text-xl font-bold text-primary">{formatPrice(car.price)} €</p>
-            <p className="text-sm text-muted-foreground">{formatPrice(car.monthlyPrice || 0)} €/mes*</p>
+            <p className="text-xl font-bold text-primary">
+              {formatPrice(car.price)} €
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {formatPrice(car.monthlyPrice || 0)} €/mes*
+            </p>
           </div>
         </div>
       </div>

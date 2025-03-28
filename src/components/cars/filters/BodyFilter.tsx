@@ -52,7 +52,7 @@ export function BodyFilter({
   handleBodyTypeChange,
 }: BodyTypeDoorsSeatsFilterProps) {
   const doorOptions = [2, 3, 4, 5];
-  const seatOptions = [2, 3, 4, 5, 6, 7, 8];
+  const seatOptions = [2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
     <AccordionItem value="bodyType">

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/utils/utils";
 import type { Car } from "@/lib/definitions";
@@ -31,7 +30,7 @@ export default function CarCardList({ car }: CarCardListProps) {
             loading="lazy"
           />
           <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-sm">
-            1/{car.images?.length || 0}
+            1/{car.images?.length || 0} 
           </div>
         </div>
 
@@ -41,6 +40,7 @@ export default function CarCardList({ car }: CarCardListProps) {
               <h3 className="text-xl font-semibold mb-2">{car.brand} {car.model}</h3>
               <p className="text-muted-foreground">{car.variant}</p>
             </div>
+            <Image src={`/distintivos/${car.environmentalTag}.svg`} width={32} height={32} alt="Etiqueta medioambiental" className="rounded-full" />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 md:justify-items-center gap-4 mt-4">

@@ -31,7 +31,10 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
         key === "fuel" ||
         key === "location" ||
         key === "color" ||
-        key === "bodyType"
+        key === "bodyType" ||
+        key === "transmission" ||
+        key === "environmentalTag" ||
+        key === "drivetrain"
       ) {
         if (!newFilters[key]) {
           newFilters[key] = [];
@@ -60,7 +63,10 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
         key === "fuel" ||
         key === "location" ||
         key === "color" ||
-        key === "bodyType"
+        key === "bodyType" ||
+        key === "transmission" ||
+        key === "environmentalTag" ||
+        key === "drivetrain"
       ) {
         if (value !== undefined) {
           const arr = newFilters[key] as string[];
@@ -183,7 +189,34 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
         if (filters.seatTo !== undefined) {
           filtered = filtered.filter((car) => (car as any).seats <= filters.seatTo!);
         }
-
+        if (filters.transmission && filters.transmission.length > 0) {
+          const transSet = new Set(filters.transmission);
+          filtered = filtered.filter((car) => transSet.has(car.transmission));
+        }
+        if (filters.environmentalTag && filters.environmentalTag.length > 0) {
+          const envSet = new Set(filters.environmentalTag);
+          filtered = filtered.filter((car) => envSet.has(car.environmentalTag));
+        }
+        if (filters.drivetrain && filters.drivetrain.length > 0) {
+          const driveSet = new Set(filters.drivetrain);
+          filtered = filtered.filter((car) => driveSet.has(car.drivetrain || ""));
+        }
+      if (filters.minPower !== undefined) {
+        filtered = filtered.filter((car) => car.power ?? 0 >= filters.minPower!);
+      }
+      if (filters.maxPower !== undefined) {
+        filtered = filtered.filter((car) => car.power ?? 0 <= filters.maxPower!);
+      }
+      if (filters.minEngineDisplacement !== undefined) {
+        filtered = filtered.filter(
+          (car) => car.engineDisplacement ?? 0 >= filters.minEngineDisplacement!
+        );
+      }
+      if (filters.maxEngineDisplacement !== undefined) {
+        filtered = filtered.filter(
+          (car) => car.engineDisplacement ?? 0 <= filters.maxEngineDisplacement!
+        );
+      }
         set({ filteredCars: filtered, isLoading: false });
       } catch (error) {
         console.error("Error applying filters:", error);

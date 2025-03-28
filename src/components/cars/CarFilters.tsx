@@ -15,10 +15,10 @@ import { useYearDebounce } from "@/hooks/useYearDebounce";
 import { useKmDebounce } from "@/hooks/useKmDebounce";
 import { YearFilter } from "./filters/YearFilter";
 import { KmFilter } from "./filters/KmFilter";
-import { FuelFilter } from "./filters/FuelFilter";
 import { ColorFilter } from "./filters/ColorFilter";
 import { LocationFilter } from "./filters/LocationFilter";
 import { BodyFilter } from "./filters/BodyFilter";
+import { MotorFilter } from "./filters/MotorFilter";
 
 export default function CarFilters({
   isOpen = false,
@@ -111,10 +111,7 @@ export default function CarFilters({
     () => Array.from(new Set(allCars.map((car) => car.color))),
     [allCars]
   );
-  const uniqueFuels = useMemo(
-    () => Array.from(new Set(allCars.map((car) => car.fuel))),
-    [allCars]
-  );
+
   const uniqueLocations = useMemo(
     () =>
       Array.from(
@@ -127,15 +124,42 @@ export default function CarFilters({
 
   const uniqueBodyTypes = [
     { value: "SUV", label: "SUV", image: "/tipo-carroceria/body-4x4-suv.png" },
-    { value: "Berlina", label: "Berlina", image: "/tipo-carroceria/body-berlina.png" },
-    { value: "Compacto", label: "Compacto", image: "/tipo-carroceria/body-compacto.png" },
-    { value: "Cabrio", label: "Cabrio", image: "/tipo-carroceria/body-cabrio.png" },
-    { value: "Coupe", label: "Coupe", image: "/tipo-carroceria/body-coupe.png" },
-    { value: "Familiar", label: "Familiar", image: "/tipo-carroceria/body-familiar.png" },
-    { value: "Monovolumen", label: "Monovolumen", image: "/tipo-carroceria/body-monovolumen.png" },
-    { value: "Pick-up", label: "Pick-up", image: "/tipo-carroceria/body-pick-up.png" },
+    {
+      value: "Berlina",
+      label: "Berlina",
+      image: "/tipo-carroceria/body-berlina.png",
+    },
+    {
+      value: "Compacto",
+      label: "Compacto",
+      image: "/tipo-carroceria/body-compacto.png",
+    },
+    {
+      value: "Cabrio",
+      label: "Cabrio",
+      image: "/tipo-carroceria/body-cabrio.png",
+    },
+    {
+      value: "Coupe",
+      label: "Coupe",
+      image: "/tipo-carroceria/body-coupe.png",
+    },
+    {
+      value: "Familiar",
+      label: "Familiar",
+      image: "/tipo-carroceria/body-familiar.png",
+    },
+    {
+      value: "Monovolumen",
+      label: "Monovolumen",
+      image: "/tipo-carroceria/body-monovolumen.png",
+    },
+    {
+      value: "Pickup",
+      label: "Pick-up",
+      image: "/tipo-carroceria/body-pick-up.png",
+    },
   ];
-  
 
   const handleBodyTypeChange = (bodyType: string, checked: boolean) => {
     if (checked) {
@@ -180,7 +204,26 @@ export default function CarFilters({
         params.set("location", filters.location.join(","));
       if (filters.color && filters.color.length > 0)
         params.set("color", filters.color.join(","));
-
+      if (filters.minPower !== undefined)
+        params.set("minPower", filters.minPower.toString());
+      if (filters.maxPower !== undefined)
+        params.set("maxPower", filters.maxPower.toString());
+      if (filters.minEngineDisplacement !== undefined)
+        params.set(
+          "minEngineDisplacement",
+          filters.minEngineDisplacement.toString()
+        );
+      if (filters.maxEngineDisplacement !== undefined)
+        params.set(
+          "maxEngineDisplacement",
+          filters.maxEngineDisplacement.toString()
+        );
+      if (filters.transmission && filters.transmission.length > 0)
+        params.set("transmission", filters.transmission.join(","));
+      if (filters.environmentalTag && filters.environmentalTag.length > 0)
+        params.set("environmental_tag", filters.environmentalTag.join(","));
+      if (filters.drivetrain && filters.drivetrain.length > 0)
+        params.set("drivetrain", filters.drivetrain.join(","));
       const newUrl = params.toString()
         ? `/coches-segunda-mano?${params.toString()}`
         : "/coches-segunda-mano";
@@ -249,11 +292,6 @@ export default function CarFilters({
   const handleColorChange = (color: string, checked: boolean) => {
     if (checked) setFilter("color", color);
     else removeFilter("color", color);
-  };
-
-  const handleFuelChange = (fuel: string, checked: boolean) => {
-    if (checked) setFilter("fuel", fuel);
-    else removeFilter("fuel", fuel);
   };
 
   const handleLocationChange = (location: string, checked: boolean) => {
@@ -331,6 +369,18 @@ export default function CarFilters({
       removeFilter("seatTo");
       setSeatFrom(2);
       setSeatTo(5);
+    } else if (type === "transmission") {
+      removeFilter("transmission", value);
+    } else if (type === "drivetrain") {
+      removeFilter("drivetrain", value);    
+    } else if (type === "environmentalTag") {
+      removeFilter("environmentalTag", value);
+    }else if (type === "power") {
+      removeFilter("minPower");
+      removeFilter("maxPower");
+    }else if (type === "engineDisplacement") {
+      removeFilter("minEngineDisplacement");
+      removeFilter("maxEngineDisplacement");
     }
   };
 
@@ -408,6 +458,38 @@ export default function CarFilters({
         value: `Plazas: ${seatFromVal} - ${seatToVal}`,
       });
     }
+    if (filters.transmission && filters.transmission.length > 0) {
+      filters.transmission.forEach((transmission) =>
+        active.push({ type: "transmission", value: transmission })
+      );
+    }
+    if (filters.environmentalTag && filters.environmentalTag.length > 0) {
+      filters.environmentalTag.forEach((tag) =>
+        active.push({ type: "environmentalTag", value: tag })
+      );
+    }
+    if (filters.drivetrain && filters.drivetrain.length > 0) {
+      filters.drivetrain.forEach((drivetrain) =>
+        active.push({ type: "drivetrain", value: drivetrain })
+      );
+    }
+    if (filters.minPower !== undefined || filters.maxPower !== undefined) {
+      active.push({
+        type: "power",
+        value: `Potencia: ${filters.minPower || 0} - ${
+          filters.maxPower || 1000
+        }`,
+      });
+    }
+    if (filters.minEngineDisplacement !== undefined || filters.maxEngineDisplacement !== undefined) {
+      active.push({
+        type: "engineDisplacement",
+        value: `Capacidad: ${filters.minEngineDisplacement || 0} - ${
+          filters.maxEngineDisplacement || 10000
+        }`,
+      });
+    }
+
     return active;
   };
 
@@ -567,14 +649,9 @@ export default function CarFilters({
             }}
             handleBodyTypeChange={handleBodyTypeChange}
           />
+          <MotorFilter />
 
           <KmFilter config={KmFilterConfig} />
-
-          <FuelFilter
-            filters={filters}
-            handleFuelChange={handleFuelChange}
-            uniqueFuels={uniqueFuels}
-          />
 
           <ColorFilter
             uniqueColors={uniqueColors}

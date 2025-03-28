@@ -79,7 +79,14 @@ export interface FiltersData {
   fuel?: string[];
   location?: string[];
   color?: string[];
-  bodyType?: string[];  
+  bodyType?: string[]; 
+  transmission?: string[];
+  environmentalTag?: string[];
+  drivetrain?: string[];
+  minPower?: number;
+  maxPower?: number;
+  minEngineDisplacement?: number;
+  maxEngineDisplacement?: number;
   doorFrom?: number;    
   doorTo?: number;      
   seatFrom?: number;    
@@ -93,10 +100,10 @@ export interface FiltersData {
 }
 
 // Claves que son array de string
-export type ArrayFilterKey = "brand" | "model" | "fuel" | "location" | "color" | "bodyType";
+export type ArrayFilterKey = "brand" | "model" | "fuel" | "location" | "color" | "bodyType" | "transmission" | "environmentalTag" | "drivetrain";
 
 // Claves que son numéricas
-export type NumberFilterKey = "minPrice" | "maxPrice" | "minYear" | "maxYear" | "minKm" | "maxKm" | "doorFrom" | "doorTo" | "seatFrom" | "seatTo";
+export type NumberFilterKey = "minPrice" | "maxPrice" | "minYear" | "maxYear" | "minKm" | "maxKm" | "doorFrom" | "doorTo" | "seatFrom" | "seatTo" | "minPower" | "maxPower" | "minEngineDisplacement" | "maxEngineDisplacement";
 
 // Union de todas las claves
 export type FilterKey = ArrayFilterKey | NumberFilterKey;
