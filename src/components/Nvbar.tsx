@@ -66,7 +66,7 @@ export default function Navbar() {
                 : "border-transparent"
             }`}
           >
-            Gentión de venta
+            Gestión de venta
           </Link>
           <Link
             href="/contacto"
@@ -127,7 +127,7 @@ export default function Navbar() {
             }`}
             onClick={() => setMenuOpen(false)}
           >
-            Gentión de venta
+            Gestión de venta
           </Link>
           <Link
             href="/contacto"
