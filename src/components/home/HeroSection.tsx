@@ -11,7 +11,7 @@ export default function HeroSection() {
           {/* Versión WebP para móviles (mejor compresión) */}
           <source
             media="(max-width: 639px)"
-            srcSet="/imgHome-mobile.webp"
+            srcSet="/imgHome-mobile.png"
             type="image/webp"
           />
           <source
@@ -48,7 +48,7 @@ export default function HeroSection() {
           <img
             src="/imgHome.jpg"
             alt="Luxury Car"
-            className="object-cover w-full h-full"
+            className="object-fill w-full h-full"
             loading="eager"
           />
         </picture>
