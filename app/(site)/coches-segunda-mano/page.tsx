@@ -19,7 +19,6 @@ export default async function CatalogPage({
 
   return (
     <div>
-      {/* Otros elementos de la página que quieras mostrar inmediatamente */}
       <Suspense fallback={<CatalogPageSkeleton />}>
         <LoadingContent searchParams={searchParams} />
       </Suspense>

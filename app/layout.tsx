@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lebauto | Concesionario de coches de segunda mano",
     description: "Explora una amplia gama de coches nuevos, de segunda mano en Lebauto, km0.",
-    images: "/imgHome.avif"
+    images: "/imgHome.png"
   },
   icons: {
     icon: "/logo.webp"

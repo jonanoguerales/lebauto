@@ -1,21 +1,58 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export default function HeroSection() {
   return (
     <section
-      className="relative min-h-[60vh] flex items-center overflow-hidden"
+      className="relative min-h-[80vh] sm:min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700"
       role="banner"
     >
-      <Image
-        src="/imgHome.avif"
-        alt="Luxury Car"
-        fill
-        priority
-        className="object-cover flex-1"
-      />
+      <div className="absolute inset-0">
+        <picture>
+          {/* Versión WebP para móviles (mejor compresión) */}
+          <source
+            media="(max-width: 639px)"
+            srcSet="/imgHome-mobile.webp"
+            type="image/webp"
+          />
+          <source
+            media="(max-width: 639px)"
+            srcSet="/imgHome-mobile.avif"
+            type="image/avif"
+          />
 
-      <div className="absolute inset-0 flex-1 bg-gradient-to-b from-black/80 via-black/50 to-black" />
+          {/* Versiones para tablet */}
+          <source
+            media="(min-width: 640px) and (max-width: 767px)"
+            srcSet="/imgHome-tablet.webp"
+            type="image/webp"
+          />
+          <source
+            media="(min-width: 640px) and (max-width: 767px)"
+            srcSet="/imgHome-tablet.avif"
+            type="image/avif"
+          />
+
+          {/* Versiones para escritorio */}
+          <source
+            media="(min-width: 768px)"
+            srcSet="/imgHome.webp"
+            type="image/webp"
+          />
+          <source
+            media="(min-width: 768px)"
+            srcSet="/imgHome.avif"
+            type="image/avif"
+          />
+
+          {/* Fallback */}
+          <img
+            src="/imgHome.jpg"
+            alt="Luxury Car"
+            className="object-cover w-full h-full"
+            loading="eager"
+          />
+        </picture>
+      </div>
 
       <div className="relative z-10 container mx-auto py-16 md:py-24 flex-1">
         <div className="max-w-2xl flex flex-col space-y-6">
