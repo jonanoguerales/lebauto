@@ -12,7 +12,7 @@ import { JSX } from "react";
 
 export default function ContactButtons() {
   return (
-    <div className="fixed right-6 bottom-6 flex flex-col gap-4 z-50">
+    <div className="hidden fixed right-6 bottom-6 md:flex flex-col gap-4 z-50">
       <TooltipProvider delayDuration={0}>
         <ContactButton
           icon={<Phone className="h-5 w-5" />}

@@ -57,7 +57,7 @@ export default function SearchSection() {
   };
 
   return (
-    <section className="relative z-10 -mt-16 pb-8" role="search">
+    <section className="relative z-10 -mt-24 sm:-mt-16 pb-8" role="search">
       <div className="container mx-auto">
         <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

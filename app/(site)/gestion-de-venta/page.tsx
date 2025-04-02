@@ -86,7 +86,7 @@ export default function SellCarPage() {
 
   return (
     <main className="min-h-screen bg-background scroll-smooth">
-      <section className="relative mt-16 py-24 bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-white overflow-hidden">
+      <section className="relative mt-[50px] md:mt-20 py-24 bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-white overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
         <div className="container mx-auto relative z-10">
           <Link href="/" className="inline-flex items-center text-white/80 hover:text-white mb-8">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,7 +25,7 @@ export default function Navbar() {
   }, []);
 
   const isHome = pathname === "/";
-  const navbarClasses = `fixed top-0 w-screen z-50 py-6 transition-all duration-300 ${
+  const navbarClasses = `fixed top-0 w-screen z-50 transition-all duration-300 ${
     isHome
       ? scrolled || menuOpen
         ? "bg-white shadow-md transition-shadow text-black"
@@ -40,9 +41,23 @@ export default function Navbar() {
 
   return (
     <nav className={navbarClasses}>
-      <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold">
-          Lebauto
+      <div
+        className={`container mx-auto flex items-center h-[50px] md:h-20 ${
+          menuOpen ? "justify-between" : scrolled ? "justify-between" : "justify-end"
+        }`}
+      >
+        <Link
+          href="/"
+          className={`text-2xl font-bold ${menuOpen ? "block" : scrolled ? "block" : "hidden"}`}
+        >
+          <Image
+            src="/logo.jpg"
+            alt="Logo"
+            width={80}
+            height={80}
+            loading="eager"
+            className="w-[50px] md:w-[80px] h-auto"
+          />
         </Link>
         <div className="hidden md:flex gap-8">
           <Link href="/" className="hover:opacity-80">

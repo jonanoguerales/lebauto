@@ -155,7 +155,7 @@ export default function CatalogClient({
   );
 
   return (
-    <div className="container mx-auto flex flex-col lg:flex-row min-h-screen py-12 gap-8 mt-16">
+    <div className="container mx-auto flex flex-col lg:flex-row min-h-screen pt-4 pb-12 gap-8 mt-[50px] md:mt-20">
       <aside className="hidden lg:block lg:w-80 lg:min-w-80">
         <div className="sticky top-24 bg-white rounded-lg shadow-md max-h-[calc(100vh-6rem)] overflow-y-auto custom-scrollbar">
           <CarFilters />

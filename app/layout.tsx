@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     images: "/imgHome.png"
   },
   icons: {
-    icon: "/logo.webp"
+    icon: "/logo.jpg"
   }
 };
 

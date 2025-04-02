@@ -20,7 +20,7 @@ export default function CarCardGrid({ car }: CarCardGridProps) {
       <div className="relative">
         <div className="absolute top-2 right-2 z-10">
           <Image
-            src="/logo.webp"
+            src="/logo.jpg"
             width={32}
             height={32}
             alt="Logo empresa"

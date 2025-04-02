@@ -1,6 +1,5 @@
 import BrandGrid from "@/components/home/BrandGrid";
 import ContactButtons from "@/components/ContactButtons";
-import CategoriesSection from "@/components/home/CategoriesSection";
 import HeroSection from "@/components/home/HeroSection";
 import SearchSection from "@/components/home/SearchSection";
 import SellYourCarSection from "@/components/home/SellYourCarSection";
@@ -8,9 +7,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ElectricVehiclesSection from "@/components/home/ElectricVehiclesSection";
 import ElectricChargersSection from "@/components/home/ElectricShargersSection";
-import WhyElectricSection from "@/components/home/WhyElectricSection";
-import SavingsCalculator from "@/components/home/SavingsCalculator";
-import SubsidiesSection from "@/components/home/SubsidiesSection";
 
 export const metadata: Metadata = {
   title:
@@ -47,7 +43,6 @@ export default function HomePage() {
     <>
       <HeroSection />
       <SearchSection />
-      <CategoriesSection />
       <ElectricVehiclesSection />
       <SellYourCarSection />
       <section className="py-20 bg-muted/40">
@@ -65,9 +60,9 @@ export default function HomePage() {
         </div>
       </section>
       <ElectricChargersSection />
-      <WhyElectricSection />
+{/*       <WhyElectricSection />
       <SavingsCalculator />
-      <SubsidiesSection />
+      <SubsidiesSection /> */}
       <ContactButtons />
 
       {/* Datos estructurados para SEO */}

@@ -30,11 +30,11 @@ export default function ElectricVehiclesSection() {
   }, []);
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-8 bg-white">
       <div className="container mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
-            <h2 className="text-3xl font-bold">Vehículos eléctricos</h2>
+            <h2 className="text-3xl font-bold text-center md:text-left">Vehículos eléctricos</h2>
             <p className="text-muted-foreground mt-2">
               Descubre nuestra selección de vehículos 100% eléctricos
             </p>
