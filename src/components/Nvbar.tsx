@@ -51,7 +51,7 @@ export default function Navbar() {
           className={`text-2xl font-bold ${menuOpen ? "block" : scrolled ? "block" : "hidden"}`}
         >
           <Image
-            src="/logo.jpg"
+            src="/logo.webp"
             alt="Logo"
             width={80}
             height={80}

@@ -20,7 +20,7 @@ export default function CarCardList({ car }: CarCardListProps) {
       <div className="flex flex-col md:flex-row">
         <div className="relative w-full md:w-[300px]">
           <div className="absolute top-2 right-2 z-10">
-            <Image src="/logo.jpg" width={32} height={32} alt="Logo empresa" className="rounded-full" />
+            <Image src="/logo.webp" width={32} height={32} alt="Logo empresa" className="rounded-full" />
           </div>
           <Image
             src={mainImage}
