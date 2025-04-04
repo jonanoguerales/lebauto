@@ -7,6 +7,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ElectricVehiclesSection from "@/components/home/ElectricVehiclesSection";
 import ElectricChargersSection from "@/components/home/ElectricShargersSection";
+import LocationsSection from "@/components/home/LocationsSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import ChargersAdvisorBanner from "@/components/home/ChargersAdvisorBanner";
+import RentingBanner from "@/components/home/RentingBanner";
 
 export const metadata: Metadata = {
   title:
@@ -44,12 +48,13 @@ export default function HomePage() {
       <HeroSection />
       <SearchSection />
       <ElectricVehiclesSection />
+      <RentingBanner />
       <SellYourCarSection />
+      <ElectricChargersSection />
+      <ChargersAdvisorBanner />
       <section className="py-20 bg-muted/40">
         <div className="container mx-auto flex flex-col items-center gap-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-            Encuentra tu marca favorita
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Encuentra tu marca favorita</h2>
           <BrandGrid />
           <Link
             href="/coches-segunda-mano"
@@ -59,10 +64,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-      <ElectricChargersSection />
-{/*       <WhyElectricSection />
-      <SavingsCalculator />
-      <SubsidiesSection /> */}
+      <TestimonialsSection />
+      <LocationsSection />
       <ContactButtons />
 
       {/* Datos estructurados para SEO */}
