@@ -27,7 +27,7 @@ export default function HeroSection() {
             loading="eager"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/30 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/10 to-black/50" />
       </div>
 
       <div className="relative z-10 container mx-auto py-16 md:py-24 flex-1">
