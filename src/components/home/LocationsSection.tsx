@@ -3,6 +3,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Clock } from "lucide-react"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
+import { useEffect, useState } from "react"
 
 type Location = {
   id: number
@@ -63,7 +64,14 @@ const locations: Location[] = [
 ]
 
 export default function LocationsSection() {
+  const [mounted, setMounted] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)")
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <section className="py-20 bg-gray-50">

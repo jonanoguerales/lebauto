@@ -1,25 +1,21 @@
-"use client"
+"use client";
 
-import { useMediaQuery } from "@/hooks/useMediaQuery" 
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Check, Home, Building2, ArrowRight, Zap } from "lucide-react"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-
-type Charger = {
-  id: string
-  name: string
-  power: string
-  type: string
-  price: number
-  installationPrice: number
-  features: string[]
-  image: string
-  category: "home" | "community" | "business"
-}
+import { useState, useEffect } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Check, Home, Building2, ArrowRight, Zap } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Charger } from "@/lib/definitions";
 
 const chargers: Charger[] = [
   {
@@ -89,10 +85,19 @@ const chargers: Charger[] = [
     image: "/placeholder.svg?height=400&width=400",
     category: "business",
   },
-]
+];
 
 export default function ElectricChargersSection() {
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const [hasMounted, setHasMounted] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <section className="py-20 bg-white">
@@ -103,8 +108,7 @@ export default function ElectricChargersSection() {
           </Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Cargadores para vehículos eléctricos</h2>
           <p className="text-lg text-muted-foreground">
-            Ofrecemos soluciones de carga completas para tu vehículo eléctrico, desde la instalación hasta el
-            mantenimiento.
+            Ofrecemos soluciones de carga completas para tu vehículo eléctrico, desde la instalación hasta el mantenimiento.
           </p>
         </div>
 
@@ -136,31 +140,21 @@ export default function ElectricChargersSection() {
             </Carousel>
           </div>
         )}
-
-{/*         <div className="text-center">
-          <div className="bg-gray-50 p-6 rounded-lg inline-block">
-            <h3 className="text-xl font-semibold mb-2">¿Necesitas asesoramiento personalizado?</h3>
-            <p className="text-muted-foreground mb-4">
-              Nuestros expertos te ayudarán a encontrar la solución de carga perfecta para tus necesidades.
-            </p>
-            <Button asChild>
-              <Link href="/contacto">
-                Solicitar asesoramiento
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </div> */}
       </div>
     </section>
-  )
+  );
 }
 
 function ChargerCard({ charger }: { charger: Charger }) {
   return (
     <Card className="overflow-hidden h-full flex flex-col">
       <div className="relative h-48">
-        <Image src={charger.image || "/placeholder.svg"} alt={charger.name} fill className="object-contain p-4" />
+        <Image
+          src={charger.image || "/placeholder.svg"}
+          alt={charger.name}
+          fill
+          className="object-contain p-4"
+        />
         {charger.category === "home" && (
           <div className="absolute top-2 left-2 bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-xs font-medium flex items-center">
             <Home className="h-3 w-3 mr-1" /> Doméstico
@@ -213,6 +207,5 @@ function ChargerCard({ charger }: { charger: Charger }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

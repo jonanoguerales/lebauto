@@ -8,29 +8,44 @@ import CarCardGrid from "@/components/cars/CarCardGrid";
 import { fetchElectricVehicles } from "@/supabase/supabase";
 import type { Car } from "@/lib/definitions";
 import { CarCardSkeleton } from "@/components/cars/skeleton/CarSkeleton";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { useMediaQuery } from "@/hooks/useMediaQuery"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function ElectricVehiclesSection() {
-  const [electricVehicles, setElectricVehicles] = useState<Car[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const loadElectricVehicles = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const vehicles = await fetchElectricVehicles(4)
-        setElectricVehicles(vehicles)
+        const vehicles = await fetchElectricVehicles(4);
+        setElectricVehicles(vehicles);
       } catch (error) {
-        console.error("Error:", error)
+        console.error("Error:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    loadElectricVehicles()
-  }, [])
+    loadElectricVehicles();
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <section className="py-20 bg-gray-50">
@@ -38,7 +53,9 @@ export default function ElectricVehiclesSection() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
             <h2 className="text-3xl font-bold">¿Buscas un vehículo eléctrico?</h2>
-            <p className="text-muted-foreground mt-2">Descubre nuestra selección de vehículos 100% eléctricos</p>
+            <p className="text-muted-foreground mt-2">
+              Descubre nuestra selección de vehículos 100% eléctricos
+            </p>
           </div>
           <Button variant="outline" className="group" asChild>
             <Link href="/coches-segunda-mano?fuel=Eléctrico">
@@ -101,10 +118,7 @@ export default function ElectricVehiclesSection() {
                 >
                   <CarouselContent>
                     {electricVehicles.map((vehicle) => (
-                      <CarouselItem
-                        key={vehicle.id}
-                        className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]"
-                      >
+                      <CarouselItem key={vehicle.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
                         <CarCardGrid car={vehicle} />
                       </CarouselItem>
                     ))}
@@ -118,5 +132,5 @@ export default function ElectricVehiclesSection() {
         )}
       </div>
     </section>
-  )
+  );
 }

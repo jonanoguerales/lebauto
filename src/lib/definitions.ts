@@ -155,3 +155,15 @@ export type ContactFormState = {
   submitting: boolean
 }
 
+export type Charger = {
+  id: string;
+  name: string;
+  power: string;
+  type: string;
+  price: number;
+  installationPrice: number;
+  features: string[];
+  image: string;
+  category: "home" | "community" | "business";
+};
+
