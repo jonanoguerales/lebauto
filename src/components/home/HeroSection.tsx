@@ -1,5 +1,4 @@
 import { ebGaramond, montserrat } from "@/utils/fonts";
-import { Battery, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function HeroSection() {

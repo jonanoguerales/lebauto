@@ -17,8 +17,8 @@ export default function SearchSection() {
   const router = useRouter();
   const [cars, setCars] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("all");
+  const [selectedModel, setSelectedModel] = useState("all");
 
   useEffect(() => {
     fetchCars()

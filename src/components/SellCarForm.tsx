@@ -13,6 +13,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { SellCarFormState } from "@/lib/definitions"
 
+const CURRENT_YEAR = new Date().getFullYear()
+const YEARS = Array.from({ length: 30 }, (_, i) => (CURRENT_YEAR - i).toString())
+const FUEL_TYPES = ["Gasolina", "Diésel", "Híbrido", "Eléctrico", "GLP", "Otro"]
+
 const initialState: SellCarFormState = {
   success: null,
   message: "",
@@ -24,7 +28,6 @@ export default function SellCarForm() {
   const { toast } = useToast()
   const [state, formAction] = useActionState(submitSellCarForm, initialState)
   const [selectKey, setSelectKey] = useState(0)
-
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
@@ -40,10 +43,6 @@ export default function SellCarForm() {
       setSelectKey((prev) => prev + 1)
     }
   }, [state, toast])
-
-  const fuelTypes = ["Gasolina", "Diésel", "Híbrido", "Eléctrico", "GLP", "Otro"]
-  const currentYear = new Date().getFullYear()
-  const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString())
 
   return (
     <Card className="shadow-lg border-0">
@@ -98,7 +97,7 @@ export default function SellCarForm() {
                     <SelectValue placeholder="Selecciona año" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year) => (
+                    {YEARS.map((year) => (
                       <SelectItem key={year} value={year}>{year}</SelectItem>
                     ))}
                   </SelectContent>
@@ -119,7 +118,7 @@ export default function SellCarForm() {
                     <SelectValue placeholder="Tipo de combustible" />
                   </SelectTrigger>
                   <SelectContent>
-                    {fuelTypes.map((fuel) => (
+                    {FUEL_TYPES.map((fuel) => (
                       <SelectItem key={fuel} value={fuel}>{fuel}</SelectItem>
                     ))}
                   </SelectContent>

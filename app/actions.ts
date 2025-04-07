@@ -6,7 +6,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer";
 import { contactFormSchema, sellCarSchema } from "@/lib/validations";
-import path from "path";
 
 export async function submitSellCarForm(_: any, formData: FormData) {
   const rawData = Object.fromEntries(formData.entries())
@@ -86,7 +85,6 @@ export async function submitSellCarForm(_: any, formData: FormData) {
         </div>
         <div class="footer">
           <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-          
           <div><strong>Lebauto</strong></div>
           <div>© 2025 Lebauto, S.L.</div>
         </div>
@@ -230,7 +228,6 @@ export async function submitContactForm(_: any, formData: FormData) {
         </div>
         <div class="footer">
           <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-          
           <div><strong>Lebauto</strong></div>
           <div>© 2025 Lebauto, S.L.</div>
         </div>
