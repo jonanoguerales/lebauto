@@ -86,7 +86,7 @@ export async function submitSellCarForm(_: any, formData: FormData) {
         </div>
         <div class="footer">
           <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-          <img src="cid:lebautoLogo" alt="Lebauto Logo" class="logo" />
+          
           <div><strong>Lebauto</strong></div>
           <div>© 2025 Lebauto, S.L.</div>
         </div>
@@ -154,13 +154,6 @@ export async function submitSellCarForm(_: any, formData: FormData) {
       to: data.email,
       subject: "Copia de tu solicitud de tasación",
       html: clientEmailHtml,
-      attachments: [
-        {
-          filename: "logo.webp",
-          path: path.join(process.cwd(), "public", "logo.webp"),
-          cid: "lebautoLogo",
-        },
-      ],
     })
 
     return {
@@ -237,7 +230,7 @@ export async function submitContactForm(_: any, formData: FormData) {
         </div>
         <div class="footer">
           <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-          <img src="cid:lebautoLogo" alt="Lebauto Logo" class="logo" />
+          
           <div><strong>Lebauto</strong></div>
           <div>© 2025 Lebauto, S.L.</div>
         </div>
@@ -306,13 +299,6 @@ export async function submitContactForm(_: any, formData: FormData) {
       to: data.email,
       subject: "Confirmación de Contacto",
       html: clientEmailHtml,
-      attachments: [
-        {
-          filename: "logo.webp",
-          path: path.join(process.cwd(), "public", "logo.webp"),
-          cid: "lebautoLogo",
-        },
-      ],
     })
     return {
       success: true,
