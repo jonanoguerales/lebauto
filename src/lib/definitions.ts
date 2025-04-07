@@ -124,3 +124,34 @@ export interface FilterStateStore {
   setIsLoading: (isLoading: boolean) => void;
   applyFilters: () => void;
 }
+
+export type SellCarFormState = {
+  success: boolean | null
+  message: string
+  errors: {
+    email?: string[]
+    name?: string[]
+    phone?: string[]
+    brand?: string[]
+    model?: string[]
+    year?: string[]
+    kilometers?: string[]
+    fuel?: string[]
+    comments?: string[]
+  }
+  submitting: boolean
+}
+
+export type ContactFormState = {
+  success: boolean | null
+  message: string
+  errors: {
+    name?: string[]
+    surnames?: string[]
+    email?: string[]
+    phone?: string[]
+    message?: string[]
+  }
+  submitting: boolean
+}
+
