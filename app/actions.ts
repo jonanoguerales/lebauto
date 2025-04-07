@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer";
 import { contactFormSchema, sellCarSchema } from "@/lib/validations";
+import path from "path";
 
 export async function submitSellCarForm(_: any, formData: FormData) {
   const rawData = Object.fromEntries(formData.entries())
@@ -156,7 +157,7 @@ export async function submitSellCarForm(_: any, formData: FormData) {
       attachments: [
         {
           filename: "logo.webp",
-          path: "public/logo.webp",
+          path: path.join(process.cwd(), "public", "logo.webp"),
           cid: "lebautoLogo",
         },
       ],
@@ -308,7 +309,7 @@ export async function submitContactForm(_: any, formData: FormData) {
       attachments: [
         {
           filename: "logo.webp",
-          path: "public/logo.webp",
+          path: path.join(process.cwd(), "public", "logo.webp"),
           cid: "lebautoLogo",
         },
       ],
