@@ -2,10 +2,11 @@
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/supabase/server";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer";
 import { contactFormSchema, sellCarSchema } from "@/lib/validations";
+import { createServerClient } from "@supabase/ssr";
 
 export async function submitSellCarForm(_: any, formData: FormData) {
   const rawData = Object.fromEntries(formData.entries())
@@ -351,15 +352,31 @@ export const signUpAction = async (formData: FormData) => {
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const cookieStore = await cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
-  if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+  if (error || !data.session) {
+    return encodedRedirect("error", "/sign-in", error?.message || "Error en la autenticación");
   }
 
   return redirect("/dashboard");
