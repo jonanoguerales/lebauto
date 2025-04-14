@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useActionState } from "react"
-import { submitSellCarForm } from "@/actions"
+import { submitSellCarForm } from "@/actions/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
