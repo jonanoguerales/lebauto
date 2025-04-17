@@ -2,6 +2,7 @@ import { Car, Feature } from "@/lib/definitions";
 import { mapCarFromDB, mapCarToDB } from "@/utils/mappers";
 import { generateVehicleSlug } from "@/utils/slug";
 import { createClient } from "@/supabase/client";
+import { updateCarDocument } from "../utils/carDocuments";
 
 export const supabaseClient = createClient();
 
@@ -26,7 +27,9 @@ export async function uploadImage(
     }
 
     const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const fileName = `${Math.random()
+      .toString(36)
+      .substring(2, 15)}.${fileExt}`;
     const filePath = `${path}/${fileName}`;
 
     const { data, error } = await supabaseClient.storage
@@ -245,8 +248,10 @@ export async function createCar(
       }
     }
 
+    await updateCarDocument(mapCarFromDB(updatedCar || newCar));
+
     return mapCarFromDB({
-      ...updatedCar,
+      ...(updatedCar || newCar),
       images: images || [],
       features: features || [],
     });
@@ -352,6 +357,7 @@ export async function updateCar(
 
       currentFeatures = featureDetails?.map((f) => f.id) || [];
     }
+    await updateCarDocument(updatedCar);
 
     return mapCarFromDB({
       ...updatedCar,
@@ -375,6 +381,8 @@ export async function deleteCar(id: string): Promise<boolean> {
       console.error("Error deleting car:", error);
       return false;
     }
+
+    await supabaseClient.from("car_documents").delete().eq("car_id", id);
 
     return true;
   } catch (error) {
@@ -493,25 +501,25 @@ export async function fetchElectricVehicles(limit = 4): Promise<Car[]> {
     .select("*")
     .eq("fuel", "Eléctrico")
     .limit(limit);
-     
+
   if (error) {
     console.error("Error fetching electric vehicles:", error);
     return [];
   }
-  
+
   const carsWithImages = await Promise.all(
     (data || []).map(async (car) => {
       const { data: carImages } = await supabaseClient
         .from("car_images")
         .select("image_url")
         .eq("car_id", car.id);
-      
+
       return mapCarFromDB({
         ...car,
-        images: carImages ? carImages.map((img) => img.image_url) : []
+        images: carImages ? carImages.map((img) => img.image_url) : [],
       });
     })
   );
-  
+
   return carsWithImages || [];
 }

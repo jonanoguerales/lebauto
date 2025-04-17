@@ -11,6 +11,7 @@ import LocationsSection from "@/components/home/LocationsSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import ChargersAdvisorBanner from "@/components/home/ChargersAdvisorBanner";
 import RentingBanner from "@/components/home/RentingBanner";
+import ChatBot from "@/components/ChatBot";
 
 export const metadata: Metadata = {
   title:
@@ -48,6 +49,7 @@ export default function HomePage() {
       <HeroSection />
       <SearchSection />
       <ElectricVehiclesSection />
+      <ChatBot />
       <RentingBanner />
       <SellYourCarSection />
       <ElectricChargersSection />
