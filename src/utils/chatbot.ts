@@ -1,127 +1,184 @@
-// src/utils/chatbot.ts
-
 import { supabaseClient } from "@/app/supabase/supabase";
 import { getHFEmbedding } from "./getHFEmbedding";
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
-if (!OPENROUTER_KEY) {
-  console.warn(
-    "OPENROUTER_API_KEY no está definida. La funcionalidad del chatbot estará limitada."
-  );
-}
+const LLM_MODEL = "deepseek/deepseek-chat-v3-0324:free";
 
-const LLM_MODEL = "deepseek/deepseek-chat-v3-0324:free"; // O el modelo que estés usando
-
-// Interfaz para la fila devuelta por match_documentos
 interface DocumentRow {
   id: number;
   car_id: string;
   file_name: string | null;
   content: string;
   similarity: number;
-  distance_debug?: number; // Añadido opcionalmente
+  distance_debug?: number;
 }
 
-export async function getAssistantAnswer(
-  question: string
-): Promise<{ answer: string }> {
-  if (!OPENROUTER_KEY) {
-    return {
-      answer:
-        "Lo siento, la configuración del chatbot no está completa (falta la clave API).",
-    };
-  }
+async function* processOpenRouterStream(readableStream: ReadableStream<Uint8Array>): AsyncGenerator<string, void, undefined> {
+  const reader = readableStream.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let stillStreaming = true;
+
+  console.log("[processOpenRouterStream] Iniciando procesamiento de stream...");
+
   try {
-    console.log(`[getAssistantAnswer] Procesando pregunta: "${question}"`);
-    const queryEmbedding = await getHFEmbedding(question); // Esto ya tiene sus propios logs internos
+    while (stillStreaming) {
+      const { done, value } = await reader.read();
 
-    console.log(
-      "[Chatbot] queryEmbedding (primeros 5 elementos):",
-      queryEmbedding.slice(0, 5)
-    );
-    console.log("[Chatbot] queryEmbedding (longitud):", queryEmbedding.length);
-
-    // Llamada a la función RPC match_documentos
-    // Asegúrate de que la función SQL activa sea la de depuración que usa el operador <->
-    // y no filtra por p_match_threshold.
-    const { data: docsRaw, error: rpcError } = await supabaseClient.rpc(
-      "match_documentos",
-      {
-        p_query_embedding: queryEmbedding,
-        p_match_threshold: 0.01, 
-        p_match_count: 5,       
+      if (done) {
+        // console.log("[processOpenRouterStream] Stream 'done' recibido del reader.");
+        stillStreaming = false; // Salir del bucle principal
+        // Procesar cualquier resto en el buffer que podría ser un JSON completo
+        if (buffer.trim().startsWith("data: ")) {
+          const dataContent = buffer.trim().substring(6);
+          if (dataContent && dataContent !== "[DONE]") {
+            try {
+              const json = JSON.parse(dataContent);
+              if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
+                // console.log("[processOpenRouterStream] Último chunk del buffer:", json.choices[0].delta.content);
+                yield json.choices[0].delta.content;
+              }
+            } catch (e) {
+              console.warn("[processOpenRouterStream] Error parseando resto del buffer al final:", e, "Buffer:", buffer);
+            }
+          }
+        }
+        break; // Salir del bucle while
       }
-    );
 
-    if (rpcError) {
-      console.error(
-        "Error DETALLADO en RPC match_documentos:",
-        JSON.stringify(rpcError, null, 2)
-      );
-      return {
-        answer:
-          "Lo siento, tuve un problema al buscar información en la base de datos (código RPC).",
-      };
+      buffer += decoder.decode(value, { stream: true });
+      // console.log("[processOpenRouterStream] Buffer actual:", buffer.replace(/\n/g, "\\n"));
+
+      let eolIndex;
+      // Un evento SSE termina con \n\n
+      while ((eolIndex = buffer.indexOf("\n\n")) >= 0) {
+        const line = buffer.substring(0, eolIndex).trim();
+        buffer = buffer.substring(eolIndex + 2); // Consumir la línea y el \n\n
+
+        // console.log("[processOpenRouterStream] Línea SSE procesada:", line);
+
+        if (line.startsWith("data: ")) {
+          const dataContent = line.substring(6).trim();
+          if (dataContent === "[DONE]") {
+            // console.log("[processOpenRouterStream] Recibido evento [DONE]");
+            stillStreaming = false; // Indicar que no se esperan más datos
+            break; // Salir del bucle while interno
+          }
+          if (dataContent) {
+            try {
+              const json = JSON.parse(dataContent);
+              if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
+                // console.log("[processOpenRouterStream] Chunk de contenido:", json.choices[0].delta.content);
+                yield json.choices[0].delta.content;
+              } else if (json.choices && json.choices[0].finish_reason) {
+                // console.log("[processOpenRouterStream] Razón de finalización:", json.choices[0].finish_reason);
+                stillStreaming = false; // El LLM indicó que terminó
+                // No hay 'break' aquí, para permitir procesar el resto del buffer si done no es true aún
+              }
+            } catch (e) {
+              // Puede que un chunk no sea un JSON completo, se acumulará en el buffer
+              // console.warn("[processOpenRouterStream] Error parseando chunk JSON:", e, "Chunk:", dataContent);
+            }
+          }
+        }
+      }
+      if (!stillStreaming) break; // Salir del bucle principal si [DONE] o finish_reason se procesó
     }
-
-    console.log(
-      "[Chatbot] Datos crudos de RPC 'match_documentos' (docsRaw):",
-      docsRaw
-    );
-
-    const docs = (docsRaw ?? []) as DocumentRow[]; // Tipado como DocumentRow
-
-    if (docs.length > 0) {
-      console.log(
-        "Documentos recuperados por 'match_documentos' (DETALLADO):",
-        docs.map((d) => ({
-          id: d.id,
-          similarity: d.similarity,
-          distance_debug: d.distance_debug, // Loguea la distancia
-          content_preview: d.content.substring(0, 70) + "...",
-        }))
-      );
-    } else {
-      console.log("Ningún documento recuperado por 'match_documentos'.");
-    }
-
-    // Construir el contexto para el LLM
-    // Para depurar, es útil no filtrar por similitud aquí al principio, para ver qué devuelve la BD.
-    // Una vez que funcione, puedes reintroducir un filtro como: .filter((doc) => doc.similarity > 0.3)
-    const context = docs.map((d) => `- ${d.content.trim()}`).join("\n\n");
-
-    const systemPrompt = `
-Eres 'Lebi', un asistente virtual amigable y experto del concesionario de coches Lebauto.
-Tu misión es ayudar a los usuarios con sus consultas sobre vehículos y servicios de Lebauto, basándote ÚNICAMENTE en la información de contexto proporcionada.
-Si la pregunta del usuario puede responderse con el contexto, hazlo de manera clara y concisa.
-Si la información solicitada no se encuentra en el contexto, indica amablemente: "No tengo información específica sobre eso en mis datos actuales. ¿Podrías reformular tu pregunta o te gustaría que te ayude con algo más general sobre nuestros coches o servicios?".
-Si el contexto está vacío, y la pregunta es general sobre Lebauto (ej: "¿Qué es Lebauto?", "¿Qué servicios ofrecéis?"), puedes dar una breve descripción general del concesionario. Para preguntas específicas de coches sin contexto, pide más detalles.
-Sé siempre cortés y profesional.
-No inventes información ni respondas a preguntas fuera del ámbito de Lebauto.
-Al final de tu respuesta, si has proporcionado información, puedes añadir: "¿Hay algo más en lo que pueda ayudarte?".
-Evita frases como "Basándome en el contexto...". Simplemente responde la pregunta.
-    `.trim();
-
-    const userMessage = `
-${
-  context
-    ? `Contexto Relevante:\n${context}\n\n`
-    : "No se encontró contexto específico relevante para esta pregunta en nuestros documentos.\n\n"
+  } catch (error) {
+    console.error("[processOpenRouterStream] Error leyendo del stream:", error);
+  } finally {
+    // console.log("[processOpenRouterStream] Finalizando procesamiento de stream.");
+    reader.releaseLock(); // Asegúrate de liberar el lock
+  }
 }
-Pregunta del Usuario: ${question}
-`.trim();
 
-    const messagesToLLM = [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userMessage },
-    ];
-
-    console.log(
-      "Enviando a OpenRouter:",
-      JSON.stringify({ model: LLM_MODEL, messages: messagesToLLM }, null, 2)
+export async function getAssistantStream(
+  question: string
+): Promise<ReadableStream<Uint8Array>> {
+  if (!OPENROUTER_KEY) {
+    throw new Error(
+      "OPENROUTER_API_KEY no definida. La funcionalidad del chatbot estará limitada."
     );
+  }
 
-    const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  console.log(`[getAssistantStream] Procesando pregunta: "${question}"`);
+  const queryEmbedding = await getHFEmbedding(question);
+  console.log("[Chatbot] queryEmbedding (longitud):", queryEmbedding.length);
+
+  const { data: docsRaw, error: rpcError } = await supabaseClient.rpc(
+    "match_documentos",
+    {
+      p_query_embedding: queryEmbedding,
+      p_match_threshold: -0.4,
+      p_match_count: 5,
+    }
+  );
+
+  if (rpcError) {
+    console.error(
+      "Error DETALLADO en RPC match_documentos:",
+      JSON.stringify(rpcError, null, 2)
+    );
+    throw new Error(
+      "Problema al buscar información en la base de datos (código RPC)."
+    );
+  }
+
+  const docs = (docsRaw ?? []) as DocumentRow[];
+  if (docs.length > 0) {
+    console.log(
+      "Documentos recuperados para el contexto del LLM:",
+      docs.map((d) => ({ id: d.id, sim: d.similarity }))
+    );
+  } else {
+    console.log(
+      "Ningún documento relevante encontrado para el contexto del LLM."
+    );
+  }
+
+  const context = docs.map((d) => `- ${d.content.trim()}`).join("\n\n");
+
+  const systemPrompt = `
+Eres 'Lebi', un asistente virtual amigable, proactivo y experto del concesionario de coches Lebauto.
+Tu misión es ayudar a los usuarios con sus consultas sobre vehículos y servicios, creando una conversación útil y guiada.
+Usa ÚNICAMENTE la información de contexto proporcionada.
+
+Flujo de conversación deseado:
+1. Si el usuario pregunta por un tipo de coche (ej. "coches eléctricos") y el contexto proporciona varios:
+   - Menciona brevemente 2-3 opciones destacadas del contexto (ej. "Tenemos varios eléctricos interesantes como el Tesla Model 3 y el BMW i4.").
+   - Indica el número total de opciones que coinciden en el contexto (ej. "En total, encuentro X coches eléctricos en este momento.").
+   - Pregunta al usuario si quiere más detalles sobre alguno en particular, o si prefiere ver la lista completa, o filtrar por marca/modelo (ej. "¿Te gustaría saber más sobre alguno de estos? También puedes decirme si buscas alguna marca en particular.").
+2. Si el usuario pregunta por un coche específico y se encuentra en el contexto:
+   - Proporciona los detalles clave (marca, modelo, año, precio, combustible, kilometraje).
+   - Pregunta si desea conocer características específicas, opciones de financiación o concertar una prueba.
+3. Si la información solicitada NO se encuentra en el contexto:
+   - Indica amablemente: "No tengo información específica sobre eso en mis datos actuales. ¿Podrías reformular tu pregunta o te gustaría que te ayude con algo más general sobre nuestro stock o servicios?".
+4. Si el contexto está vacío Y la pregunta es general sobre Lebauto:
+   - Da una breve descripción general del concesionario.
+5. Sé siempre cortés. No inventes información.
+6. Si el usuario simplemente saluda o dice "hola", responde amablemente y pregunta en qué puedes ayudarle, quizás sugiriendo algunas preguntas comunes como las opciones de coches.
+Al final de cada respuesta útil, pregunta si hay algo más en lo que puedas ayudar o si quiere continuar explorando.
+Evita frases como "Basándome en el contexto...". Simplemente integra la información.
+Prioriza la información de los coches eléctricos si el usuario muestra interés general en ellos.
+    `.trim();
+  const userMessage = `${
+    context
+      ? `Contexto Relevante:\n${context}\n\n`
+      : "No se encontró contexto específico.\n\n"
+  }Pregunta del Usuario: ${question}`;
+
+  const messagesToLLM = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userMessage },
+  ];
+  console.log(
+    "Enviando a OpenRouter (solicitando stream):",
+    JSON.stringify({ model: LLM_MODEL, messages: messagesToLLM[1] }, null, 2)
+  ); // Solo loguea el mensaje de usuario para brevedad
+
+  const llmResponse = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -133,37 +190,30 @@ Pregunta del Usuario: ${question}
       body: JSON.stringify({
         model: LLM_MODEL,
         messages: messagesToLLM,
+        stream: true,
         temperature: 0.2,
         max_tokens: 350,
       }),
-    });
-
-    if (!resp.ok) {
-      const errorBody = await resp.text();
-      console.error(`Error de OpenRouter API (${resp.status}):`, errorBody);
-      return {
-        answer: `Lo siento, el servicio de chat no está disponible en este momento (Error OR: ${resp.status}). Intenta más tarde.`,
-      };
     }
+  );
 
-    const { choices } = await resp.json();
-    const answer =
-      choices?.[0]?.message?.content?.trim() ??
-      "No pude procesar tu solicitud en este momento.";
-    console.log(
-      `[getAssistantAnswer] Respuesta del LLM: "${answer.substring(0, 100)}..."`
+  if (!llmResponse.ok || !llmResponse.body) {
+    const errorBody = await llmResponse.text();
+    console.error(
+      `Error de OpenRouter API (${llmResponse.status}):`,
+      errorBody
     );
-    return { answer };
-  } catch (err: any) {
-    console.error("Excepción en getAssistantAnswer:", err.message, err.stack);
-    if (err.message && err.message.includes("Failed to fetch")) {
-      return {
-        answer:
-          "No pude conectarme al servicio de chat. Verifica tu conexión a internet.",
-      };
-    }
-    return {
-      answer: `Ha ocurrido un error interno al procesar tu pregunta: ${err.message}`,
-    };
+    throw new Error(`Error del LLM al iniciar stream: ${llmResponse.status}`);
   }
+
+  const customTextStream = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of processOpenRouterStream(llmResponse.body!)) {
+        controller.enqueue(new TextEncoder().encode(chunk));
+      }
+      controller.close();
+    },
+  });
+
+  return customTextStream;
 }

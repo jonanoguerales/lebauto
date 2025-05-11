@@ -1,11 +1,9 @@
-// src/utils/carDocuments.ts
-"use server"; // Es una Server Action
+"use server";
 
 import type { Car } from '@/lib/definitions';
 import { getHFEmbedding } from './getHFEmbedding';
-import { createClient } from '@/lib/supabase/server'; // <<< USA EL CLIENTE DE SERVIDOR
+import { createClient } from '@/lib/supabase/server'; 
 
-// Tu función formatCarDocument (sin cambios)
 function formatCarDocument(car: Car): string {
   const parts = [
     `Vehículo: ${car.brand} ${car.model}${car.variant ? ` ${car.variant}` : ''}, Año: ${car.year}.`,
@@ -28,7 +26,7 @@ function formatCarDocument(car: Car): string {
 
 
 export async function updateCarDocument(car: Car): Promise<{ success: boolean; message: string }> {
-  const supabase = await createClient(); // <<< Crea una instancia del cliente de servidor
+  const supabase = await createClient(); 
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -50,11 +48,11 @@ export async function updateCarDocument(car: Car): Promise<{ success: boolean; m
       car_id: car.id,
       content,
       embedding,
-      file_name: car.slug || `car-${car.id}`, // Usa slug o un identificador
-      metadata: { lastUpdated: new Date().toISOString() } // Ejemplo
+      file_name: car.slug || `car-${car.id}`, 
+      metadata: { lastUpdated: new Date().toISOString() } 
     };
     
-    const { error, data } = await supabase // <<< Usa la instancia 'supabase' creada aquí
+    const { error, data } = await supabase 
       .from('documentos')
       .upsert(documentToUpsert, { onConflict: 'car_id' })
       .select()

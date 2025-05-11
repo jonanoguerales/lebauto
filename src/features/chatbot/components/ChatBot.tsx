@@ -9,15 +9,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import {
-  Send,
-  Bot,
-  UserCircle2,
-  RotateCw,
-  MessageSquarePlus,
-} from "lucide-react";
+import { Send, Bot, UserCircle2 } from "lucide-react";
 
 interface ChatMessage {
   id: string;
@@ -38,10 +31,54 @@ const defaultSuggestions = [
 export default function ChatBot() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [isBotTyping, setIsBotTyping] = useState(false);
+  const [isBotResponding, setIsBotResponding] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Helper function to render suggestions as buttons
+  const addMessage = useCallback(
+    (
+      sender: "user" | "bot",
+      text: string | JSX.Element,
+      isLoading = false
+    ): string => {
+      const id = crypto.randomUUID();
+      setMessages((prev) => [...prev, { id, sender, text, isLoading }]);
+      return id;
+    },
+    []
+  );
+
+  const updateMessageWithStream = useCallback((id: string, chunk: string) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === id
+          ? {
+              ...m,
+              text: (typeof m.text === "string" ? m.text : "") + chunk,
+              isLoading: false,
+            }
+          : m
+      )
+    );
+  }, []);
+
+  const finalizeBotMessage = useCallback(
+    (id: string) => {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, isLoading: false } : m))
+      );
+      addMessage(
+        "bot",
+        renderSuggestions(defaultSuggestions, handleSuggestionClick)
+      );
+    },
+    [addMessage]
+  );
+
+  const removeSuggestions = useCallback(() => {
+    setMessages((prev) =>
+      prev.filter((m) => !(typeof m.text === "object" && m.sender === "bot"))
+    );
+  }, []);
   const renderSuggestions = useCallback(
     (
       suggestionsArray: string[],
@@ -50,7 +87,7 @@ export default function ChatBot() {
       return (
         <div className="flex flex-col space-y-2 items-start mt-2">
           <p className="text-xs text-muted-foreground mb-1">
-            También puedes probar con:
+            También puedes probar con esto:
           </p>
           <div className="flex flex-wrap gap-2">
             {suggestionsArray.map((s, i) => (
@@ -70,93 +107,75 @@ export default function ChatBot() {
     },
     []
   );
-
-  const addMessage = (
-    sender: "user" | "bot",
-    text: string | JSX.Element,
-    isLoading = false
-  ): string => {
-    const id = crypto.randomUUID();
-    setMessages((prev) => [...prev, { id, sender, text, isLoading }]);
-    return id;
-  };
-
-  const updateMessage = (
-    id: string,
-    newText: string | JSX.Element,
-    isLoading = false
-  ) => {
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, text: newText, isLoading } : m))
-    );
-  };
-
-  const removeSuggestions = () => {
-    setMessages((prev) =>
-      prev.filter((m) => !(typeof m.text === "object" && m.sender === "bot"))
-    );
-  };
-
-  const fetchBotResponse = useCallback(
+  const fetchBotStreamResponse = useCallback(
     async (query: string) => {
       if (!query.trim()) return;
 
-      setIsBotTyping(true);
-      const botLoadingId = addMessage("bot", "", true); // Add temporary loading message
+      setIsBotResponding(true);
+      setInput("");
+
+      const botMessageId = addMessage("bot", "", true);
 
       try {
-        const res = await fetch("/api/chat", {
+        const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: query }),
         });
 
-        if (!res.ok) {
-          const errorData = await res
+        if (!response.ok || !response.body) {
+          const errorData = await response
             .json()
-            .catch(() => ({ error: "Error desconocido del servidor" }));
-          throw new Error(errorData.error || `Error ${res.status}`);
+            .catch(() => ({
+              error: "Error desconocido del servidor al iniciar stream",
+            }));
+          throw new Error(errorData.error || `Error ${response.status}`);
         }
 
-        const { answer } = await res.json();
-        updateMessage(botLoadingId, answer, false);
-        // Después de la respuesta, mostrar nuevas sugerencias
-        addMessage(
-          "bot",
-          renderSuggestions(defaultSuggestions, handleSuggestionClick)
-        );
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            break;
+          }
+          const chunk = decoder.decode(value, { stream: true });
+          updateMessageWithStream(botMessageId, chunk);
+        }
       } catch (e: any) {
-        console.error("Error fetching bot response:", e);
-        updateMessage(
-          botLoadingId,
-          `Lo siento, ha ocurrido un error: ${
-            e.message || "Intenta de nuevo."
-          }`,
-          false
-        );
-        // También aquí, mostrar sugerencias para que el usuario pueda continuar
-        addMessage(
-          "bot",
-          renderSuggestions(defaultSuggestions, handleSuggestionClick)
+        console.error("Error consumiendo stream:", e);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === botMessageId
+              ? {
+                  ...m,
+                  text: `Lo siento, ha ocurrido un error: ${
+                    e.message || "Intenta de nuevo."
+                  }`,
+                  isLoading: false,
+                }
+              : m
+          )
         );
       } finally {
-        setIsBotTyping(false);
+        finalizeBotMessage(botMessageId);
+        setIsBotResponding(false);
       }
     },
-    [renderSuggestions]
-  ); // Agrega renderSuggestions a las dependencias
+    [addMessage, updateMessageWithStream, finalizeBotMessage]
+  );
 
   const handleSuggestionClick = useCallback(
     (suggestion: string) => {
       removeSuggestions();
       addMessage("user", suggestion);
-      fetchBotResponse(suggestion);
+      fetchBotStreamResponse(suggestion);
     },
-    [fetchBotResponse]
-  ); // Agrega fetchBotResponse a las dependencias
+    [addMessage, fetchBotStreamResponse, removeSuggestions]
+  );
 
   useEffect(() => {
-    // Mensaje inicial del bot con sugerencias
     setMessages([
       { id: crypto.randomUUID(), sender: "bot", text: initialBotGreeting },
       {
@@ -165,16 +184,15 @@ export default function ChatBot() {
         text: renderSuggestions(defaultSuggestions, handleSuggestionClick),
       },
     ]);
-  }, [renderSuggestions, handleSuggestionClick]); // Se ejecuta una vez al montar
+  }, [renderSuggestions, handleSuggestionClick]);
 
   const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    if (!input.trim() || isBotTyping) return;
+    if (!input.trim() || isBotResponding) return;
 
     removeSuggestions();
     addMessage("user", input.trim());
-    fetchBotResponse(input.trim());
-    setInput("");
+    fetchBotStreamResponse(input.trim());
   };
 
   useEffect(() => {
@@ -189,15 +207,10 @@ export default function ChatBot() {
       <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <MessageSquarePlus className="text-primary h-6 w-6" />
+            <Bot className="text-primary h-6 w-6" />
             Asistente Virtual Lebauto
           </CardTitle>
-          {/* Podrías añadir un botón para cerrar el chat aquí si fuera un pop-up */}
         </div>
-        <CardDescription className="text-xs">
-          Pregúntame sobre nuestros coches, financiación, o cómo vender tu
-          vehículo.
-        </CardDescription>
       </CardHeader>
       <CardContent
         ref={chatContainerRef}
@@ -252,7 +265,7 @@ export default function ChatBot() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe tu mensaje..."
-            disabled={isBotTyping}
+            disabled={isBotResponding}
             className="flex-1 h-10 text-sm"
             aria-label="Escribe tu pregunta para el chatbot"
             autoFocus
@@ -260,7 +273,7 @@ export default function ChatBot() {
           <Button
             type="submit"
             size="icon"
-            disabled={isBotTyping || !input.trim()}
+            disabled={isBotResponding || !input.trim()}
             aria-label="Enviar pregunta"
           >
             <Send className="h-4 w-4" />
