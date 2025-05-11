@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import CarCardGrid from "@/components/cars/CarCardGrid";
-import { fetchElectricVehicles } from "@/supabase/supabase";
+import { fetchElectricVehicles } from "@/app/supabase/supabase";
 import type { Car } from "@/lib/definitions";
 import { CarCardSkeleton } from "@/components/cars/skeleton/CarSkeleton";
 import {

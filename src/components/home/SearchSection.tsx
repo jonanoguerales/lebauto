@@ -11,7 +11,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { fetchCars } from "@/supabase/supabase";
+import { fetchCars } from "@/app/supabase/supabase";
 
 export default function SearchSection() {
   const router = useRouter();

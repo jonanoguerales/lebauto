@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Trash2, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { uploadImage, deleteImage } from "@/supabase/supabase";
+import { uploadImage, deleteImage } from "@/app/supabase/supabase";
 import { useToast } from "@/hooks/useToast";
 
 interface Car {

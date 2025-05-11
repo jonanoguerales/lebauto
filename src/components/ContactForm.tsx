@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/useToast"
 import { Card, CardContent } from "@/components/ui/card"
 import { ContactFormState } from "@/lib/definitions"
-import { submitContactForm } from "@/actions/actions"
+import { submitContactForm } from "@/app/actions/actions"
 
 const initialState: ContactFormState = {
   success: null,
