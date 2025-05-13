@@ -49,7 +49,7 @@ export default function HomePage() {
       <HeroSection />
       <SearchSection />
       <ElectricVehiclesSection />
-      <ChatBot />
+      {/* <ChatBot /> */}
       <RentingBanner />
       <SellYourCarSection />
       <ElectricChargersSection />
