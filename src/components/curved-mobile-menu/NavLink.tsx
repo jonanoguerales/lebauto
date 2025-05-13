@@ -31,7 +31,7 @@ export default function NavLink({ data, isActive, setSelectedIndicator, closeMen
       <motion.div
         variants={scale as Variants} 
         animate={isActive ? "open" : "closed"}
-        className="w-2.5 h-2.5 bg-white rounded-full absolute -left-[30px]" 
+        className="w-2.5 h-2.5 bg-white rounded-full absolute -left-[20px] sm:-left-[30px]"
       />
       <ViewTransitionsLink href={href} onClick={closeMenu} className="text-white hover:text-gray-300 transition-colors">
         {title}
