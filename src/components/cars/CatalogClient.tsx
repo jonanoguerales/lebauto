@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useResponsiveView } from "@/hooks/useResponsiveView";
-import { CarCardSkeleton } from "./skeleton/CarSkeleton";
 import { LoadingVehicles } from "./LoadingCars";
 
 export default function CatalogClient({
@@ -46,7 +45,6 @@ export default function CatalogClient({
     setFilter,
     setAllCars,
     clearFilters,
-    getActiveFiltersCount,
     isLoading,
   } = useFilterStore();
   const [isOpen, setIsOpen] = useState(false);

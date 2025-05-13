@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { menuSlide } from "./anim";
 import NavLink from "./NavLink";
 import Curve from "./Curve";
-import NavFooter from "./NavFooter";
 import Image from "next/image";
 import { X } from "lucide-react";
+import ContactButtons from "../ContactButtons";
 
 const navItems = [
   {
@@ -44,12 +44,12 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
       exit="exit"
       className="h-dvh bg-gray-900 fixed right-0 top-0 text-white z-40"
     >
-      <div className="box-border h-full py-[100px] px-[60px] md:px-[100px] flex flex-col justify-between">
+      <div className="box-border h-full p-[30px] sm:p-[50px] flex flex-col justify-between">
         <div
           onMouseLeave={() => {
             setSelectedIndicator(pathname);
           }}
-          className="flex flex-col text-[40px] sm:text-[56px] gap-2.5 sm:gap-3"
+          className="flex flex-col px-3 text-[30px] sm:text-[38px] gap-2.5 sm:gap-3"
         >
           <div className="flex items-center justify-between text-white">
             <Image
@@ -68,7 +68,7 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
               <X className="h-6 w-6" />
             </button>
           </div>
-          <div className="text-gray-400 border-b border-gray-600 uppercase text-[11px] mt-8 mb-6 sm:mb-8">
+          <div className="text-gray-400 border-b border-gray-600 uppercase text-[11px] mt-8 mb-2 sm:mb-4">
             <p>Navegación</p>
           </div>
           {navItems.map((data, index) => {
@@ -83,7 +83,7 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
             );
           })}
         </div>
-        <NavFooter />
+        <ContactButtons estado="menu" />
       </div>
       <Curve />
     </motion.div>
