@@ -68,7 +68,7 @@ export default function HomePage() {
       </section>
       <TestimonialsSection />
       <LocationsSection />
-      <ContactButtons />
+      <ContactButtons estado="menu"/>
 
       {/* Datos estructurados para SEO */}
       <script
