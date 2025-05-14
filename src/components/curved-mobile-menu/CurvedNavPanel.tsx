@@ -42,16 +42,16 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
       initial="initial"
       animate="enter"
       exit="exit"
-      className="h-dvh bg-gray-900 fixed right-0 top-0 text-white z-40"
+      className="h-dvh max500:w-full bg-white fixed right-0 top-0 text-white z-40"
     >
-      <div className="box-border h-full p-[30px] sm:p-[50px] flex flex-col justify-between">
+      <div className="box-border h-full px-10 pt-[30px] pb-16 flex flex-col justify-between">
         <div
           onMouseLeave={() => {
             setSelectedIndicator(pathname);
           }}
           className="flex flex-col px-3 text-[30px] sm:text-[38px] gap-2.5 sm:gap-3"
         >
-          <div className="flex items-center justify-between text-white">
+          <div className="flex items-center justify-between text-black">
             <Image
               src="/logo.webp"
               alt="Logo Lebauto"

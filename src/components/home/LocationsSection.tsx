@@ -2,7 +2,6 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Clock } from "lucide-react"
-import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { useEffect, useState } from "react"
 
 type Location = {
@@ -65,7 +64,6 @@ const locations: Location[] = [
 
 export default function LocationsSection() {
   const [mounted, setMounted] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
 
   useEffect(() => {
     setMounted(true);
@@ -74,20 +72,12 @@ export default function LocationsSection() {
   if (!mounted) return null;
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20">
       <div className="container mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Encuentra tu centro Lebauto</h2>
-
-        {isDesktop ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {locations.map((location) => (
-              <LocationCard key={location.id} location={location} />
-            ))}
-          </div>
-        ) : (
-          <div className="relative overflow-hidden">
+        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Encuentra tu centro Lebauto</h2>
+          <div className="relative overflow-hidden flex justify-center items-center">
             <Carousel
-              className="w-full"
+              className="w-full md:max-w-[88%] lg:max-w-[91%] static"
               opts={{
                 align: "start",
                 loop: true,
@@ -101,11 +91,10 @@ export default function LocationsSection() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-2 z-10" />
-              <CarouselNext className="right-2 z-10" />
+              <CarouselPrevious className="hidden md:flex left-2 z-10" />
+              <CarouselNext className="hidden md:flex right-2 z-10" />
             </Carousel>
           </div>
-        )}
       </div>
     </section>
   )

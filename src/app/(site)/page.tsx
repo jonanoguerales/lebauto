@@ -12,6 +12,7 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import ChargersAdvisorBanner from "@/components/home/ChargersAdvisorBanner";
 import RentingBanner from "@/components/home/RentingBanner";
 import ChatBot from "@/features/chatbot/components/ChatBot";
+import DudasAdvisorBanner from "@/components/home/DudasAdvisorBanner";
 
 export const metadata: Metadata = {
   title:
@@ -47,28 +48,18 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <SearchSection />
+      {/* <SearchSection /> */}
       <ElectricVehiclesSection />
       {/* <ChatBot /> */}
-      <RentingBanner />
       <SellYourCarSection />
+      <RentingBanner />
       <ElectricChargersSection />
       <ChargersAdvisorBanner />
-      <section className="py-20 bg-muted/40">
-        <div className="container mx-auto flex flex-col items-center gap-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Encuentra tu marca favorita</h2>
-          <BrandGrid />
-          <Link
-            href="/coches-segunda-mano"
-            className="bg-black text-white font-semibold px-8 py-3 text-base md:text-lg rounded-lg hover:bg-gray-300 transition-colors hover:text-black w-max"
-          >
-            Ver todas las marcas
-          </Link>
-        </div>
-      </section>
+      <BrandGrid />
+      <DudasAdvisorBanner />
       <TestimonialsSection />
       <LocationsSection />
-      <ContactButtons estado="menu"/>
+      <ContactButtons estado="desktop" />
 
       {/* Datos estructurados para SEO */}
       <script

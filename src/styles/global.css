@@ -10,6 +10,7 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--bg-primary);
 }
 
 .logo {
@@ -64,7 +65,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: #f4f4f4;
     --foreground: 222.2 84% 4.9%;
 
     --muted: 210 40% 96.1%;

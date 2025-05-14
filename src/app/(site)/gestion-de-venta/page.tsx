@@ -253,7 +253,7 @@ export default function SellCarPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-primary to-primary/80 text-white">
+      <section className="py-20 bg-gray-900 text-white">
         <div className="container mx-auto text-center relative z-10">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">¿Listo para vender tu coche?</h2>

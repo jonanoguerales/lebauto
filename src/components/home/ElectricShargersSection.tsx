@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Home, Building2, ArrowRight, Zap } from "lucide-react";
+import { Check, Home, Building2, Zap } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -100,9 +100,9 @@ export default function ElectricChargersSection() {
   }
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20">
       <div className="container mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <Badge className="mb-4" variant="outline">
             <Zap className="h-3 w-3 mr-1" /> Soluciones de carga
           </Badge>
@@ -113,13 +113,13 @@ export default function ElectricChargersSection() {
         </div>
 
         {isDesktop ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {chargers.map((charger) => (
               <ChargerCard key={charger.id} charger={charger} />
             ))}
           </div>
         ) : (
-          <div className="relative overflow-hidden mb-12">
+          <div className="relative overflow-hidden">
             <Carousel
               className="w-full"
               opts={{

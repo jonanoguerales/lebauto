@@ -18,16 +18,41 @@ const brands = [
 
 export default function BrandGrid() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 xl:p-4" role="region" aria-labelledby="brand-grid-title">
-      <h2 id="brand-grid-title" className="sr-only">Marcas de coches disponibles</h2>
-      {brands.map((brand, index) => (
-        <BrandCard key={brand.name} brand={brand} hidden={index >= 6} />
-      ))}
-    </div>
+    <section className="py-20">
+      <div className="container mx-auto flex flex-col items-center gap-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-center">
+          Encuentra tu marca favorita
+        </h2>
+        <div
+          className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 xl:p-4"
+          role="region"
+          aria-labelledby="brand-grid-title"
+        >
+          <h2 id="brand-grid-title" className="sr-only">
+            Marcas de coches disponibles
+          </h2>
+          {brands.map((brand, index) => (
+            <BrandCard key={brand.name} brand={brand} hidden={index >= 6} />
+          ))}
+        </div>
+        <Link
+          href="/coches-segunda-mano"
+          className="bg-black text-white font-semibold px-8 py-3 text-base md:text-lg rounded-lg hover:bg-gray-300 transition-colors hover:text-black w-max"
+        >
+          Ver todas las marcas
+        </Link>
+      </div>
+    </section>
   );
 }
 
-function BrandCard({ brand, hidden }: { brand: { name: string; logo: string }; hidden: boolean }) {
+function BrandCard({
+  brand,
+  hidden,
+}: {
+  brand: { name: string; logo: string };
+  hidden: boolean;
+}) {
   return (
     <Link
       href={`/coches-segunda-mano?brand=${brand.name}`}

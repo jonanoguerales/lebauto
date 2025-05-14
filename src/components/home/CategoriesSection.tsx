@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function CategoriesSection() {
   return (
     <section
-      className="bg-white py-20"
+      className="py-20"
       role="region"
       aria-labelledby="categories-title"
     >

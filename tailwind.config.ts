@@ -8,6 +8,7 @@ const config: Config = {
       screens: {
         xxs: "420px",
         xs: "520px",
+        'max500': { 'max': '500px' },
         short: { raw: "(max-height: 900px)" },
       },
       gridTemplateColumns: {

@@ -48,7 +48,7 @@ export default function ElectricVehiclesSection() {
   }
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
@@ -123,8 +123,8 @@ export default function ElectricVehiclesSection() {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="left-2 z-10" />
-                  <CarouselNext className="right-2 z-10" />
+                  <CarouselPrevious className="hidden md:block left-2 z-10" />
+                  <CarouselNext className="hidden md:block right-2 z-10" />
                 </Carousel>
               </div>
             )}
