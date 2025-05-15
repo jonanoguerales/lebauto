@@ -1,18 +1,16 @@
-import BrandGrid from "@/components/home/BrandGrid";
 import ContactButtons from "@/components/ContactButtons";
-import HeroSection from "@/components/home/HeroSection";
-import SearchSection from "@/components/home/SearchSection";
-import SellYourCarSection from "@/components/home/SellYourCarSection";
-import Link from "next/link";
-import type { Metadata } from "next";
-import ElectricVehiclesSection from "@/components/home/ElectricVehiclesSection";
-import ElectricChargersSection from "@/components/home/ElectricShargersSection";
-import LocationsSection from "@/components/home/LocationsSection";
-import TestimonialsSection from "@/components/home/TestimonialsSection";
-import ChargersAdvisorBanner from "@/components/home/ChargersAdvisorBanner";
-import RentingBanner from "@/components/home/RentingBanner";
-import ChatBot from "@/features/chatbot/components/ChatBot";
-import DudasAdvisorBanner from "@/components/home/DudasAdvisorBanner";
+import BrandGrid from "@/features/home/components/BrandGrid";
+import ChargersAdvisorBanner from "@/features/home/components/ChargersAdvisorBanner";
+import DudasAdvisorBanner from "@/features/home/components/DudasAdvisorBanner";
+import ElectricChargersSection from "@/features/home/components/ElectricShargersSection";
+import ElectricVehiclesSection from "@/features/home/components/ElectricVehiclesSection";
+import HeroSection from "@/features/home/components/HeroSection";
+import LocationsSection from "@/features/home/components/LocationsSection";
+import RentingBanner from "@/features/home/components/RentingBanner";
+import SellYourCarSection from "@/features/home/components/SellYourCarSection";
+import TestimonialsSection from "@/features/home/components/TestimonialsSection";
+import { Metadata } from "next";
+
 
 export const metadata: Metadata = {
   title:

@@ -1,6 +1,6 @@
-import CatalogClient from "@/components/cars/CatalogClient";
 import { fetchFilteredCars } from "@/lib/supabase/fetchFilteredCars";
 import { fetchCars } from "@/app/supabase/supabase";
+import CatalogClient from "@/features/cars/CatalogClient";
 
 export default async function LoadingContent({ searchParams }: { searchParams: any }) {
   const params = await Promise.resolve(searchParams);

@@ -7,7 +7,7 @@ import NavLink from "./NavLink";
 import Curve from "./Curve";
 import Image from "next/image";
 import { X } from "lucide-react";
-import ContactButtons from "../ContactButtons";
+import ContactButtons from "../../components/ContactButtons";
 
 const navItems = [
   {

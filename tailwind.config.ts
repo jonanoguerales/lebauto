@@ -4,13 +4,18 @@ const config: Config = {
   darkMode: ["class"],
   content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
+    screens: {
+      xxs: "420px",
+      xs: "520px",
+      sm: "640px", // Tailwind default
+      md: "768px", // Tailwind default
+      lg: "1024px", // Tailwind default
+      xl: "1280px", // Tailwind default
+      "2xl": "1536px", // Tailwind default
+      max500: { max: "500px" },
+      short: { raw: "(max-height: 900px)" },
+    },
     extend: {
-      screens: {
-        xxs: "420px",
-        xs: "520px",
-        'max500': { 'max': '500px' },
-        short: { raw: "(max-height: 900px)" },
-      },
       gridTemplateColumns: {
         "13": "repeat(13, minmax(0, 1fr))",
       },
@@ -119,6 +124,7 @@ const config: Config = {
       slideIn: "slideIn 0.5s ease-in-out",
       shimmer: "shimmer 2s infinite",
       bounce: "bounce 1s infinite",
+      fadeInAfterLoad: "fadeIn 0.5s ease-out forwards",
     },
   },
   plugins: [

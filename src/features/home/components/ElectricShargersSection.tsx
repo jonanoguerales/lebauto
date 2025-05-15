@@ -194,7 +194,7 @@ function ChargerCard({ charger }: { charger: Charger }) {
           <div className="flex justify-between items-end mb-4">
             <div>
               <p className="text-sm text-muted-foreground">Precio</p>
-              <p className="text-xl font-bold">{charger.price.toLocaleString()} €</p>
+              <p className="text-[#e63946] text-xl font-bold">{charger.price.toLocaleString()} €</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Instalación desde</p>

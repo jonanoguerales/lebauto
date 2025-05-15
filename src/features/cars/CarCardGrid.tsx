@@ -61,7 +61,7 @@ export default function CarCardGrid({ car }: CarCardGridProps) {
           <InfoItem label="Combustible" value={car.fuel} />
           <InfoItem label="Año" value={car.year.toString()} />
           <InfoItem label="Potencia" value={`${car.power} CV`} />
-          <InfoItem label="Ubicación" value={car.location || "Desconocida"} />
+          <InfoItem label="Kilómetros" value={formatPrice(car.mileage || 0)} />
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">

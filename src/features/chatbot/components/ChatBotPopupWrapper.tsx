@@ -1,4 +1,3 @@
-// src/features/chatbot/components/ChatBotPopupWrapper.tsx
 "use client";
 
 import React, { useEffect } from "react";
@@ -36,7 +35,7 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
         aria-hidden="true"
       ></div>
 
-      <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full h-[calc(100%-50px)] sm:w-[400px] sm:max-h-[calc(100dvh-8rem)] z-[1000] flex flex-col">
+      <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full h-[calc(100dvh-50px)] sm:w-[400px] sm:max-h-[calc(100dvh-8rem)] z-[1000] flex flex-col">
         <Card className="w-full h-full rounded-t-xl sm:rounded-xl shadow-2xl flex flex-col transform transition-all duration-300 ease-out data-[state=closed]:translate-y-full sm:data-[state=closed]:translate-y-0 sm:data-[state=closed]:opacity-0 data-[state=open]:translate-y-0 sm:data-[state=open]:opacity-100" data-state={isOpen ? "open" : "closed"}>
           <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-50 dark:bg-gray-800 rounded-t-xl sm:rounded-t-lg flex-shrink-0">
             <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100">

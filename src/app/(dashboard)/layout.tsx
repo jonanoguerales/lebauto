@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import { Sidebar } from "@/features/dashboard/Sidebar";
 import "@/styles/global.css";
 export default async function Layout({
   children,

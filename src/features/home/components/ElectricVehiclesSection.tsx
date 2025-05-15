@@ -4,10 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import CarCardGrid from "@/components/cars/CarCardGrid";
 import { fetchElectricVehicles } from "@/app/supabase/supabase";
 import type { Car } from "@/lib/definitions";
-import { CarCardSkeleton } from "@/components/cars/skeleton/CarSkeleton";
 import {
   Carousel,
   CarouselContent,
@@ -16,6 +14,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { CarCardSkeleton } from "@/features/cars/skeleton/CarSkeleton";
+import CarCardGrid from "@/features/cars/CarCardGrid";
 
 export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);

@@ -45,9 +45,9 @@ export default function CarCardList({ car }: CarCardListProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 md:justify-items-center gap-4 mt-4">
             <InfoItem label="Combustible" value={car.fuel} />
+            <InfoItem label="Kilómetros" value={formatPrice(car.mileage || 0)} />
             <InfoItem label="Año" value={car.year.toString()} />
             <InfoItem label="Potencia" value={`${car.power} CV`} />
-            <InfoItem label="Ubicación" value={car.location || "Desconocida"} />
           </div>
 
           <div className="flex flex-wrap gap-2 mt-4">

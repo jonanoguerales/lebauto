@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "../ui/button";
 import { ArrowRight, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function ChargersAdvisorBanner() {
   return (
