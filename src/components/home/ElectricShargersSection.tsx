@@ -31,7 +31,7 @@ const chargers: Charger[] = [
       "Compatible con todos los vehículos eléctricos",
       "Gestión inteligente de carga",
     ],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/cargadores/cargador2.png",
     category: "home",
   },
   {
@@ -48,7 +48,7 @@ const chargers: Charger[] = [
       "Gestión inteligente de carga",
       "Conectividad WiFi y control por app",
     ],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/cargadores/cargador3.png",
     category: "home",
   },
   {
@@ -65,7 +65,7 @@ const chargers: Charger[] = [
       "Sistema de identificación de usuarios",
       "Gestión de pagos y facturación",
     ],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/cargadores/cargador1.png",
     category: "community",
   },
   {
@@ -82,7 +82,7 @@ const chargers: Charger[] = [
       "Sistema de pago integrado",
       "Monitorización remota y mantenimiento",
     ],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/cargadores/cargador4.png",
     category: "business",
   },
 ];
@@ -135,8 +135,8 @@ export default function ElectricChargersSection() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-2 z-10" />
-              <CarouselNext className="right-2 z-10" />
+              <CarouselPrevious className="hidden md:block left-2 z-10" />
+              <CarouselNext className="hidden md:block right-2 z-10" />
             </Carousel>
           </div>
         )}

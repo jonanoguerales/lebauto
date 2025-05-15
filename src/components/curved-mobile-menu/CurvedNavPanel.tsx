@@ -42,7 +42,7 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
       initial="initial"
       animate="enter"
       exit="exit"
-      className="h-dvh max500:w-full bg-white fixed right-0 top-0 text-white z-40"
+      className="h-dvh max500:w-full bg-white fixed right-0 top-0 text-white z-[99]"
     >
       <div className="box-border h-full px-10 pt-[30px] pb-16 flex flex-col justify-between">
         <div

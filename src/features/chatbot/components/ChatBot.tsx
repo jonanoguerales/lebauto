@@ -7,8 +7,6 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Send, Bot, UserCircle2 } from "lucide-react";
 
@@ -203,15 +201,7 @@ export default function ChatBot() {
   }, [messages]);
 
   return (
-    <Card className="w-full max-w-lg mx-auto shadow-xl flex flex-col h-[80vh] md:h-[70vh]">
-      <CardHeader className="border-b">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Bot className="text-primary h-6 w-6" />
-            Asistente Virtual Lebauto
-          </CardTitle>
-        </div>
-      </CardHeader>
+    <Card className="w-full max-w-lg mx-auto shadow-xl flex flex-col h-full">
       <CardContent
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"

@@ -72,7 +72,7 @@ export default function LocationsSection() {
   if (!mounted) return null;
 
   return (
-    <section className="py-20">
+    <section className="pb-20">
       <div className="container mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Encuentra tu centro Lebauto</h2>
           <div className="relative overflow-hidden flex justify-center items-center">
