@@ -10,7 +10,6 @@ interface DocumentRow {
   file_name: string | null;
   content: string;
   similarity: number;
-  distance_debug?: number;
 }
 
 async function* processOpenRouterStream(readableStream: ReadableStream<Uint8Array>): AsyncGenerator<string, void, undefined> {
@@ -18,191 +17,180 @@ async function* processOpenRouterStream(readableStream: ReadableStream<Uint8Arra
   const decoder = new TextDecoder();
   let buffer = "";
   let stillStreaming = true;
-
-  console.log("[processOpenRouterStream] Iniciando procesamiento de stream...");
-
+  // console.log("[processOpenRouterStream] Iniciando procesamiento de stream...");
   try {
     while (stillStreaming) {
       const { done, value } = await reader.read();
-
       if (done) {
-        // console.log("[processOpenRouterStream] Stream 'done' recibido del reader.");
-        stillStreaming = false; // Salir del bucle principal
-        // Procesar cualquier resto en el buffer que podría ser un JSON completo
+        stillStreaming = false;
         if (buffer.trim().startsWith("data: ")) {
           const dataContent = buffer.trim().substring(6);
           if (dataContent && dataContent !== "[DONE]") {
             try {
               const json = JSON.parse(dataContent);
               if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
-                // console.log("[processOpenRouterStream] Último chunk del buffer:", json.choices[0].delta.content);
                 yield json.choices[0].delta.content;
               }
-            } catch (e) {
-              console.warn("[processOpenRouterStream] Error parseando resto del buffer al final:", e, "Buffer:", buffer);
-            }
+            } catch (e) { /* Ignorar error de parseo en el último chunk incompleto */ }
           }
         }
-        break; // Salir del bucle while
+        break;
       }
-
       buffer += decoder.decode(value, { stream: true });
-      // console.log("[processOpenRouterStream] Buffer actual:", buffer.replace(/\n/g, "\\n"));
-
       let eolIndex;
-      // Un evento SSE termina con \n\n
       while ((eolIndex = buffer.indexOf("\n\n")) >= 0) {
         const line = buffer.substring(0, eolIndex).trim();
-        buffer = buffer.substring(eolIndex + 2); // Consumir la línea y el \n\n
-
-        // console.log("[processOpenRouterStream] Línea SSE procesada:", line);
-
+        buffer = buffer.substring(eolIndex + 2);
         if (line.startsWith("data: ")) {
           const dataContent = line.substring(6).trim();
           if (dataContent === "[DONE]") {
-            // console.log("[processOpenRouterStream] Recibido evento [DONE]");
-            stillStreaming = false; // Indicar que no se esperan más datos
-            break; // Salir del bucle while interno
+            stillStreaming = false;
+            break;
           }
           if (dataContent) {
             try {
               const json = JSON.parse(dataContent);
               if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
-                // console.log("[processOpenRouterStream] Chunk de contenido:", json.choices[0].delta.content);
                 yield json.choices[0].delta.content;
               } else if (json.choices && json.choices[0].finish_reason) {
-                // console.log("[processOpenRouterStream] Razón de finalización:", json.choices[0].finish_reason);
-                stillStreaming = false; // El LLM indicó que terminó
-                // No hay 'break' aquí, para permitir procesar el resto del buffer si done no es true aún
+                stillStreaming = false;
               }
-            } catch (e) {
-              // Puede que un chunk no sea un JSON completo, se acumulará en el buffer
-              // console.warn("[processOpenRouterStream] Error parseando chunk JSON:", e, "Chunk:", dataContent);
-            }
+            } catch (e) { /* Chunk puede no ser JSON completo, se acumulará */ }
           }
         }
       }
-      if (!stillStreaming) break; // Salir del bucle principal si [DONE] o finish_reason se procesó
+      if (!stillStreaming) break;
     }
   } catch (error) {
     console.error("[processOpenRouterStream] Error leyendo del stream:", error);
   } finally {
-    // console.log("[processOpenRouterStream] Finalizando procesamiento de stream.");
-    reader.releaseLock(); // Asegúrate de liberar el lock
+    reader.releaseLock();
   }
 }
 
-export async function getAssistantStream(
-  question: string
-): Promise<ReadableStream<Uint8Array>> {
+export async function getAssistantStream(question: string): Promise<ReadableStream<Uint8Array>> {
+  console.time("[PERF] getAssistantStream TOTAL");
   if (!OPENROUTER_KEY) {
-    throw new Error(
-      "OPENROUTER_API_KEY no definida. La funcionalidad del chatbot estará limitada."
-    );
+    console.timeEnd("[PERF] getAssistantStream TOTAL");
+    throw new Error("OPENROUTER_API_KEY no definida.");
   }
 
-  console.log(`[getAssistantStream] Procesando pregunta: "${question}"`);
+  // console.log(`[getAssistantStream] Procesando pregunta: "${question}"`);
+  
+  console.time("[PERF] Paso 1: getHFEmbedding");
   const queryEmbedding = await getHFEmbedding(question);
-  console.log("[Chatbot] queryEmbedding (longitud):", queryEmbedding.length);
+  console.timeEnd("[PERF] Paso 1: getHFEmbedding");
 
+  console.time("[PERF] Paso 2: Supabase RPC match_documentos");
   const { data: docsRaw, error: rpcError } = await supabaseClient.rpc(
     "match_documentos",
     {
       p_query_embedding: queryEmbedding,
-      p_match_threshold: -0.4,
-      p_match_count: 5,
+      p_match_threshold: -0.4, 
+      p_match_count: 3,        
     }
   );
+  console.timeEnd("[PERF] Paso 2: Supabase RPC match_documentos");
 
   if (rpcError) {
-    console.error(
-      "Error DETALLADO en RPC match_documentos:",
-      JSON.stringify(rpcError, null, 2)
-    );
-    throw new Error(
-      "Problema al buscar información en la base de datos (código RPC)."
-    );
+    console.error("Error DETALLADO en RPC match_documentos:", JSON.stringify(rpcError, null, 2));
+    console.timeEnd("[PERF] getAssistantStream TOTAL");
+    throw new Error("Problema al buscar información en la base de datos (código RPC).");
   }
 
   const docs = (docsRaw ?? []) as DocumentRow[];
+  let context = "";
+  let numDocsInContext = 0;
+
   if (docs.length > 0) {
-    console.log(
-      "Documentos recuperados para el contexto del LLM:",
-      docs.map((d) => ({ id: d.id, sim: d.similarity }))
-    );
+    // console.log("Documentos recuperados para el contexto del LLM:", docs.map(d => ({ id: d.id, sim: d.similarity, content: d.content.substring(0,30)+"..." })));
+    context = docs.map((d) => `- ${d.content.trim()}`).join("\n\n");
+    numDocsInContext = docs.length;
   } else {
-    console.log(
-      "Ningún documento relevante encontrado para el contexto del LLM."
-    );
+    console.log("Ningún documento relevante encontrado para el contexto del LLM con el umbral actual.");
   }
 
-  const context = docs.map((d) => `- ${d.content.trim()}`).join("\n\n");
+  let totalElectricCarsInDB: number | null = null;
+  const lowerQuestion = question.toLowerCase();
+  if (lowerQuestion.includes("eléctrico") || lowerQuestion.includes("electricos")) {
+      console.time("[PERF] Supabase COUNT Query (Eléctricos)");
+      const { count, error: countError } = await supabaseClient
+          .from('cars')
+          .select('*', { count: 'exact', head: true })
+          .eq('fuel', 'Eléctrico');
+      console.timeEnd("[PERF] Supabase COUNT Query (Eléctricos)");
+      if (countError) {
+          console.error("Error obteniendo conteo total de coches eléctricos:", countError);
+      } else {
+          totalElectricCarsInDB = count;
+          // console.log(`[Chatbot] Conteo total real de coches eléctricos: ${totalElectricCarsInDB}`);
+      }
+  }
+
 
   const systemPrompt = `
-Eres 'Lebi', un asistente virtual amigable, proactivo y experto del concesionario de coches Lebauto.
-Tu misión es ayudar a los usuarios con sus consultas sobre vehículos y servicios, creando una conversación útil y guiada.
-Usa ÚNICAMENTE la información de contexto proporcionada.
+Eres 'Lebi', un asistente virtual amigable y experto del concesionario de coches Lebauto.
+Tu misión es ayudar a los usuarios con sus consultas sobre vehículos y servicios, basándote ÚNICAMENTE en la información de contexto proporcionada.
+Usa formato Markdown para las negritas (ej. **Tesla Model 3**) y para listas si es natural.
 
-Flujo de conversación deseado:
-1. Si el usuario pregunta por un tipo de coche (ej. "coches eléctricos") y el contexto proporciona varios:
-   - Menciona brevemente 2-3 opciones destacadas del contexto (ej. "Tenemos varios eléctricos interesantes como el Tesla Model 3 y el BMW i4.").
-   - Indica el número total de opciones que coinciden en el contexto (ej. "En total, encuentro X coches eléctricos en este momento.").
-   - Pregunta al usuario si quiere más detalles sobre alguno en particular, o si prefiere ver la lista completa, o filtrar por marca/modelo (ej. "¿Te gustaría saber más sobre alguno de estos? También puedes decirme si buscas alguna marca en particular.").
-2. Si el usuario pregunta por un coche específico y se encuentra en el contexto:
-   - Proporciona los detalles clave (marca, modelo, año, precio, combustible, kilometraje).
-   - Pregunta si desea conocer características específicas, opciones de financiación o concertar una prueba.
-3. Si la información solicitada NO se encuentra en el contexto:
-   - Indica amablemente: "No tengo información específica sobre eso en mis datos actuales. ¿Podrías reformular tu pregunta o te gustaría que te ayude con algo más general sobre nuestro stock o servicios?".
-4. Si el contexto está vacío Y la pregunta es general sobre Lebauto:
-   - Da una breve descripción general del concesionario.
-5. Sé siempre cortés. No inventes información.
-6. Si el usuario simplemente saluda o dice "hola", responde amablemente y pregunta en qué puedes ayudarle, quizás sugiriendo algunas preguntas comunes como las opciones de coches.
-Al final de cada respuesta útil, pregunta si hay algo más en lo que puedas ayudar o si quiere continuar explorando.
-Evita frases como "Basándome en el contexto...". Simplemente integra la información.
-Prioriza la información de los coches eléctricos si el usuario muestra interés general en ellos.
-    `.trim();
-  const userMessage = `${
-    context
-      ? `Contexto Relevante:\n${context}\n\n`
-      : "No se encontró contexto específico.\n\n"
-  }Pregunta del Usuario: ${question}`;
+Cuando te pregunten por vehículos disponibles (ej. "coches eléctricos", "Tesla"):
+1. Revisa el contexto proporcionado. Si hay vehículos, lista un MÁXIMO de 2 o 3 ejemplos.
+2. Para cada ejemplo listado, incluye SOLO: **Marca Modelo (Año)**, Precio (ej. 45.990€), y Kilometraje (ej. 12.000 km).
+3. Si se te proporciona información sobre el "CONTEO TOTAL REAL DE COCHES" (verás una nota así en el mensaje del usuario), úsala para decir algo como: "Actualmente, disponemos de [CONTEO TOTAL REAL] coches eléctricos en nuestro inventario." Si no se proporciona ese conteo, y el contexto sí tiene documentos, puedes decir: "He encontrado estos ${numDocsInContext} ejemplos que podrían interesarte:".
+4. Después de la lista (o si no hay ejemplos en el contexto pero sí un conteo total), pregunta al usuario cómo quiere proceder. Por ejemplo: "¿Te gustaría más información detallada sobre alguno de estos modelos? También puedo buscar por otra marca, rango de precios, o contarte sobre nuestras opciones de financiación."
+
+Si el usuario pregunta por UN coche específico (ej. "detalles del Audi A4") y lo encuentras en el contexto:
+- Proporciona una descripción un poco más detallada usando los datos del contexto: Marca, Modelo, Año, Precio, Kilometraje, Combustible, Color, y alguna característica destacada si está presente.
+- Pregunta: "¿Quieres saber más sobre su equipamiento completo, opciones de financiación, o quizás concertar una prueba?"
+
+Si la información solicitada NO se encuentra en el contexto, o el contexto está vacío y no hay un conteo total relevante:
+- Responde amablemente: "No tengo información específica sobre eso en mis datos actuales. ¿Podrías reformular tu pregunta o te gustaría que te ayude con algo más general sobre nuestro stock o los servicios que ofrecemos?".
+
+Sé siempre cortés. No inventes información.
+Al final de cada respuesta útil, invita a continuar la conversación.
+  `.trim();
+
+  let userMessageContextPrefix = "";
+  if (totalElectricCarsInDB !== null && (lowerQuestion.includes("eléctrico") || lowerQuestion.includes("electricos"))) {
+    userMessageContextPrefix = `NOTA PARA EL ASISTENTE: Hay un CONTEO TOTAL REAL DE COCHES de ${totalElectricCarsInDB} coches eléctricos. El siguiente contexto solo muestra algunos ejemplos si se encontraron.\n\n`;
+  }
+
+
+  const userMessage = `
+${userMessageContextPrefix}
+${context ? `Contexto Relevante (ejemplos destacados):\n${context}\n\n` : "No se encontró contexto específico relevante para esta pregunta en nuestros documentos.\n\n"}
+Pregunta del Usuario: ${question}
+`.trim();
 
   const messagesToLLM = [
     { role: "system", content: systemPrompt },
     { role: "user", content: userMessage },
   ];
-  console.log(
-    "Enviando a OpenRouter (solicitando stream):",
-    JSON.stringify({ model: LLM_MODEL, messages: messagesToLLM[1] }, null, 2)
-  ); // Solo loguea el mensaje de usuario para brevedad
 
-  const llmResponse = await fetch(
-    "https://openrouter.ai/api/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENROUTER_KEY}`,
-        "HTTP-Referer":
-          process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-        "X-Title": "Lebauto Chatbot",
-      },
-      body: JSON.stringify({
-        model: LLM_MODEL,
-        messages: messagesToLLM,
-        stream: true,
-        temperature: 0.2,
-        max_tokens: 350,
-      }),
-    }
-  );
+
+  console.time("[PERF] Paso 3: LLM API Call (OpenRouter)");
+  const llmResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENROUTER_KEY}`,
+      "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+      "X-Title": "Lebauto Chatbot",
+    },
+    body: JSON.stringify({
+      model: LLM_MODEL,
+      messages: messagesToLLM,
+      stream: true,
+      temperature: 0.2,
+      max_tokens: 300,
+    }),
+  });
+  console.timeEnd("[PERF] Paso 3: LLM API Call (OpenRouter)");
 
   if (!llmResponse.ok || !llmResponse.body) {
     const errorBody = await llmResponse.text();
-    console.error(
-      `Error de OpenRouter API (${llmResponse.status}):`,
-      errorBody
-    );
+    console.error(`Error de OpenRouter API (${llmResponse.status}):`, errorBody);
+    console.timeEnd("[PERF] getAssistantStream TOTAL");
     throw new Error(`Error del LLM al iniciar stream: ${llmResponse.status}`);
   }
 
@@ -215,5 +203,6 @@ Prioriza la información de los coches eléctricos si el usuario muestra interé
     },
   });
 
+  console.timeEnd("[PERF] getAssistantStream TOTAL");
   return customTextStream;
 }
