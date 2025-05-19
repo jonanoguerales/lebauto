@@ -242,7 +242,7 @@ export default function ChatBotInternal() {
           </div>
         ))}
       </CardContent>
-      <CardFooter className="border-t p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 flex-shrink-0">
+      <CardFooter className="border-t p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 flex-shrink-0 w-full">
         <form
           onSubmit={handleSubmit}
           className="flex w-full items-center space-x-2"
@@ -253,7 +253,7 @@ export default function ChatBotInternal() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe tu mensaje..."
             disabled={isBotResponding}
-            className="flex-1 h-10 text-sm"
+            className="flex-1 h-10 text-[16px] sm:text-sm min-w-0"
             aria-label="Escribe tu pregunta para el chatbot"
           />
           <Button

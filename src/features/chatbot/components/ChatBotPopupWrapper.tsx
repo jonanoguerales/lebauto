@@ -13,14 +13,24 @@ interface ChatBotPopupWrapperProps {
 
 export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrapperProps) {
   useEffect(() => {
-    const originalBodyOverflow = document.body.style.overflow;
+    const body = document.body;
+    const originalOverflow = body.style.overflow;
+    const originalPosition = body.style.position; 
+    const originalWidth = body.style.width; 
+
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      body.style.position = 'fixed';
+      body.style.width = '100%';
     } else {
-      document.body.style.overflow = originalBodyOverflow;
+      body.style.overflow = originalOverflow;
+      body.style.position = originalPosition;
+      body.style.width = originalWidth;
     }
     return () => {
-      document.body.style.overflow = originalBodyOverflow;
+      body.style.overflow = originalOverflow;
+      body.style.position = originalPosition;
+      body.style.width = originalWidth;
     };
   }, [isOpen]);
 
@@ -38,11 +48,11 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
 
       <div
         className="fixed inset-x-0 bottom-0 
-                   w-full h-full max-h-full 
-                   sm:inset-auto sm:bottom-6 sm:right-6 
-                   sm:w-[400px] sm:h-auto sm:max-h-[calc(100vh-7rem)] md:max-h-[650px]
-                   z-[1000] flex flex-col shadow-2xl 
-                   bg-card sm:rounded-t-2xl sm:rounded-xl overflow-hidden"
+                   w-full h-[100dvh]
+                   bg-card shadow-2xl 
+                   flex flex-col 
+                   sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:h-[calc(100dvh-8rem)] sm:max-h-[650px] sm:rounded-xl 
+                   z-[1000] overflow-hidden" 
       >
         <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-100 dark:bg-gray-800 flex-shrink-0">
           <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100">
