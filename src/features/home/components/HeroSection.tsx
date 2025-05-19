@@ -1,7 +1,6 @@
 import { ebGaramond, montserrat } from "@/utils/fonts";
 import { Battery, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
-import { a } from "node_modules/framer-motion/dist/types.d-CQt5spQA";
 
 const btnLink = [
   {
@@ -19,7 +18,7 @@ const btnLink = [
     label: "Renting",
     ariaLabel: "Ver opciones de renting",
   },
-]
+];
 
 const cardsData = [
   {
@@ -41,8 +40,8 @@ const cardsData = [
 
 export default function HeroSection() {
   return (
-    <section className="relative h-dvh flex overflow-hidden" role="banner">
-      <div className="absolute inset-0 z-0">
+    <section className="relative min-h-dvh flex flex-col" role="banner">
+      <div className="fixed inset-0 h-dvh w-screen z-[-1]">
         <picture>
           <source
             media="(max-width: 1024px)"
@@ -56,34 +55,35 @@ export default function HeroSection() {
           />
           <img
             src="/imgHome2.png"
-            alt="Luxury Car"
+            alt="Coche de lujo Lebauto"
             className="object-cover w-full h-full"
             loading="eager"
+            aria-hidden="true"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/10 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/10 to-black/60" />
       </div>
 
-      <div className="relative flex flex-col justify-between z-10 container mx-auto px-0 pb-0 pt-16 md:px-8 md:pb-12 md:pt-24 flex-1">
-        <div className="max-w-2xl flex flex-col items-center gap-6 mt-2 md:mt-20 short:mt-4 ">
+      <div className="relative flex flex-col justify-between z-10 container mx-auto px-4 md:px-8 pb-8 pt-16 md:pb-12 md:pt-24 flex-1">
+        <div className="max-w-2xl flex flex-col items-center text-center mx-auto gap-6 mt-2 md:mt-10 lg:mt-20 short:mt-4">
           <div className="flex flex-col items-center gap-1">
             <h1
-              className={`${montserrat.className} text-4xl md:text-5xl lg:text-6xl text-center font-extrabold text-white`}
+              className={`${montserrat.className} text-4xl md:text-5xl lg:text-6xl font-extrabold text-white`}
             >
               LEBAUTO
             </h1>
             <p
-              className={`${ebGaramond.className} italic max-md:font-semibold text-2xl md:text-3xl lg:text-5xl text-gray-200`}
+              className={`${ebGaramond.className} italic text-2xl md:text-3xl lg:text-5xl text-gray-200`}
             >
               La referencia en coches eléctricos
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
             {btnLink.map((btn, index) => (
               <Link
                 key={index}
                 href={btn.href}
-                className="bg-white text-black font-semibold px-4 py-2 text-base md:text-lg rounded-[0.5rem] hover:opacity-80 w-[100px] text-center"
+                className="bg-white text-black font-semibold px-6 py-2.5 text-base md:text-lg rounded-lg hover:bg-opacity-90 transition-opacity min-w-[120px] text-center"
                 aria-label={btn.ariaLabel}
               >
                 {btn.label}
@@ -91,15 +91,18 @@ export default function HeroSection() {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-2 md:gap-6 mt-8 max-w-5xl mx-auto pb-6 px-4 md:p-0">
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 w-full gap-2 md:gap-4 lg:gap-6 mt-12 md:mt-16 max-w-5xl mx-auto">
           {cardsData.map((card, index) => (
             <div
               key={index}
-              className="md:bg-black/40 backdrop-blur-sm p-2 md:p-6 rounded-xl flex items-center gap-4 text-white"
+              className="bg-black/50 backdrop-blur-md p-4 md:p-5 rounded-xl flex items-center gap-3 text-white"
             >
-              <div className="bg-white/10 p-3 rounded-full">{card.icon}</div>
+              <div className="bg-white/10 p-3 rounded-full flex-shrink-0">
+                {card.icon}
+              </div>
               <div>
-                <h3 className="font-bold text-sm md:text-lg mb-1">
+                <h3 className="font-bold text-sm md:text-base lg:text-lg mb-0.5 md:mb-1">
                   {card.title}
                 </h3>
                 <p className="text-gray-300 text-xs md:text-sm">
