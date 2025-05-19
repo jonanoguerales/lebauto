@@ -173,7 +173,7 @@ export default function ChatBotInternal() {
 
   return (
     <>
-      <CardContent
+     <CardContent
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 scroll-smooth bg-white dark:bg-gray-900"
       >
@@ -255,13 +255,13 @@ export default function ChatBotInternal() {
             disabled={isBotResponding}
             className="flex-1 h-10 text-sm"
             aria-label="Escribe tu pregunta para el chatbot"
-            autoFocus
           />
           <Button
             type="submit"
             size="icon"
             disabled={isBotResponding || !input.trim()}
             aria-label="Enviar pregunta"
+            className="flex-shrink-0"
           >
             <Send className="h-4 w-4" />
           </Button>
