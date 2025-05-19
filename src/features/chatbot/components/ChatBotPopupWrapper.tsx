@@ -38,11 +38,11 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
 
       <div
         className="fixed inset-x-0 bottom-0 
-                   w-full h-full max-h-full  // Ocupa toda la pantalla en móviles por defecto
+                   w-full h-full max-h-full 
                    sm:inset-auto sm:bottom-6 sm:right-6 
-                   sm:w-[400px] sm:h-auto sm:max-h-[calc(100vh-7rem)] md:max-h-[650px] // Ajusta alturas máximas
+                   sm:w-[400px] sm:h-auto sm:max-h-[calc(100vh-7rem)] md:max-h-[650px]
                    z-[1000] flex flex-col shadow-2xl 
-                   bg-card rounded-t-2xl sm:rounded-xl overflow-hidden"
+                   bg-card sm:rounded-t-2xl sm:rounded-xl overflow-hidden"
       >
         <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-100 dark:bg-gray-800 flex-shrink-0">
           <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100">
