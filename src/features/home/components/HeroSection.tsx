@@ -40,8 +40,8 @@ const cardsData = [
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-dvh flex overflow-hidden" role="banner">
-      <div className="absolute inset-0 w-full h-dvh z-0">
+    <section className="relative h-screen flex overflow-hidden" role="banner">
+      <div className="absolute inset-0 w-full h-full z-0">
         <picture>
           <source
             media="(max-width: 1024px)"
