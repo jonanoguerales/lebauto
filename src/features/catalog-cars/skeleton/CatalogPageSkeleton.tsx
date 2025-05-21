@@ -1,10 +1,10 @@
 "use client";
 
 import { useViewStore } from "@/lib/store";
-import CarFiltersSkeleton from "./CarFiltersSkeleton";
-import { CarCardSkeleton, CarCardSkeletonList } from "./CarSkeleton"; 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useResponsiveView } from "@/hooks/useResponsiveView";
+import CarFiltersSkeleton from "./CarFiltersSkeleton";
+import { CarCardSkeleton, CarCardSkeletonList } from "@/features/car/skeleton/CarSkeleton";
 
 export default function CatalogPageSkeleton() {
   const { view } = useViewStore();

@@ -14,8 +14,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { CarCardSkeleton } from "@/features/cars/skeleton/CarSkeleton";
-import CarCardGrid from "@/features/cars/CarCardGrid";
+import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
+import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
 
 export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);

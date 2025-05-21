@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { menuSlide } from "./anim";
-import NavLink from "./NavLink";
 import Curve from "./Curve";
 import Image from "next/image";
 import { X } from "lucide-react";
-import ContactButtons from "../../components/ContactButtons";
+import NavLink from "./NavLink";
+import ContactButtons from "@/components/ContactButtons";
+import { menuSlide } from "../animations/anim";
 
 const navItems = [
   {

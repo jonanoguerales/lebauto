@@ -1,6 +1,6 @@
 import { Link as ViewTransitionsLink } from "next-view-transitions";
 import { motion, Variants } from 'framer-motion';
-import { slide, scale } from './anim';
+import { scale, slide } from "../animations/anim";
 
 interface NavItemData {
   title: string;

@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useViewStore, useFilterStore } from "@/lib/store";
+import type { Car } from "@/lib/definitions";
 import CarCardGrid from "./CarCardGrid";
 import CarCardList from "./CarCardList";
-import { CarCardSkeleton } from "./skeleton/CarSkeleton";
-import type { Car } from "@/lib/definitions";
+import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
 
 interface CarListProps {
   cars?: Car[];
@@ -46,7 +46,7 @@ function CarList({ cars: carsProp }: CarListProps) {
 
 function LoadingSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-1">
       {Array.from({ length: 6 }).map((_, i) => (
         <CarCardSkeleton key={i} />
       ))}
@@ -67,7 +67,7 @@ function NoResults() {
 
 function CarGrid({ cars }: { cars: Car[] }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-1">
       {cars.map((car) => (
         <CarCardGrid key={car.id} car={car} />
       ))}
@@ -77,7 +77,7 @@ function CarGrid({ cars }: { cars: Car[] }) {
 
 function CarListView({ cars }: { cars: Car[] }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-1">
       {cars.map((car) => (
         <CarCardList key={car.id} car={car} />
       ))}

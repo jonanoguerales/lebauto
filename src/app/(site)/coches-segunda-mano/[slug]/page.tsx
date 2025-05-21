@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchCarDetailsBySlug } from "@/app/supabase/supabase";
-import { CarDetailSkeleton } from "@/features/cars/skeleton/CarSkeleton";
 import CarDetailsLoader from "./CarDetailsLoader";
+import { CarDetailSkeleton } from "@/features/car/skeleton/CarSkeleton";
 
 export const revalidate = 60;
 

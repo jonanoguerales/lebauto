@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import LoadingContent from "./LoadingContent";
-import CatalogPageSkeleton from "@/features/cars/skeleton/CatalogPageSkeleton";
+import CatalogPageSkeleton from "@/features/catalog-cars/skeleton/CatalogPageSkeleton";
 
 export const revalidate = 60;
 

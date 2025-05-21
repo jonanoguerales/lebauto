@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { fetchCarDetailsBySlug } from "@/app/supabase/supabase";
-import CarGallery from "@/features/cars/CarGallery";
-import CarInfo from "@/features/cars/CarInfo";
-import CarFeatures from "@/features/cars/CarFeatures";
-import CarContact from "@/features/cars/CarContact";
+import CarGallery from "@/features/car/components/CarGallery";
+import CarInfo from "@/features/car/components/CarInfo";
+import CarFeatures from "@/features/car/components/CarFeatures";
+import CarContact from "@/features/car/components/CarContact";
 
 interface CarDetailsLoaderProps {
   slug: string;

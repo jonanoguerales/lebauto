@@ -91,19 +91,19 @@ async function* processOpenRouterStream(
 export async function getAssistantStream(
   question: string
 ): Promise<ReadableStream<Uint8Array>> {
-  console.time("[PERF] getAssistantStream TOTAL");
+  // console.time("[PERF] getAssistantStream TOTAL");
   if (!OPENROUTER_KEY) {
-    console.timeEnd("[PERF] getAssistantStream TOTAL");
+    // console.timeEnd("[PERF] getAssistantStream TOTAL");
     throw new Error("OPENROUTER_API_KEY no definida.");
   }
 
   // console.log(`[getAssistantStream] Procesando pregunta: "${question}"`);
 
-  console.time("[PERF] Paso 1: getHFEmbedding");
+  // console.time("[PERF] Paso 1: getHFEmbedding");
   const queryEmbedding = await getHFEmbedding(question);
-  console.timeEnd("[PERF] Paso 1: getHFEmbedding");
+  // console.timeEnd("[PERF] Paso 1: getHFEmbedding");
 
-  console.time("[PERF] Paso 2: Supabase RPC match_documentos");
+  // console.time("[PERF] Paso 2: Supabase RPC match_documentos");
   const { data: docsRaw, error: rpcError } = await supabaseClient.rpc(
     "match_documentos",
     {
@@ -112,14 +112,14 @@ export async function getAssistantStream(
       p_match_count: 3,
     }
   );
-  console.timeEnd("[PERF] Paso 2: Supabase RPC match_documentos");
+  // console.timeEnd("[PERF] Paso 2: Supabase RPC match_documentos");
 
   if (rpcError) {
     console.error(
       "Error DETALLADO en RPC match_documentos:",
       JSON.stringify(rpcError, null, 2)
     );
-    console.timeEnd("[PERF] getAssistantStream TOTAL");
+    // console.timeEnd("[PERF] getAssistantStream TOTAL");
     throw new Error(
       "Problema al buscar información en la base de datos (código RPC)."
     );
@@ -145,12 +145,12 @@ export async function getAssistantStream(
     lowerQuestion.includes("eléctrico") ||
     lowerQuestion.includes("electricos")
   ) {
-    console.time("[PERF] Supabase COUNT Query (Eléctricos)");
+    // console.time("[PERF] Supabase COUNT Query (Eléctricos)");
     const { count, error: countError } = await supabaseClient
       .from("cars")
       .select("*", { count: "exact", head: true })
       .eq("fuel", "Eléctrico");
-    console.timeEnd("[PERF] Supabase COUNT Query (Eléctricos)");
+    // console.timeEnd("[PERF] Supabase COUNT Query (Eléctricos)");
     if (countError) {
       console.error(
         "Error obteniendo conteo total de coches eléctricos:",
@@ -208,7 +208,7 @@ Pregunta del Usuario: ${question}
     { role: "user", content: userMessage },
   ];
 
-  console.time("[PERF] Paso 3: LLM API Call (OpenRouter)");
+  // console.time("[PERF] Paso 3: LLM API Call (OpenRouter)");
   const llmResponse = await fetch(
     "https://openrouter.ai/api/v1/chat/completions",
     {
@@ -229,7 +229,7 @@ Pregunta del Usuario: ${question}
       }),
     }
   );
-  console.timeEnd("[PERF] Paso 3: LLM API Call (OpenRouter)");
+  // console.timeEnd("[PERF] Paso 3: LLM API Call (OpenRouter)");
 
   if (!llmResponse.ok || !llmResponse.body) {
     const errorBody = await llmResponse.text();
@@ -237,7 +237,7 @@ Pregunta del Usuario: ${question}
       `Error de OpenRouter API (${llmResponse.status}):`,
       errorBody
     );
-    console.timeEnd("[PERF] getAssistantStream TOTAL");
+    // console.timeEnd("[PERF] getAssistantStream TOTAL");
     throw new Error(`Error del LLM al iniciar stream: ${llmResponse.status}`);
   }
 
@@ -250,6 +250,6 @@ Pregunta del Usuario: ${question}
     },
   });
 
-  console.timeEnd("[PERF] getAssistantStream TOTAL");
+  // console.timeEnd("[PERF] getAssistantStream TOTAL");
   return customTextStream;
 }

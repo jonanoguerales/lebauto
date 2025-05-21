@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { Link as ViewTransitionsLink } from "next-view-transitions";
 import { AnimatePresence } from "framer-motion";
-import CurvedNavPanel from "../features/curved-mobile-menu/CurvedNavPanel"; 
+import CurvedNavPanel from "../curved-mobile-menu/components/CurvedNavPanel";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -55,7 +55,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={navbarClasses}>
+      <nav id="main-navbar" className={navbarClasses}>
         <div
           className={`container mx-auto flex items-center h-[50px] md:h-20 ${
             menuOpen

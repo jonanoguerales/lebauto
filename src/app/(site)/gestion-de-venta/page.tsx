@@ -89,11 +89,6 @@ export default function SellCarPage() {
       <section className="relative mt-[50px] md:mt-20 py-24 bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-white overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
         <div className="container mx-auto relative z-10">
-          <Link href="/" className="inline-flex items-center text-white/80 hover:text-white mb-8">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a inicio
-          </Link>
-
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Vende tu coche <span className="text-yellow-300">sin complicaciones</span>
