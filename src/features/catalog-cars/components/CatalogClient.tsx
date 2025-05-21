@@ -212,7 +212,7 @@ export default function CatalogClient({
           <div className="p-4 border-t bg-white">
             <Button
               onClick={toggleMenu}
-              className="w-full bg-gray-900 text-white h-12"
+              className="w-full bg-gray-900 text-white h-10"
             >
               Ver resultados ({filteredCars.length})
             </Button>

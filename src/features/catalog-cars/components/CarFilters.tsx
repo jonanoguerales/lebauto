@@ -572,19 +572,7 @@ export default function CarFilters({
   };
 
   return (
-    <div className="space-y-6 p-6 flex flex-col justify-between h-full">
-      <div className="flex flex-col h-full overflow-x-hidden overflow-y-auto custom-scrollbar">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Filtros</h2>
-          {isOpen && (
-            <button
-              className="lg:hidden flex items-center justify-center "
-              onClick={toggleMenu}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
+    <div className="space-y-6 pl-4 pr-[1.8rem] py-2">
         {activeFiltersArray.length > 0 && (
           <div className="mt-4">
             <div className="flex justify-between items-center mb-4">
@@ -667,11 +655,5 @@ export default function CarFilters({
           />
         </Accordion>
       </div>
-      <div>
-        <Button onClick={toggleMenu} className="lg:hidden w-full bg-gray-900">
-          Ver resultados ({filteredCars.length})
-        </Button>
-      </div>
-    </div>
   );
 }
