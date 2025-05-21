@@ -167,4 +167,3 @@ export type Charger = {
   category: "home" | "community" | "business";
 };
 
-export const ITEMS_PER_PAGE = 12;
