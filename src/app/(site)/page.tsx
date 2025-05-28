@@ -57,7 +57,7 @@ export default function HomePage() {
       <DudasAdvisorBanner />
       <TestimonialsSection />
       <LocationsSection />
-      <ContactButtons estado="desktop" />
+      {/* <ContactButtons estado="desktop" /> */}
 
       {/* Datos estructurados para SEO */}
       <script

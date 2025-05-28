@@ -1801,6 +1801,7 @@ export default function SellCarPage() {
 
 ```tsx
 import Footer from "@/components/Footer";
+import GlobalChatButton from "@/components/GlobalChatButton";
 import Navbar from "@/features/header/components/Nvbar";
 import "@/styles/global.css";
 export default async function Layout({
@@ -1813,6 +1814,7 @@ export default async function Layout({
       <Navbar />
       <section>{children}</section>
       <Footer />
+      <GlobalChatButton /> 
     </>
   );
 }
@@ -1881,7 +1883,7 @@ export default function HomePage() {
       <DudasAdvisorBanner />
       <TestimonialsSection />
       <LocationsSection />
-      <ContactButtons estado="desktop" />
+      {/* <ContactButtons estado="desktop" /> */}
 
       {/* Datos estructurados para SEO */}
       <script
@@ -2563,8 +2565,6 @@ import { updateCarDocument } from "@/utils/carDocuments";
 
 export const supabaseClient = createClient();
 
-const DEFAULT_ITEMS_PER_PAGE = 12;
-
 export async function uploadImage(
   file: File,
   path: string
@@ -2646,24 +2646,17 @@ export async function deleteImage(url: string): Promise<boolean> {
   }
 }
 
-export async function fetchCars(page: number = 1): Promise<{ cars: Car[]; totalCount: number }> {
+export async function fetchCars(): Promise<Car[]> {
   try {
-    const startIndex = (page - 1) * DEFAULT_ITEMS_PER_PAGE;
-    const endIndex = startIndex + DEFAULT_ITEMS_PER_PAGE - 1;
-
-    const { data: carsData, error, count } = await supabaseClient
-      .from("cars")
-      .select("*", { count: "exact" })
-      .range(startIndex, endIndex)
-      .order('created_at', { ascending: false }); 
+    const { data: cars, error } = await supabaseClient.from("cars").select("*");
 
     if (error) {
       console.error("Error fetching cars:", error);
-      return { cars: [], totalCount: 0 };
+      return [];
     }
 
     const carsWithDetails = await Promise.all(
-      (carsData || []).map(async (car) => {
+      cars.map(async (car) => {
         const { data: carImages } = await supabaseClient
           .from("car_images")
           .select("image_url")
@@ -2679,8 +2672,9 @@ export async function fetchCars(page: number = 1): Promise<{ cars: Car[]; totalC
           const featureIds = carFeatures.map((cf) => cf.feature_id);
           const { data: featureDetails } = await supabaseClient
             .from("features")
-            .select("id") 
+            .select("id")
             .in("id", featureIds);
+
           features = featureDetails?.map((f) => f.id) || [];
         }
 
@@ -2691,10 +2685,11 @@ export async function fetchCars(page: number = 1): Promise<{ cars: Car[]; totalC
         });
       })
     );
-    return { cars: carsWithDetails || [], totalCount: count || 0 };
+
+    return carsWithDetails || [];
   } catch (error) {
     console.error("Error in fetchCars:", error);
-    return { cars: [], totalCount: 0 };
+    return [];
   }
 }
 
@@ -3332,6 +3327,84 @@ export function FormMessage({ message }: { message: Message }) {
   );
 }
 
+```
+
+# src/components/GlobalChatButton.tsx
+
+```tsx
+// src/components/GlobalChatButton.tsx
+"use client";
+import { useState } from "react";
+import { Bot, MessageSquareX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
+import { useChatStore } from "@/lib/chatStore";
+
+export default function GlobalChatButton() {
+  const [isChatUIVisible, setIsChatUIVisible] = useState(false);
+  // Corregir los nombres para que coincidan con los del store
+  const resetChatInStore = useChatStore((state) => state.resetChatInStore);
+  const setIsChatInitializedInStore = useChatStore((state) => state.setIsChatInitializedInStore);
+
+  const handleToggleChat = () => {
+    setIsChatUIVisible((prev) => !prev);
+  };
+
+  const handleFullReset = () => {
+    resetChatInStore();
+    setIsChatInitializedInStore(false); 
+  };
+
+  return (
+    <>
+      <div className="fixed flex flex-col gap-2 right-6 bottom-6 z-[998]">
+        {process.env.NODE_ENV === 'development' && (
+            <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            size="icon"
+                            variant="destructive"
+                            className="rounded-full h-10 w-10 shadow-md"
+                            onClick={handleFullReset}
+                            aria-label="Resetear Chat (Dev)"
+                        >
+                            <MessageSquareX className="h-5 w-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left"><p>Resetear Chat (Dev)</p></TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        )}
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-14 w-14 shadow-lg"
+                onClick={handleToggleChat}
+                aria-label="Abrir chat de agente virtual"
+                aria-expanded={isChatUIVisible}
+              >
+                <Bot className="h-7 w-7" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Agente Virtual Lebi</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <ChatBotPopupWrapper isOpen={isChatUIVisible} onOpenChange={setIsChatUIVisible} />
+    </>
+  );
+}
 ```
 
 # src/components/PaginationControls.tsx
@@ -7434,13 +7507,26 @@ import { KmFilter } from "./filters/KmFilter";
 import { ColorFilter } from "./filters/ColorFilter";
 import { LocationFilter } from "./filters/LocationFilter";
 
-export default function CarFilters() {
+
+export default function CarFilters({
+  isOpen = false,
+  toggleMenu,
+}: {
+  isOpen?: boolean;
+  toggleMenu?: () => void;
+}) {
   const router = useRouter();
   const { toast } = useToast();
   const currentYear = new Date().getFullYear();
 
-  const { filters, setFilter, removeFilter, clearFilters, allCars } =
-    useFilterStore();
+  const {
+    filters,
+    setFilter,
+    removeFilter,
+    clearFilters,
+    allCars,
+    filteredCars,
+  } = useFilterStore();
 
   // Estados para precio, año, km, etc.
   const [minPrice, setMinPrice] = useState<string>(
@@ -7633,7 +7719,7 @@ export default function CarFilters() {
     };
 
     updateUrl();
-  }, [filters, router]);
+  }, [filters]);
 
   useEffect(() => {
     const newState: Record<string, boolean> = {};
@@ -7774,13 +7860,13 @@ export default function CarFilters() {
     } else if (type === "transmission") {
       removeFilter("transmission", value);
     } else if (type === "drivetrain") {
-      removeFilter("drivetrain", value);
+      removeFilter("drivetrain", value);    
     } else if (type === "environmentalTag") {
       removeFilter("environmentalTag", value);
-    } else if (type === "power") {
+    }else if (type === "power") {
       removeFilter("minPower");
       removeFilter("maxPower");
-    } else if (type === "engineDisplacement") {
+    }else if (type === "engineDisplacement") {
       removeFilter("minEngineDisplacement");
       removeFilter("maxEngineDisplacement");
     }
@@ -7883,10 +7969,7 @@ export default function CarFilters() {
         }`,
       });
     }
-    if (
-      filters.minEngineDisplacement !== undefined ||
-      filters.maxEngineDisplacement !== undefined
-    ) {
+    if (filters.minEngineDisplacement !== undefined || filters.maxEngineDisplacement !== undefined) {
       active.push({
         type: "engineDisplacement",
         value: `Capacidad: ${filters.minEngineDisplacement || 0} - ${
@@ -7976,82 +8059,89 @@ export default function CarFilters() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {activeFiltersArray.length > 0 && (
-        <div className="mt-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium">Tu búsqueda</h3>
-            <Button
-              variant="link"
-              className="text-sm h-auto p-0"
-              onClick={handleClearFilters}
-            >
-              Eliminar filtros
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {activeFiltersArray.map((filter, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="flex items-center gap-1"
+    <div className="space-y-6 pl-4 pr-[1.8rem] py-2">
+        {activeFiltersArray.length > 0 && (
+          <div className="mt-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">Tu búsqueda</h3>
+              <Button
+                variant="link"
+                className="text-sm h-auto p-0"
+                onClick={handleClearFilters}
               >
-                {filter.value}
-                <button
-                  onClick={() => handleRemoveFilter(filter.type, filter.value)}
-                  className="ml-1 rounded-full hover:bg-muted p-0.5"
-                  aria-label={`Eliminar filtro ${filter.value}`}
+                Eliminar filtros
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {activeFiltersArray.map((filter, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="flex items-center gap-1"
                 >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
+                  {filter.value}
+                  <button
+                    onClick={() =>
+                      handleRemoveFilter(filter.type, filter.value)
+                    }
+                    className="ml-1 rounded-full hover:bg-muted p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-      <Accordion type="multiple" defaultValue={["marca"]}>
-        <BrandModelFilter config={brandModelConfig} />
-        <PriceFilter config={PriceFilterConfig} />
-        <YearFilter config={YearFilterConfig} />
-        <BodyFilter
-          uniqueBodyTypes={uniqueBodyTypes}
-          filters={filters}
-          doorFrom={doorFrom}
-          doorTo={doorTo}
-          seatFrom={seatFrom}
-          seatTo={seatTo}
-          setDoorFrom={(value) => {
-            setDoorFrom(value);
-            setFilter("doorFrom", value);
-          }}
-          setDoorTo={(value) => {
-            setDoorTo(value);
-            setFilter("doorTo", value);
-          }}
-          setSeatFrom={(value) => {
-            setSeatFrom(value);
-            setFilter("seatFrom", value);
-          }}
-          setSeatTo={(value) => {
-            setSeatTo(value);
-            setFilter("seatTo", value);
-          }}
-          handleBodyTypeChange={handleBodyTypeChange}
-        />
-        <MotorFilter />
-        <KmFilter config={KmFilterConfig} />
-        <ColorFilter
-          uniqueColors={uniqueColors}
-          filters={filters}
-          handleColorChange={handleColorChange}
-        />
-        <LocationFilter
-          uniqueLocations={uniqueLocations}
-          filters={filters}
-          handleLocationChange={handleLocationChange}
-        />
-      </Accordion>
-    </div>
+        )}
+        <Accordion type="multiple" defaultValue={["marca"]}>
+          <BrandModelFilter config={brandModelConfig} />
+
+          <PriceFilter config={PriceFilterConfig} />
+
+          <YearFilter config={YearFilterConfig} />
+
+          <BodyFilter
+            uniqueBodyTypes={uniqueBodyTypes}
+            filters={filters}
+            doorFrom={doorFrom}
+            doorTo={doorTo}
+            seatFrom={seatFrom}
+            seatTo={seatTo}
+            setDoorFrom={(value) => {
+              setDoorFrom(value);
+              setFilter("doorFrom", value);
+            }}
+            setDoorTo={(value) => {
+              setDoorTo(value);
+              setFilter("doorTo", value);
+            }}
+            setSeatFrom={(value) => {
+              setSeatFrom(value);
+              setFilter("seatFrom", value);
+            }}
+            setSeatTo={(value) => {
+              setSeatTo(value);
+              setFilter("seatTo", value);
+            }}
+            handleBodyTypeChange={handleBodyTypeChange}
+          />
+          <MotorFilter />
+
+          <KmFilter config={KmFilterConfig} />
+
+          <ColorFilter
+            uniqueColors={uniqueColors}
+            filters={filters}
+            handleColorChange={handleColorChange}
+          />
+
+          <LocationFilter
+            uniqueLocations={uniqueLocations}
+            filters={filters}
+            handleLocationChange={handleLocationChange}
+          />
+        </Accordion>
+      </div>
   );
 }
 
@@ -8368,7 +8458,7 @@ export default function CatalogClient({
           <div className="p-4 border-t bg-white">
             <Button
               onClick={toggleMenu}
-              className="w-full bg-gray-900 text-white h-12"
+              className="w-full bg-gray-900 text-white h-10"
             >
               Ver resultados ({filteredCars.length})
             </Button>
@@ -9945,185 +10035,387 @@ export default function CatalogPageSkeleton() {
 
 ```tsx
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardContent, CardFooter } from "@/components/ui/card";
-import { Send, Bot as BotIconLucide, UserCircle2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-
-interface ChatMessageButton {
-  label: string;
-  payload: string;
-  type: "query";
-}
-
-interface ChatMessage {
-  id: string;
-  sender: "user" | "bot";
-  text: string;
-  buttons?: ChatMessageButton[];
-  isLoading?: boolean;
-}
-
-const initialBotGreeting =
-  "¡Hola! Soy Lebi, tu asistente virtual de Lebauto. ¿En qué puedo ayudarte hoy?";
-const defaultSuggestions: ChatMessageButton[] = [
-  { label: "Coches eléctricos disponibles", payload: "Coches eléctricos disponibles", type: "query" },
-  { label: "¿Cuál es el Audi A4 más barato?", payload: "¿Cuál es el Audi A4 más barato?", type: "query" },
-  { label: "Quiero vender mi coche", payload: "Quiero vender mi coche", type: "query" },
-];
+import { Send, UserCircle2, ArrowLeft, BotMessageSquare } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { chatFlow, type UserData, type ChatButtonOption } from "@/lib/chatFlow";
+import { useChatStore, type ChatMessageInStore } from "@/lib/chatStore";
+import { useFilterStore as useGlobalFilterStore } from "@/lib/store";
+import {
+  ArrayFilterKey,
+  FiltersData,
+  NumberFilterKey,
+} from "@/lib/definitions";
 
 export default function ChatBotInternal() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [isBotResponding, setIsBotResponding] = useState(false);
+  const router = useRouter();
+  const {
+    messages,
+    currentStepId,
+    userData,
+    history,
+    errorMessage,
+    isChatInitialized,
+    addMessageToStore,
+    setCurrentStepIdInStore,
+    setUserDataInStore,
+    pushHistoryInStore,
+    popHistoryFromStore,
+    setHistoryInStore,
+    setErrorMessageInStore,
+    setMessagesDirectlyInStore,
+    clearButtonsFromBotMessagesInStore,
+    setIsChatInitializedInStore,
+  } = useChatStore();
+
+  const [userInput, setUserInput] = useState("");
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
-   const initialLoadEffectRan = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const globalSetFilter = useGlobalFilterStore((state) => state.setFilter);
+  const globalClearFilters = useGlobalFilterStore(
+    (state) => state.clearFilters
+  );
 
   const addMessage = useCallback(
-    (
-      sender: "user" | "bot",
-      text: string,
-      isLoading = false,
-      buttons?: ChatMessageButton[]
-    ): string => {
-      const id = crypto.randomUUID();
-      setMessages((prev) => [
-        ...prev,
-        { id, sender, text, isLoading, buttons },
-      ]);
-      return id;
+    (sender: "user" | "bot", text: string, buttons?: ChatButtonOption[]) => {
+      if (sender === "bot" && buttons && buttons.length > 0) {
+        clearButtonsFromBotMessagesInStore();
+      }
+      addMessageToStore(sender, text, buttons);
     },
-    [] 
+    [addMessageToStore, clearButtonsFromBotMessagesInStore]
   );
 
-  const updateMessageWithStream = useCallback((id: string, chunk: string) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, text: m.text + chunk, isLoading: false } : m
-      )
-    );
-  }, []); 
-
-  const removeLastBotSuggestions = useCallback(() => {
-    setMessages((prev) => {
-      const lastMsg = prev[prev.length - 1];
-      if (
-        lastMsg &&
-        lastMsg.sender === "bot" &&
-        lastMsg.buttons &&
-        lastMsg.buttons.length > 0 &&
-        lastMsg.text.startsWith("También puedes probar") 
-      ) {
-        return prev.slice(0, -1);
-      }
-      return prev;
-    });
-  }, []);
-
-  const addDefaultSuggestionButtons = useCallback(() => {
-    addMessage("bot", "También puedes probar con esto:", false, defaultSuggestions);
-  }, [addMessage]);
-
-  const finalizeBotStreaming = useCallback((botMessageId?: string) => {
-    if (botMessageId) {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === botMessageId ? { ...m, isLoading: false } : m
-        )
-      );
-    }
-    setIsBotResponding(false);
-  }, []); 
-
-  const fetchBotStreamResponse = useCallback(
-    async (query: string) => {
-      if (!query.trim()) return;
-      setIsBotResponding(true);
-      setInput("");
-      const botMessageId = addMessage("bot", "", true);
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: query }),
-        });
-        if (!response.ok || !response.body) {
-          const errorData = await response.json().catch(() => ({ error: "Error desconocido" }));
-          throw new Error(errorData.error || `Error ${response.status}`);
-        }
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          updateMessageWithStream(botMessageId, chunk);
-        }
-      } catch (e: any) {
-        console.error("Error consumiendo stream:", e);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === botMessageId
-              ? { ...m, text: `Lo siento, ha ocurrido un error: ${e.message || "Intenta de nuevo."}`, isLoading: false }
-              : m
-          )
+  const processStep = useCallback(
+    (stepId: string, currentData: UserData) => {
+      const step = chatFlow[stepId];
+      if (!step) {
+        console.error(`Error: No se encontró el paso con ID "${stepId}"`);
+        addMessage(
+          "bot",
+          "Lo siento, ha ocurrido un error interno. Volviendo al inicio."
         );
-      } finally {
-        finalizeBotStreaming(botMessageId); 
-        addDefaultSuggestionButtons(); 
+        setCurrentStepIdInStore("start");
+        setHistoryInStore(["start"]);
+        setTimeout(() => processStep("start", {}), 0);
+        return;
+      }
+
+      const botMessageText =
+        typeof step.message === "function"
+          ? step.message(currentData)
+          : step.message;
+      let stepOptions =
+        typeof step.options === "function"
+          ? step.options(currentData)
+          : step.options;
+
+      // Añadir botón "Atrás" genérico si no hay otras opciones y no es un input de usuario, y no es el inicio o fin.
+      if (
+        !stepOptions &&
+        step.previousStepId &&
+        step.id !== "start" &&
+        !step.isUserInput &&
+        step.id !== "endChat"
+      ) {
+        const prevId =
+          typeof step.previousStepId === "function"
+            ? step.previousStepId(currentData)
+            : step.previousStepId;
+        if (prevId) {
+          // Asegurarse de que prevId no sea undefined
+          stepOptions = [
+            {
+              label: "Atrás",
+              nextStepId: prevId,
+              value: `internal_back_to_${prevId}`,
+            },
+          ];
+        }
+      }
+
+      addMessage("bot", botMessageText, stepOptions);
+
+      if (step.isUserInput && inputRef.current) {
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
+
+      const navigateToPath =
+        typeof step.navigateTo === "function"
+          ? step.navigateTo(currentData)
+          : step.navigateTo;
+      const redirectPathValue =
+        typeof step.redirectPath === "function"
+          ? step.redirectPath(currentData)
+          : step.redirectPath;
+
+      if (navigateToPath) {
+        if (step.action) {
+          step.action("", currentData);
+        } // Ejecutar acción del chatFlow si existe
+
+        // EXTRAER FILTROS DE navigateToPath para actualizar el store global
+        if (navigateToPath) {
+          if (step.action) {
+            step.action("", currentData);
+          }
+
+          if (navigateToPath.includes("?")) {
+            const searchParamsString = navigateToPath.split("?")[1];
+            const params = new URLSearchParams(searchParamsString);
+
+            globalClearFilters();
+
+            params.forEach((value, key) => {
+              const filterKey = key as keyof FiltersData; // Usamos keyof FiltersData para una mejor inferencia
+
+              // Lista de claves que son numéricas en tu FiltersData
+              const numericKeys: (keyof FiltersData)[] = [
+                "minPrice",
+                "maxPrice",
+                "minYear",
+                "maxYear",
+                "minKm",
+                "maxKm",
+                "doorFrom",
+                "doorTo",
+                "seatFrom",
+                "seatTo",
+                "minPower",
+                "maxPower",
+                "minEngineDisplacement",
+                "maxEngineDisplacement",
+              ];
+
+              // Lista de claves que son arrays de strings en tu FiltersData
+              const arrayKeys: (keyof FiltersData)[] = [
+                "brand",
+                "model",
+                "fuel",
+                "location",
+                "color",
+                "bodyType",
+                "transmission",
+                "environmentalTag",
+                "drivetrain",
+              ];
+
+              if (numericKeys.includes(filterKey) && !isNaN(Number(value))) {
+                // TypeScript sabrá aquí que filterKey es una de las claves numéricas
+                globalSetFilter(filterKey as NumberFilterKey, Number(value));
+              } else if (arrayKeys.includes(filterKey)) {
+                // Si el valor de la URL puede tener múltiples elementos separados por comas
+                value.split(",").forEach((part) => {
+                  // TypeScript sabrá que filterKey es una de las claves de array
+                  globalSetFilter(filterKey as ArrayFilterKey, part.trim());
+                });
+              } else {
+                // Fallback para otras claves que no sean ni numéricas ni arrays (si las hubiera)
+                // O si la clave no está en tus listas definidas (puede indicar un error o una nueva clave no manejada)
+                console.warn(
+                  `Clave de filtro no manejada explícitamente o tipo inesperado: ${key}`
+                );
+                // podrías decidir si intentar un casteo genérico o no hacer nada:
+                // globalSetFilter(filterKey as any, value); // Esto es menos seguro
+              }
+            });
+          } else {
+            if (navigateToPath === "/coches-segunda-mano") {
+              globalClearFilters();
+            }
+          }
+          router.push(navigateToPath);
+        } else if (redirectPathValue) {
+          if (step.action) {
+            step.action("", currentData);
+          }
+          if (step.openInNewTab !== false) {
+            setTimeout(() => {
+              if (typeof window !== "undefined") {
+                window.open(redirectPathValue, "_blank");
+              }
+            }, 1000);
+          } else {
+            setTimeout(() => router.push(redirectPathValue), 1000);
+          }
+        } else if (step.action && step.endFlow) {
+          step.action("", currentData);
+        }
       }
     },
-    [addMessage, updateMessageWithStream, finalizeBotStreaming, addDefaultSuggestionButtons]
-  );
-
-  const handleSuggestionOrButtonClick = useCallback(
-    (button: ChatMessageButton) => { 
-      removeLastBotSuggestions();
-      addMessage("user", button.label);
-      fetchBotStreamResponse(button.payload);
-    },
-    [addMessage, fetchBotStreamResponse, removeLastBotSuggestions]
+    [
+      addMessage,
+      router,
+      setCurrentStepIdInStore,
+      setHistoryInStore,
+      globalSetFilter,
+      globalClearFilters,
+    ]
   );
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && initialLoadEffectRan.current) {
-        // console.log("[ChatBot] StrictMode: Efecto inicial ya se ejecutó una vez, omitiendo segundo montaje.");
-        return;
+    if (!isChatInitialized) {
+      processStep("start", {});
+      setIsChatInitializedInStore(true);
     }
-    if (messages.length === 0) {
-        // console.log("[ChatBot] Efecto de carga inicial EJECUTÁNDOSE.");
-        addMessage("bot", initialBotGreeting);
-        addDefaultSuggestionButtons();
-    }
-    return () => {
-      initialLoadEffectRan.current = true;
-    };
-  }, []); 
-  const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
-    if (!input.trim() || isBotResponding) return;
-    removeLastBotSuggestions();
-    addMessage("user", input.trim());
-    fetchBotStreamResponse(input.trim());
-    setInput("");
-  };
+  }, [isChatInitialized, setIsChatInitializedInStore, processStep]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
+  const handleUserResponse = async (value: string, isButtonClick = false) => {
+    const currentStep = chatFlow[currentStepId];
+    if (!currentStep) return;
+
+    let responseTextForChat: string = value;
+    let nextStepIdToGo: string | undefined;
+    let accumulatedUserDataChanges: Partial<UserData> = {};
+
+    if (isButtonClick) {
+      const stepOptions =
+        typeof currentStep.options === "function"
+          ? currentStep.options(userData)
+          : currentStep.options;
+      const selectedOption = stepOptions?.find(
+        (opt) => opt.value === value || opt.label === value
+      );
+      if (selectedOption) {
+        responseTextForChat = selectedOption.label;
+        nextStepIdToGo = selectedOption.nextStepId;
+        if (currentStepId === "start" && selectedOption.value) {
+          accumulatedUserDataChanges.initialOption = selectedOption.value;
+        }
+        // Ejecutar acción del PASO ACTUAL si es un botón y el paso no es de input, y la opción tiene un 'value'
+        if (
+          currentStep.action &&
+          !currentStep.isUserInput &&
+          selectedOption.value
+        ) {
+          const dataFromAction = await currentStep.action(
+            selectedOption.value,
+            userData
+          );
+          accumulatedUserDataChanges = {
+            ...accumulatedUserDataChanges,
+            ...dataFromAction,
+          };
+        }
+      } else {
+        console.warn("Opción de botón no encontrada para el valor:", value);
+        responseTextForChat = value || "Acción no reconocida";
+      }
+    } else {
+      responseTextForChat = value; // El texto que el usuario escribió
+      if (currentStep.isUserInput) {
+        if (currentStep.validation) {
+          const error = currentStep.validation(value, userData);
+          if (error) {
+            setErrorMessageInStore(error);
+            inputRef.current?.focus();
+            return;
+          }
+        }
+        setErrorMessageInStore(null);
+        if (currentStep.action) {
+          const dataFromAction = await currentStep.action(value, userData); // 'value' es el input del usuario
+          accumulatedUserDataChanges = {
+            ...accumulatedUserDataChanges,
+            ...dataFromAction,
+          };
+        }
+        nextStepIdToGo = currentStep.nextStepIdAfterInput;
+      }
+    }
+
+    addMessage("user", responseTextForChat);
+    if (Object.keys(accumulatedUserDataChanges).length > 0) {
+      setUserDataInStore(accumulatedUserDataChanges);
+    }
+    setUserInput("");
+
+    if (nextStepIdToGo) {
+      setCurrentStepIdInStore(nextStepIdToGo);
+      pushHistoryInStore(nextStepIdToGo);
+      // Es importante pasar la userData que incluye los cambios de esta interacción
+      processStep(nextStepIdToGo, {
+        ...userData,
+        ...accumulatedUserDataChanges,
+      });
+    }
+  };
+
+  const handleOptionClick = (option: ChatButtonOption) => {
+    // Usar option.value si está definido, sino option.label. Esto es para el primer argumento de handleUserResponse.
+    handleUserResponse(option.value || option.label, true);
+  };
+
+  const handleSubmitInput = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!userInput.trim()) return;
+    const currentStep = chatFlow[currentStepId];
+    if (currentStep?.isUserInput) {
+      handleUserResponse(userInput.trim(), false);
+    }
+  };
+
+  const handleGoBack = () => {
+    const targetPreviousStepId = popHistoryFromStore();
+    if (!targetPreviousStepId) return;
+
+    setMessagesDirectlyInStore(
+      (prevMessages: ChatMessageInStore[]): ChatMessageInStore[] => {
+        if (prevMessages.length === 0) return [];
+        let cutOffIndex = prevMessages.length;
+
+        const lastMessage = prevMessages[prevMessages.length - 1];
+
+        if (
+          lastMessage?.sender === "user" &&
+          prevMessages.length > 1 &&
+          prevMessages[prevMessages.length - 2]?.sender === "bot"
+        ) {
+          cutOffIndex -= 2;
+        } else if (lastMessage?.sender === "bot") {
+          cutOffIndex -= 1;
+        }
+
+        const newMessages = prevMessages.slice(0, Math.max(0, cutOffIndex));
+        if (
+          targetPreviousStepId === "start" &&
+          ((newMessages.length === 0 && prevMessages.length > 0) ||
+            (newMessages.length === 1 &&
+              newMessages[0]?.text.startsWith("¡Hola! Soy Lebi"))) &&
+          prevMessages[0]?.text.startsWith("¡Hola! Soy Lebi")
+        ) {
+          return [prevMessages[0]];
+        }
+        return newMessages;
+      }
+    );
+
+    setCurrentStepIdInStore(targetPreviousStepId);
+    setTimeout(() => processStep(targetPreviousStepId, userData), 0);
+  };
+
+  const currentStepDef = chatFlow[currentStepId];
+  const canGoBack = currentStepDef?.previousStepId && history.length > 1;
+
   return (
     <>
-     <CardContent
+      <CardContent
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 scroll-smooth bg-white dark:bg-gray-900"
       >
-        {messages.map((m) => (
+        {messages.map((m: ChatMessageInStore) => (
           <div
             key={m.id}
             className={`flex gap-2.5 ${
@@ -10131,56 +10423,40 @@ export default function ChatBotInternal() {
             }`}
           >
             {m.sender === "bot" && (
-              <BotIconLucide className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+              <BotMessageSquare className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
             )}
             <div
-              className={`max-w-[85%] p-3 rounded-xl shadow-sm ${
+              className={`max-w-[85%] p-3 rounded-xl shadow-sm break-words ${
                 m.sender === "user"
-                  ? "bg-primary text-primary-foreground rounded-br-none"
-                  : "bg-muted text-foreground rounded-bl-none"
+                  ? "bg-slate-600 text-white rounded-br-none"
+                  : "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 rounded-bl-none"
               }`}
             >
-              {m.isLoading ? (
-                <div className="flex items-center space-x-1 text-sm opacity-80">
-                  <span className="h-2 w-2 bg-current rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                  <span className="h-2 w-2 bg-current rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                  <span className="h-2 w-2 bg-current rounded-full animate-bounce"></span>
-                </div>
-              ) : (
-                <div className="prose prose-sm dark:prose-invert max-w-full text-sm leading-relaxed">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      p: ({ node, ...props }) => (
-                        <p className="mb-1 last:mb-0" {...props} />
-                      ),
-                      strong: ({ node, ...props }) => (
-                        <strong className="font-semibold" {...props} />
-                      ),
-                    }}
-                  >
-                    {m.text}
-                  </ReactMarkdown>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {m.text}
+              </p>
+              {m.sender === "bot" && m.buttons && m.buttons.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {m.buttons.map((button, btnIdx) => (
+                    <Button
+                      key={btnIdx}
+                      variant="default"
+                      size="sm"
+                      className="h-auto py-2 px-3 text-sm text-center bg-[#708BA0] hover:bg-[#5c7081] text-white border-0 
+                                 min-w-[calc(50%-0.25rem)] flex-grow basis-[calc(50%-0.25rem)] sm:flex-grow-0 sm:basis-auto"
+                      onClick={() => handleOptionClick(button)}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ")
+                          handleOptionClick(button);
+                      }}
+                      aria-label={button.label}
+                    >
+                      {button.label}
+                    </Button>
+                  ))}
                 </div>
               )}
-              {m.sender === "bot" &&
-                !m.isLoading &&
-                m.buttons &&
-                m.buttons.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2 items-start">
-                    {m.buttons.map((button, btnIdx) => (
-                      <Button
-                        key={btnIdx}
-                        variant="outline"
-                        size="sm"
-                        className="h-auto py-1 px-2 text-xs text-left bg-white hover:bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:border-gray-600"
-                        onClick={() => handleSuggestionOrButtonClick(button) }
-                      >
-                        {button.label}
-                      </Button>
-                    ))}
-                  </div>
-                )}
             </div>
             {m.sender === "user" && (
               <UserCircle2 className="h-6 w-6 text-gray-400 flex-shrink-0 mt-1" />
@@ -10188,46 +10464,84 @@ export default function ChatBotInternal() {
           </div>
         ))}
       </CardContent>
-      <CardFooter className="border-t p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 flex-shrink-0 w-full">
-        <form
-          onSubmit={handleSubmit}
-          className="flex w-full items-center space-x-2"
-        >
-          <Input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Escribe tu mensaje..."
-            disabled={isBotResponding}
-            className="flex-1 h-10 text-[16px] sm:text-sm min-w-0"
-            aria-label="Escribe tu pregunta para el chatbot"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={isBotResponding || !input.trim()}
-            aria-label="Enviar pregunta"
-            className="flex-shrink-0"
+      <CardFooter className="border-t p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 flex-shrink-0 w-full flex flex-col items-start">
+        {errorMessage && (
+          <p className="text-red-500 text-xs mb-2 w-full text-left">
+            {errorMessage}
+          </p>
+        )}
+        {currentStepDef?.isUserInput ? (
+          <form
+            onSubmit={handleSubmitInput}
+            className="flex w-full items-center space-x-2"
           >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+            {canGoBack && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleGoBack}
+                aria-label="Atrás"
+                className="flex-shrink-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+            <Input
+              ref={inputRef}
+              type={currentStepDef.inputType || "text"}
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder={
+                currentStepDef.inputPlaceholder || "Escribe tu mensaje..."
+              }
+              className="flex-1 h-10 text-[16px] sm:text-sm min-w-0"
+              aria-label="Escribe tu respuesta"
+            />
+            <Button
+              type="submit"
+              size="icon"
+              disabled={!userInput.trim()}
+              aria-label="Enviar respuesta"
+              className="flex-shrink-0 bg-[#708BA0] hover:bg-[#5c7081]"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </form>
+        ) : (
+          canGoBack && (
+            <div className="w-full flex">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGoBack}
+                aria-label="Atrás"
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" /> Atrás
+              </Button>
+            </div>
+          )
+        )}
       </CardFooter>
     </>
   );
 }
+
 ```
 
 # src/features/chatbot/components/ChatBotPopupWrapper.tsx
 
 ```tsx
+// src/features/chatbot/components/ChatBotPopupWrapper.tsx
 "use client";
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react"; // Añadir useState
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot as BotIcon, X as XIcon } from "lucide-react";
+import { Bot as BotIcon, X as XIcon, CornerDownLeft, ChevronsDownUp } from "lucide-react"; // ChevronsDownUp para "minimizar"
 import ChatBotInternal from "./ChatBot";
+import { useChatStore } from "@/lib/chatStore"; // Para escuchar cambios
+import { chatFlow } from "@/lib/chatFlow";
 
 interface ChatBotPopupWrapperProps {
   isOpen: boolean;
@@ -10235,6 +10549,12 @@ interface ChatBotPopupWrapperProps {
 }
 
 export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrapperProps) {
+  // Escuchar el currentStepId para detectar si se ha navegado a un paso con `navigateTo`
+  const currentStepId = useChatStore((state) => state.currentStepId);
+  
+  const [isCompactMode, setIsCompactMode] = useState(false); // Nuevo estado para modo compacto
+  const [hasNavigated, setHasNavigated] = useState(false); // Para saber si ya hemos navegado una vez
+
   useEffect(() => {
     const body = document.body;
     const originalOverflow = body.style.overflow;
@@ -10243,49 +10563,91 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
 
     if (isOpen) {
       body.style.overflow = 'hidden';
-      body.style.position = 'fixed';
-      body.style.width = '100%';
+      // Solo fijar posición en pantallas grandes o si no está en modo compacto
+      if (!isCompactMode || window.innerWidth >= 640 ) { 
+        body.style.position = 'fixed';
+        body.style.width = '100%';
+      }
     } else {
       body.style.overflow = originalOverflow;
       body.style.position = originalPosition;
       body.style.width = originalWidth;
+      setIsCompactMode(false); // Resetear modo compacto al cerrar
+      setHasNavigated(false); // Resetear estado de navegación
     }
     return () => {
       body.style.overflow = originalOverflow;
       body.style.position = originalPosition;
       body.style.width = originalWidth;
     };
-  }, [isOpen]);
+  }, [isOpen, isCompactMode]);
+
+
+  useEffect(() => {
+    // Si el chat está abierto y el paso actual tiene 'navigateTo', activamos el modo compacto
+    // y marcamos que ha habido una navegación.
+    if (isOpen && chatFlow && chatFlow[currentStepId]?.navigateTo && !hasNavigated) {
+        if (window.innerWidth < 640) { // Solo activar modo compacto en móviles
+             setIsCompactMode(true);
+        }
+        setHasNavigated(true); // Marcar que ya ocurrió una navegación
+    }
+    // Si el usuario vuelve al paso 'start', desactivamos el modo compacto
+    if (currentStepId === 'start' && hasNavigated) {
+        setIsCompactMode(false);
+        setHasNavigated(false); // Resetear para la próxima navegación
+    }
+  }, [currentStepId, isOpen, hasNavigated]);
+
 
   if (!isOpen) {
     return null;
   }
 
+  const popupHeightClass = isCompactMode 
+    ? "h-[60dvh] sm:h-[calc(100dvh-8rem)]" // Altura reducida en móvil, normal en SM+
+    : "h-[100dvh] sm:h-[calc(100dvh-8rem)]"; // Altura completa
+
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[999]"
-        onClick={() => onOpenChange(false)}
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[999]" // Un poco menos opaco
+        onClick={() => {
+            onOpenChange(false);
+            // setIsCompactMode(false); // Resetear al cerrar desde el overlay
+            // setHasNavigated(false);
+        }}
         aria-hidden="true"
       ></div>
 
       <div
-        className="fixed inset-x-0 bottom-0 
-                   w-full h-[100dvh]
+        className={`fixed inset-x-0 bottom-0 
+                   w-full ${popupHeightClass}
                    bg-card shadow-2xl 
                    flex flex-col 
-                   sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:h-[calc(100dvh-8rem)] sm:max-h-[650px] sm:rounded-xl 
-                   z-[1000] overflow-hidden" 
+                   sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:max-h-[650px] sm:rounded-xl 
+                   z-[1000] overflow-hidden transition-all duration-300 ease-out`} // Añadida transición
       >
         <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-100 dark:bg-gray-800 flex-shrink-0">
           <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100">
             <BotIcon className="text-primary h-5 w-5" /> Agente Virtual Lebi
           </CardTitle>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} aria-label="Cerrar chat" className="h-8 w-8 sm:h-9 sm:w-9">
-            <XIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300" />
-          </Button>
+          <div className="flex items-center gap-1">
+            {isCompactMode && window.innerWidth < 640 && ( // Solo mostrar en móvil y modo compacto
+                 <Button variant="ghost" size="icon" onClick={() => setIsCompactMode(false)} aria-label="Expandir chat" className="h-8 w-8 sm:h-9 sm:w-9">
+                    <ChevronsDownUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300 rotate-180" />
+                </Button>
+            )}
+             {!isCompactMode && hasNavigated && window.innerWidth < 640 && ( // Botón para volver a compacto
+                <Button variant="ghost" size="icon" onClick={() => setIsCompactMode(true)} aria-label="Minimizar chat" className="h-8 w-8 sm:h-9 sm:w-9">
+                    <ChevronsDownUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300" />
+                </Button>
+            )}
+            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} aria-label="Cerrar chat" className="h-8 w-8 sm:h-9 sm:w-9">
+              <XIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300" />
+            </Button>
+          </div>
         </CardHeader>
-
         <ChatBotInternal /> 
       </div>
     </>
@@ -14102,7 +14464,7 @@ const cardsData = [
 
 export default function HeroSection() {
   return (
-    <section className="relative h-dvh flex overflow-hidden" role="banner">
+    <section className="relative h-svh flex overflow-hidden" role="banner">
       <div className="absolute inset-0 z-0">
         <picture>
           <source
@@ -15646,6 +16008,339 @@ export function useYearDebounce({ minYear, maxYear, setMinYear, setMaxYear, setF
 }
 ```
 
+# src/lib/chat-flows/buyCarFlow.ts
+
+```ts
+// src/lib/chat-flows/buyCarFlow.ts
+import type { ChatStep, UserData, ChatButtonOption } from '../chatFlowTypes'; // Importar tipos
+
+// Si necesitas funciones auxiliares específicas para este flujo, defínelas aquí
+const parseBuyCarQueryToFilters = (query: string, existingFiltersString?: string): string => {
+    // ... (lógica de parseo específica para la compra, como la que teníamos)
+    const lowerQuery = query.toLowerCase();
+    let filters = "";
+    if (lowerQuery.includes("electrico") || lowerQuery.includes("eléctrico")) filters += "fuel=Eléctrico&";
+    if (lowerQuery.includes("suv")) filters += "bodyType=SUV&";
+    const priceMatch = lowerQuery.match(/(?:menos de|hasta|presupuesto)\s*(\d+)/i);
+    if (priceMatch && priceMatch[1]) filters += `maxPrice=${priceMatch[1]}&`;
+    // ... más lógica de parseo ...
+    return filters.endsWith('&') ? filters.slice(0, -1) : filters;
+};
+
+
+export const buyCarFlowSteps: Record<string, ChatStep> = {
+  buyCar_start: {
+    id: 'buyCar_start',
+    message: '¡Genial que quieras comprar un coche! ¿Tienes algún modelo o tipo en mente, o prefieres que te ayude a encontrar uno?',
+    options: [
+      { label: 'Tengo una idea', nextStepId: 'buyCar_askPreferences', value: 'buy_have_idea'},
+      { label: 'Ayúdame a elegir', nextStepId: 'recommend_start', value: 'buy_need_help_choosing'}, // Llama a un ID de otro flujo
+      { label: 'Ver coches eléctricos', nextStepId: 'showElectricCarsCatalog', value: 'buy_see_electric'}, // Llama a un ID de otro flujo/general
+      { label: 'Ver todo el catálogo', nextStepId: 'showAllCarsCatalog', value: 'buy_see_all'}, // Llama a un ID de otro flujo/general
+      { label: 'Volver', nextStepId: 'start', value: 'back_to_main_from_buy'} // Llama al 'start' general
+    ],
+    previousStepId: 'start'
+  },
+  buyCar_askPreferences: {
+    id: 'buyCar_askPreferences',
+    message: 'Perfecto. Dime qué características buscas (ej: marca, tipo, presupuesto...).',
+    isUserInput: true,
+    inputPlaceholder: 'Ej: SUV rojo, menos de 20000€...',
+    action: async (input, userData) => {
+        const parsedQueryString = parseBuyCarQueryToFilters(input, userData.parsedFiltersForCatalog);
+        return { 
+            userSearchQuery: input,
+            parsedFiltersForCatalog: parsedQueryString
+        };
+    },
+    nextStepIdAfterInput: 'buyCar_showFilteredCatalog',
+    previousStepId: 'buyCar_start'
+  },
+  buyCar_showFilteredCatalog: {
+    id: 'buyCar_showFilteredCatalog',
+    message: (userData) => `Entendido. Buscando coches con características similares a: "${userData.userSearchQuery || 'tus preferencias'}". Te mostraré lo que encuentre.`,
+    navigateTo: (userData) => `/coches-segunda-mano${userData.parsedFiltersForCatalog ? `?${userData.parsedFiltersForCatalog}` : ''}`,
+    options: [
+        {label: 'Refinar búsqueda', nextStepId: 'buyCar_refineSearch', value: 'refine_search'},
+        {label: 'Ayuda para elegir (guiado)', nextStepId: 'recommend_start', value: 'go_to_recommendation_flow'},
+        {label: 'Volver a opciones de compra', nextStepId: 'buyCar_start', value: 'back_to_buy_options'}
+    ],
+    previousStepId: 'buyCar_askPreferences'
+  },
+  buyCar_refineSearch: {
+    id: 'buyCar_refineSearch',
+    message: (userData) => `De acuerdo. Búsqueda actual: "${userData.userSearchQuery || 'ninguna'}". ¿Qué quieres cambiar o añadir?`,
+    isUserInput: true, inputPlaceholder: 'Ej: añadir "automático"',
+    action: async (input, userData) => {
+        const newParsedQueryString = parseBuyCarQueryToFilters(input, userData.parsedFiltersForCatalog);
+        return { 
+            userSearchQuery: `${userData.userSearchQuery || ''}, ${input}`,
+            parsedFiltersForCatalog: newParsedQueryString 
+        };
+    },
+    nextStepIdAfterInput: 'buyCar_showFilteredCatalog',
+    previousStepId: 'buyCar_showFilteredCatalog'
+  },
+  // Pasos genéricos de recolección de datos si se usan PRIMARIAMENTE en este flujo
+  // Si son muy genéricos, podrían ir a un "leadCollectionFlow.ts"
+  askName_buyCar: { // Renombrar para evitar colisiones si hay otros 'askName'
+    id: 'askName_buyCar', message: 'Para continuar con la compra, ¿tu nombre?',
+    isUserInput: true, inputType: 'text', inputPlaceholder: 'Nombre completo',
+    action: async (input) => ({ name: input, initialOption: 'comprar_coche' }),
+    nextStepIdAfterInput: 'askEmail_buyCar',
+    previousStepId: 'buyCar_start', // O el paso que lo llame
+  },
+
+};
+```
+
+# src/lib/chat-flows/generalSteps.ts
+
+```ts
+import type { ChatStep, ChatButtonOption } from '../chatFlowTypes';
+
+export const initialChatOptionsBase: ChatButtonOption[] = [
+  { label: 'Comprar un coche', nextStepId: 'buyCar_start', value: 'comprar_coche' },
+  { label: 'Vender mi coche', nextStepId: 'sellCar_askName', value: 'vender_coche' },
+  { label: 'Renting', nextStepId: 'renting_askName', value: 'renting' },
+  { label: 'Soporte al cliente', nextStepId: 'support_entry', value: 'soporte' },
+];
+
+export const generalFlowSteps: Record<string, ChatStep> = {
+  start: {
+    id: 'start',
+    message: '¡Hola! Soy Lebi, tu asistente virtual de Lebauto. ¿Cómo te podemos ayudar?',
+    options: initialChatOptionsBase,
+  },
+  endChat: {
+    id: 'endChat',
+    message: '¡Gracias por chatear con Lebi! Que tengas un buen día.',
+    options: [ { label: 'Iniciar nueva consulta', nextStepId: 'start', value: 'restart_chat' } ]
+  },
+  redirectToTasacion: {
+    id: 'redirectToTasacion', message: 'Un momento, redirigiendo a tasación...', redirectPath: '/gestion-de-venta', openInNewTab: true,
+    options: [ { label: 'Tengo otra duda', nextStepId: 'start' }, { label: 'Finalizar chat', nextStepId: 'endChat' } ],
+    previousStepId: 'sellCar_thankYou', // Este previousStepId viene de sellCarFlow
+    action: async () => { console.log("Redir. tasación"); return {}; }
+  },
+  redirectToRentingPage: {
+    id: 'redirectToRentingPage', message: 'Perfecto, redirigiendo a renting...', redirectPath: '/renting', openInNewTab: true,
+    options: [ { label: 'Tengo otra duda', nextStepId: 'start' }, { label: 'Finalizar chat', nextStepId: 'endChat' } ],
+    previousStepId: 'renting_askName', // Este viene de rentingFlow
+    action: async () => { console.log("Redir. renting"); return {}; }
+  },
+  showElectricCarsCatalog: { // Movido aquí como un paso general de navegación
+    id: 'showElectricCarsCatalog', message: '¡Claro! Te mostraré nuestros coches eléctricos.', navigateTo: '/coches-segunda-mano?fuel=Eléctrico',
+    options: [ {label: '¿Qué características tienen?', nextStepId: 'askAboutElectricFeatures'}, {label: 'Volver', nextStepId: 'buyCar_start'} ], // askAboutElectricFeatures podría estar en recommendation o buyCar
+    previousStepId: 'buyCar_start' // Asume que se llama desde el flujo de compra
+  },
+  showAllCarsCatalog: { // Movido aquí
+    id: 'showAllCarsCatalog', message: 'Perfecto, aquí tienes nuestro catálogo completo.', navigateTo: '/coches-segunda-mano',
+    options: [ {label: '¿Buscas algo específico?', nextStepId: 'buyCar_askPreferences'}, {label: 'Volver', nextStepId: 'buyCar_start'} ],
+    previousStepId: 'buyCar_start'
+  },
+   error_unknown_prev_for_askname: {
+    id: 'error_unknown_prev_for_askname',
+    message: "Error: No se pudo determinar el paso anterior. Volviendo al inicio.",
+    options: [{label: "Ok", nextStepId: "start"}]
+  }
+};
+```
+
+# src/lib/chat-flows/recommendationFlow.ts
+
+```ts
+
+```
+
+# src/lib/chat-flows/rentingFlow.ts
+
+```ts
+
+```
+
+# src/lib/chat-flows/sellCarFlow.ts
+
+```ts
+
+```
+
+# src/lib/chat-flows/supportFlow.ts
+
+```ts
+
+```
+
+# src/lib/chatFlow.ts
+
+```ts
+// src/lib/chatFlow.ts
+import type { ChatStep, UserData, ChatButtonOption } from './chatFlowTypes'; // Importar tipos
+
+// Importar los flujos modulares
+import { generalFlowSteps, initialChatOptionsBase } from './chat-flows/generalSteps'; // Asume que initialChatOptionsBase se mueve aquí
+import { buyCarFlowSteps } from './chat-flows/buyCarFlow';
+
+
+// Exportar los tipos para que otros módulos puedan usarlos
+export type { UserData, ChatButtonOption, ChatStep };
+/* export { faqData, findFAQAnswer, initialChatOptionsBase }; */ // Exportar también las constantes/funciones necesarias
+
+// Combinar todos los pasos en un único objeto chatFlow
+export const chatFlow: Record<string, ChatStep> = {
+  ...generalFlowSteps,
+  ...buyCarFlowSteps,
+ /*  ...sellCarFlowSteps,
+  ...rentingFlowSteps,
+  ...supportFlowSteps,
+  ...recommendationFlowSteps, */
+  // Puedes añadir aquí pasos "huérfanos" o muy específicos que no encajen en un flujo modular,
+  // pero es mejor intentar mantenerlos dentro de los módulos.
+};
+```
+
+# src/lib/chatFlowTypes.ts
+
+```ts
+export interface UserData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  initialOption?: string;
+  faqAnswer?: string | null;
+  userQuestion?: string;
+  preferredBodyType?: string;
+  budgetMax?: number;
+  preferredFuel?: string;
+  parsedFiltersForCatalog?: string;
+  userSearchQuery?: string;
+}
+
+export interface ChatButtonOption {
+  label: string;
+  nextStepId: string; 
+  value?: string;
+}
+
+export interface ChatStep {
+  id: string; 
+  message: string | ((userData: UserData) => string);
+  isUserInput?: boolean;
+  inputType?: 'text' | 'email' | 'tel';
+  inputPlaceholder?: string;
+  validation?: (input: string, userData: UserData) => string | null;
+  action?: (input: string, userData: UserData) => Promise<Partial<UserData>> | Partial<UserData>;
+  options?: ChatButtonOption[] | ((userData: UserData) => ChatButtonOption[]);
+  nextStepIdAfterInput?: string;
+  endFlow?: boolean;
+  previousStepId?: string | ((userData: UserData) => string);
+  redirectPath?: string | ((userData: UserData) => string);
+  openInNewTab?: boolean;
+  navigateTo?: string | ((userData: UserData) => string);
+}
+
+```
+
+# src/lib/chatStore.ts
+
+```ts
+// src/lib/chatStore.ts
+import { create } from 'zustand';
+import type { UserData, ChatButtonOption } from './chatFlow';
+
+export interface ChatMessageInStore {
+  id: string;
+  sender: "user" | "bot";
+  text: string;
+  buttons?: ChatButtonOption[];
+  isTyping?: boolean;
+}
+
+interface ChatState {
+  messages: ChatMessageInStore[];
+  currentStepId: string;
+  userData: UserData;
+  history: string[];
+  errorMessage: string | null;
+  isChatInitialized: boolean;
+
+  addMessageToStore: (sender: "user" | "bot", text: string, buttons?: ChatButtonOption[]) => void;
+  setCurrentStepIdInStore: (stepId: string) => void;
+  setUserDataInStore: (data: Partial<UserData> | ((prev: UserData) => Partial<UserData>)) => void;
+  pushHistoryInStore: (stepId: string) => void;
+  popHistoryFromStore: () => string | undefined;
+  setHistoryInStore: (newHistory: string[]) => void;
+  setErrorMessageInStore: (message: string | null) => void;
+  resetChatInStore: () => void; // Nombre consistente
+  clearButtonsFromBotMessagesInStore: () => void;
+   setMessagesDirectlyInStore: (messagesUpdater: ChatMessageInStore[] | ((prevMessages: ChatMessageInStore[]) => ChatMessageInStore[])) => void;
+  setIsChatInitializedInStore: (isInitialized: boolean) => void; // Nombre consistente
+}
+
+const initialChatStoreState = {
+  messages: [],
+  currentStepId: 'start',
+  userData: {},
+  history: ['start'],
+  errorMessage: null,
+  isChatInitialized: false,
+};
+
+export const useChatStore = create<ChatState>((set, get) => ({
+  ...initialChatStoreState,
+
+  addMessageToStore: (sender, text, buttons) => set(state => {
+    const id = crypto.randomUUID();
+    let prevMessagesCleaned = state.messages;
+    if (sender === 'bot' && buttons && buttons.length > 0) {
+        prevMessagesCleaned = state.messages.map(msg => 
+            msg.sender === 'bot' && msg.buttons ? { ...msg, buttons: undefined } : msg
+        );
+    }
+    return { messages: [...prevMessagesCleaned, { id, sender, text, buttons, isTyping: false }] };
+  }),
+
+  setCurrentStepIdInStore: (stepId) => set({ currentStepId: stepId }),
+
+  setUserDataInStore: (data) => set(state => ({
+    userData: typeof data === 'function' ? { ...state.userData, ...data(state.userData) } : { ...state.userData, ...data }
+  })),
+
+  pushHistoryInStore: (stepId) => set(state => ({ history: [...state.history, stepId] })),
+
+  popHistoryFromStore: () => {
+    let previousStepId: string | undefined;
+    set(state => {
+        if (state.history.length <= 1) {
+            previousStepId = state.history[0] || 'start';
+            return { history: state.history }; 
+        }
+        const newHistory = [...state.history];
+        newHistory.pop(); 
+        previousStepId = newHistory[newHistory.length - 1];
+        return { history: newHistory };
+    });
+    return previousStepId;
+  },
+
+  setHistoryInStore: (newHistory) => set({ history: newHistory}),
+  setErrorMessageInStore: (message) => set({ errorMessage: message }),
+  setIsChatInitializedInStore: (isInitialized) => set({ isChatInitialized: isInitialized }),
+  clearButtonsFromBotMessagesInStore: () => set(state => ({
+    messages: state.messages.map(msg => 
+        msg.sender === 'bot' && msg.buttons ? { ...msg, buttons: undefined } : msg
+    )
+  })),
+    setMessagesDirectlyInStore: (messagesUpdater) => set(state => ({
+    messages: typeof messagesUpdater === 'function' ? messagesUpdater(state.messages) : messagesUpdater
+  })),
+  resetChatInStore: () => { // <- Nombre consistente
+    set(initialChatStoreState);
+    set({ isChatInitialized: false });
+  },
+}));
+```
+
 # src/lib/definitions.ts
 
 ```ts
@@ -15762,20 +16457,18 @@ export type FilterKey = ArrayFilterKey | NumberFilterKey;
 export interface FilterStateStore {
   filters: FiltersData;
   filteredCars: Car[];
-  allCars: Car[]; // Podrías reconsiderar si necesitas 'allCars' si toda la carga es paginada
+  allCars: Car[];
   isLoading: boolean;
-  currentPage: number;  
-  totalPages: number;   
-  totalCars: number;
   getActiveFiltersCount: () => number;
+  // setFilter recibe la clave y el valor (string o number)
   setFilter: (key: FilterKey, value: string | number) => void;
+  // removeFilter: clave y valor string (en caso de arrays). Si es numérico, se ignora el value.
   removeFilter: (key: FilterKey, value?: string) => void;
   clearFilters: () => void;
-  setFilteredCars: (cars: Car[], totalItems: number) => void; // <--- MODIFICADO
-  setAllCars: (cars: Car[]) => void; // Considera si aún es necesario
+  setFilteredCars: (cars: Car[]) => void;
+  setAllCars: (cars: Car[]) => void;
   setIsLoading: (isLoading: boolean) => void;
-  applyFilters: (page?: number) => void; // <--- MODIFICADO para aceptar página
-  setCurrentPage: (page: number) => void
+  applyFilters: () => void;
 }
 
 export type SellCarFormState = {
@@ -16090,13 +16783,8 @@ export const createClient = () =>
 import type { Car } from "@/lib/definitions";
 import { supabaseClient } from "../../app/supabase/supabase";
 
-const ITEMS_PER_PAGE = 12;
-
-export async function fetchFilteredCars(
-  searchParams: any,
-  page: number = 1
-): Promise<{ cars: Car[]; totalCount: number }> {
-  let query = supabaseClient.from("cars").select("*", { count: "exact" });
+export async function fetchFilteredCars(searchParams: any): Promise<Car[]> {
+  let query = supabaseClient.from("cars").select("*");
 
   if (typeof searchParams.brand === "string") {
     const brands = searchParams.brand.split(",").map((v: string) => v.trim());
@@ -16115,15 +16803,11 @@ export async function fetchFilteredCars(
     query = query.in("color", colors);
   }
   if (typeof searchParams.location === "string") {
-    const locations = searchParams.location
-      .split(",")
-      .map((v: string) => v.trim());
+    const locations = searchParams.location.split(",").map((v: string) => v.trim());
     query = query.in("location", locations);
   }
   if (typeof searchParams.bodyType === "string") {
-    const bodyTypes = searchParams.bodyType
-      .split(",")
-      .map((v: string) => v.trim());
+    const bodyTypes = searchParams.bodyType.split(",").map((v: string) => v.trim());
     query = query.in("body_type", bodyTypes);
   }
   if (typeof searchParams.minPrice === "string") {
@@ -16157,17 +16841,12 @@ export async function fetchFilteredCars(
     query = query.lte("seats", Number(searchParams.seatTo));
   }
 
-  const startIndex = (page - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE - 1;
-  query = query.range(startIndex, endIndex);
-
-  const { data: cars, error, count } = await query;
-
+  const { data: cars, error } = await query;
   if (error) {
     console.error("Error fetching filtered cars:", error);
-    return { cars: [], totalCount: 0 };
+    return [];
   }
-  return { cars: cars || [], totalCount: count || 0 };
+  return cars || [];
 }
 
 ```

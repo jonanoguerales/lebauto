@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import GlobalChatButton from "@/components/GlobalChatButton";
 import Navbar from "@/features/header/components/Nvbar";
 import "@/styles/global.css";
 export default async function Layout({
@@ -11,6 +12,7 @@ export default async function Layout({
       <Navbar />
       <section>{children}</section>
       <Footer />
+      <GlobalChatButton /> 
     </>
   );
 }
