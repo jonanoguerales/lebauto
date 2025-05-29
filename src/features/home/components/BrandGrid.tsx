@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion"; 
-import { useInView } from "react-intersection-observer"; 
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { useMediaQuery } from "@/hooks/useMediaQuery"; 
 
-const brands = [
+const brandsData = [ 
   { name: "Tesla", logo: "/logos-coches/tesla-logo.png" },
   { name: "Volkswagen", logo: "/logos-coches/vw-logo.png" },
   { name: "BMW", logo: "/logos-coches/bmw-logo.png" },
@@ -28,8 +29,8 @@ const sectionVariants = {
     transition: {
       duration: 0.6,
       ease: "easeOut",
-      when: "beforeChildren", 
-      staggerChildren: 0.08, 
+      when: "beforeChildren",
+      staggerChildren: 0.08,
     },
   },
 };
@@ -46,8 +47,9 @@ const cardItemVariants = {
 
 const buttonVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.3 } }, 
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.3 } },
 };
+
 
 export default function BrandGrid() {
   const { ref, inView } = useInView({
@@ -55,13 +57,17 @@ export default function BrandGrid() {
     threshold: 0.1,
   });
 
+  const isMobile = useMediaQuery("(max-width: 767px)"); 
+
+  const brandsToShow = isMobile ? brandsData.slice(0, 6) : brandsData;
+
   return (
     <motion.section
       className="py-20"
       ref={ref}
       variants={sectionVariants}
       initial="hidden"
-      animate={inView ? "visible" : "hidden"} 
+      animate={inView ? "visible" : "hidden"}
     >
       <div className="container mx-auto flex flex-col items-center gap-8">
         <motion.h2
@@ -74,16 +80,18 @@ export default function BrandGrid() {
           className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 xl:p-4"
           role="region"
           aria-labelledby="brand-grid-title"
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"} 
-          variants={sectionVariants} 
         >
           <h2 id="brand-grid-title" className="sr-only">
             Marcas de coches disponibles
           </h2>
-          {brands.map((brand, index) => (
-            <motion.div key={brand.name} variants={cardItemVariants}>
-              <BrandCard brand={brand} hidden={index >= 6} />
+          {brandsToShow.map((brand, index) => (
+            <motion.div
+              key={brand.name}
+              variants={cardItemVariants}
+              initial="hidden"
+              animate={inView ? "visible" : "hidden"} 
+            >
+              <BrandCard brand={brand} hidden={!isMobile && index >= 6} />
             </motion.div>
           ))}
         </motion.div>
@@ -102,7 +110,7 @@ export default function BrandGrid() {
 
 function BrandCard({
   brand,
-  hidden,
+  hidden, 
 }: {
   brand: { name: string; logo: string };
   hidden: boolean;
@@ -111,7 +119,7 @@ function BrandCard({
     <Link
       href={`/coches-segunda-mano?brand=${brand.name}`}
       className={`bg-gray-300 rounded-lg p-4 flex flex-col items-center gap-3 hover:shadow-md hover:border-gray-600 hover:border-4 border-4 border-transparent transition-shadow 
-      ${hidden ? "hidden md:flex" : ""}`}
+      ${hidden ? "hidden" : "flex"} md:flex`} 
       aria-label={`Explorar coches de la marca ${brand.name}`}
     >
       <div className="w-20 h-14 xl:w-24 xl:h-16 relative">

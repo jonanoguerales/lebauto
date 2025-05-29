@@ -1,4 +1,5 @@
 import ContactButtons from "@/components/ContactButtons";
+import ScrollToTopOnMount from "@/components/ScrollToTopOnMount";
 import BrandGrid from "@/features/home/components/BrandGrid";
 import ChargersAdvisorBanner from "@/features/home/components/ChargersAdvisorBanner";
 import DudasAdvisorBanner from "@/features/home/components/DudasAdvisorBanner";
@@ -10,7 +11,6 @@ import RentingBanner from "@/features/home/components/RentingBanner";
 import SellYourCarSection from "@/features/home/components/SellYourCarSection";
 import TestimonialsSection from "@/features/home/components/TestimonialsSection";
 import { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title:
@@ -45,6 +45,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <ScrollToTopOnMount />
       <HeroSection />
       {/* <SearchSection /> */}
       <ElectricVehiclesSection />

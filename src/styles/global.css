@@ -7,7 +7,7 @@ html {
   background-color: var(--bg-primary);
 }
 
-body.filters-open-no-navbar nav { 
+body.filters-open-no-navbar nav {
   display: none !important;
 }
 
@@ -25,6 +25,7 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -138,6 +139,7 @@ input[type="number"]::-webkit-outer-spin-button {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -146,24 +148,28 @@ input[type="number"]::-webkit-outer-spin-button {
 @layer utilities {
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #d1d5db #ffffff; 
+    scrollbar-color: #d1d5db #ffffff;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px; 
+    width: 6px;
     background-color: transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full; 
+    @apply bg-gray-300 rounded-full;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-white; 
+    @apply bg-white;
   }
 
   .custom-scrollbar::-webkit-scrollbar-button {
-    display: none; 
+    display: none;
+  }
+
+  .initially-hidden {
+    opacity: 0;
   }
 }
 
