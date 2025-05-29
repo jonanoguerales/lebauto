@@ -1,7 +1,9 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
 
-// Sample testimonial data
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer"; 
+
 const testimonials = [
   {
     id: 1,
@@ -32,34 +34,46 @@ const testimonials = [
   },
 ];
 
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const carouselContainerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut", delay: 0.2 } },
+};
+
 const TestimonialsSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
   const testimonialRef = useRef<HTMLDivElement>(null);
 
+  const { ref: inViewTriggerRef, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("opacity-100");
-            entry.target.classList.remove("opacity-0");
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
     if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+      (inViewTriggerRef as React.RefCallback<HTMLDivElement>)(sectionRef.current);
     }
+  }, [inViewTriggerRef]);
 
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,12 +102,24 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section ref={sectionRef} className="py-20">
+    <motion.section
+      className="py-20"
+      ref={sectionRef}
+      variants={sectionVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"} 
+    >
       <div className="container mx-auto">
-        <h2 className="text-2xl sm:text-3xl mx-auto w-full font-bold text-center mb-4">
+        <motion.h2
+          className="text-2xl sm:text-3xl mx-auto w-full font-bold text-center mb-4"
+          variants={titleVariants}
+        >
           Las opiniones de nuestros clientes
-        </h2>
-        <div className="max-w-4xl mx-auto relative">
+        </motion.h2>
+        <motion.div
+          className="max-w-4xl mx-auto relative"
+          variants={carouselContainerVariants}
+        >
           <div
             ref={testimonialRef}
             className="relative overflow-hidden min-h-[480px] sm:min-h-[370px] md:min-h-[270px] lg:min-h-[240px]"
@@ -150,9 +176,9 @@ const TestimonialsSection = () => {
               />
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

@@ -12,7 +12,7 @@ import { JSX, useState } from "react";
 import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
 
 export default function ContactButtons({ estado }: { estado: string }) {
-  const [isChatOpen, setIsChatOpen] = useState(false); // Estado para el chatbot
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const toggleChatbot = () => {
     setIsChatOpen((prev) => !prev);

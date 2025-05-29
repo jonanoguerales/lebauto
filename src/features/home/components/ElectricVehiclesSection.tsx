@@ -16,12 +16,43 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
 import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer"; 
+
+const sectionContainerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      when: "beforeChildren", 
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const headerItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const carCardVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+};
 
 export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [mounted, setMounted] = useState(false);
+
+  const { ref, inView } = useInView({
+    triggerOnce: true, 
+    threshold: 0.1, 
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -48,21 +79,30 @@ export default function ElectricVehiclesSection() {
   }
 
   return (
-    <section className="py-20">
+    <motion.section
+      className="py-20"
+      id="electric-vehicles-section"
+      ref={ref}
+      variants={sectionContainerVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+    >
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div>
+          <motion.div variants={headerItemVariants}>
             <h2 className="text-3xl font-bold">¿Buscas un vehículo eléctrico?</h2>
             <p className="text-muted-foreground mt-2">
               Descubre nuestra selección de vehículos 100% eléctricos
             </p>
-          </div>
-          <Button variant="outline" className="group" asChild>
-            <Link href="/coches-segunda-mano?fuel=Eléctrico">
-              Ver todos los vehículos eléctricos
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
+          </motion.div>
+          <motion.div variants={headerItemVariants}>
+            <Button variant="outline" className="group" asChild>
+              <Link href="/coches-segunda-mano?fuel=Eléctrico">
+                Ver todos los vehículos eléctricos
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </motion.div>
         </div>
 
         {isLoading ? (
@@ -89,23 +129,23 @@ export default function ElectricVehiclesSection() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-2 z-10" />
-                <CarouselNext className="right-2 z-10" />
+                <CarouselPrevious className="hidden md:block left-2 z-10" />
+                <CarouselNext className="hidden md:block right-2 z-10" />
               </Carousel>
             </div>
           )
         ) : (
           <>
-            {/* Vista de escritorio: Grid */}
             {isDesktop && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {electricVehicles.map((vehicle) => (
-                  <CarCardGrid key={vehicle.id} car={vehicle} />
+                  <motion.div key={vehicle.id} variants={carCardVariants}>
+                    <CarCardGrid car={vehicle} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
 
-            {/* Vista móvil y tablet: Carrusel */}
             {!isDesktop && (
               <div className="relative overflow-hidden">
                 <Carousel
@@ -119,7 +159,9 @@ export default function ElectricVehiclesSection() {
                   <CarouselContent>
                     {electricVehicles.map((vehicle) => (
                       <CarouselItem key={vehicle.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                        <CarCardGrid car={vehicle} />
+                        <motion.div variants={carCardVariants}>
+                          <CarCardGrid car={vehicle} />
+                        </motion.div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
@@ -131,6 +173,6 @@ export default function ElectricVehiclesSection() {
           </>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -3332,10 +3332,9 @@ export function FormMessage({ message }: { message: Message }) {
 # src/components/GlobalChatButton.tsx
 
 ```tsx
-// src/components/GlobalChatButton.tsx
 "use client";
 import { useState } from "react";
-import { Bot, MessageSquareX } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -3344,44 +3343,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
-import { useChatStore } from "@/lib/chatStore";
 
 export default function GlobalChatButton() {
   const [isChatUIVisible, setIsChatUIVisible] = useState(false);
-  // Corregir los nombres para que coincidan con los del store
-  const resetChatInStore = useChatStore((state) => state.resetChatInStore);
-  const setIsChatInitializedInStore = useChatStore((state) => state.setIsChatInitializedInStore);
 
   const handleToggleChat = () => {
     setIsChatUIVisible((prev) => !prev);
   };
 
-  const handleFullReset = () => {
-    resetChatInStore();
-    setIsChatInitializedInStore(false); 
-  };
-
   return (
     <>
       <div className="fixed flex flex-col gap-2 right-6 bottom-6 z-[998]">
-        {process.env.NODE_ENV === 'development' && (
-            <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            size="icon"
-                            variant="destructive"
-                            className="rounded-full h-10 w-10 shadow-md"
-                            onClick={handleFullReset}
-                            aria-label="Resetear Chat (Dev)"
-                        >
-                            <MessageSquareX className="h-5 w-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left"><p>Resetear Chat (Dev)</p></TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        )}
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -10040,15 +10012,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Send, UserCircle2, ArrowLeft, BotMessageSquare } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { chatFlow, type UserData, type ChatButtonOption } from "@/lib/chatFlow";
-import { useChatStore, type ChatMessageInStore } from "@/lib/chatStore";
-import { useFilterStore as useGlobalFilterStore } from "@/lib/store";
+import { useRouter } from 'next/navigation';
 import {
-  ArrayFilterKey,
-  FiltersData,
-  NumberFilterKey,
-} from "@/lib/definitions";
+  chatFlow,
+  type UserData,
+  type ChatButtonOption,
+} from "@/lib/chatFlow";
+import { useChatStore } from '@/lib/chatStore';
+import { useFilterStore as useGlobalFilterStore } from '@/lib/store';
+import type { FiltersData, ArrayFilterKey, NumberFilterKey } from '@/lib/definitions';
+import { ChatMessageInStore } from "@/lib/chatFlowTypes";
+
 
 export default function ChatBotInternal() {
   const router = useRouter();
@@ -10071,72 +10045,45 @@ export default function ChatBotInternal() {
     setIsChatInitializedInStore,
   } = useChatStore();
 
-  const [userInput, setUserInput] = useState("");
-
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const globalSetFilter = useGlobalFilterStore((state) => state.setFilter);
   const globalClearFilters = useGlobalFilterStore(
     (state) => state.clearFilters
   );
 
-  const addMessage = useCallback(
-    (sender: "user" | "bot", text: string, buttons?: ChatButtonOption[]) => {
-      if (sender === "bot" && buttons && buttons.length > 0) {
+  const [userInput, setUserInput] = useState("");
+
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addMessage = useCallback((sender: "user" | "bot", text: string, buttons?: ChatButtonOption[]) => {
+    if (sender === 'bot' && buttons && buttons.length > 0) {
         clearButtonsFromBotMessagesInStore();
-      }
-      addMessageToStore(sender, text, buttons);
-    },
-    [addMessageToStore, clearButtonsFromBotMessagesInStore]
-  );
+    }
+    addMessageToStore(sender, text, buttons);
+  }, [addMessageToStore, clearButtonsFromBotMessagesInStore]);
 
   const processStep = useCallback(
     (stepId: string, currentData: UserData) => {
       const step = chatFlow[stepId];
       if (!step) {
         console.error(`Error: No se encontró el paso con ID "${stepId}"`);
-        addMessage(
-          "bot",
-          "Lo siento, ha ocurrido un error interno. Volviendo al inicio."
-        );
+        addMessage("bot", "Lo siento, ha ocurrido un error interno. Volviendo al inicio.");
         setCurrentStepIdInStore("start");
         setHistoryInStore(["start"]);
         setTimeout(() => processStep("start", {}), 0);
         return;
       }
 
-      const botMessageText =
-        typeof step.message === "function"
-          ? step.message(currentData)
-          : step.message;
-      let stepOptions =
-        typeof step.options === "function"
-          ? step.options(currentData)
-          : step.options;
+      const botMessageText = typeof step.message === "function" ? step.message(currentData) : step.message;
+      let stepOptions = typeof step.options === "function" ? step.options(currentData) : step.options;
+      
+      const prevIdFunc = step.previousStepId;
+      const prevId = typeof prevIdFunc === 'function' ? prevIdFunc(currentData) : prevIdFunc;
 
-      // Añadir botón "Atrás" genérico si no hay otras opciones y no es un input de usuario, y no es el inicio o fin.
-      if (
-        !stepOptions &&
-        step.previousStepId &&
-        step.id !== "start" &&
-        !step.isUserInput &&
-        step.id !== "endChat"
-      ) {
-        const prevId =
-          typeof step.previousStepId === "function"
-            ? step.previousStepId(currentData)
-            : step.previousStepId;
-        if (prevId) {
-          // Asegurarse de que prevId no sea undefined
-          stepOptions = [
-            {
-              label: "Atrás",
-              nextStepId: prevId,
-              value: `internal_back_to_${prevId}`,
-            },
-          ];
-        }
+      if (!stepOptions && prevId && step.id !== 'start' && !step.isUserInput && step.id !== 'endChat') {
+          if (prevId) { 
+              stepOptions = [{label: "Atrás", nextStepId: prevId, value: `internal_back_to_${prevId}`}];
+          }
       }
 
       addMessage("bot", botMessageText, stepOptions);
@@ -10144,118 +10091,59 @@ export default function ChatBotInternal() {
       if (step.isUserInput && inputRef.current) {
         setTimeout(() => inputRef.current?.focus(), 50);
       }
-
-      const navigateToPath =
-        typeof step.navigateTo === "function"
-          ? step.navigateTo(currentData)
-          : step.navigateTo;
-      const redirectPathValue =
-        typeof step.redirectPath === "function"
-          ? step.redirectPath(currentData)
-          : step.redirectPath;
+      
+      const navigateToPath = typeof step.navigateTo === 'function' ? step.navigateTo(currentData) : step.navigateTo;
+      const redirectPathValue = typeof step.redirectPath === 'function' ? step.redirectPath(currentData) : step.redirectPath;
 
       if (navigateToPath) {
-        if (step.action) {
-          step.action("", currentData);
-        } // Ejecutar acción del chatFlow si existe
+        if (step.action) { step.action("", currentData); }
 
-        // EXTRAER FILTROS DE navigateToPath para actualizar el store global
-        if (navigateToPath) {
-          if (step.action) {
-            step.action("", currentData);
-          }
+        if (navigateToPath.includes("?")) {
+          const searchParamsString = navigateToPath.split("?")[1];
+          const params = new URLSearchParams(searchParamsString);
+          
+          globalClearFilters(); 
 
-          if (navigateToPath.includes("?")) {
-            const searchParamsString = navigateToPath.split("?")[1];
-            const params = new URLSearchParams(searchParamsString);
+          params.forEach((value, key) => {
+            const filterKey = key as keyof FiltersData;
+            const numericKeys: (keyof FiltersData)[] = ["maxPrice", "minPrice", "maxYear", "minYear", "maxKm", "minKm", "doorFrom", "doorTo", "seatFrom", "seatTo", "minPower", "maxPower", "minEngineDisplacement", "maxEngineDisplacement"];
+            const arrayKeys: (keyof FiltersData)[] = ["brand", "model", "fuel", "location", "color", "bodyType", "transmission", "environmentalTag", "drivetrain"];
 
-            globalClearFilters();
-
-            params.forEach((value, key) => {
-              const filterKey = key as keyof FiltersData; // Usamos keyof FiltersData para una mejor inferencia
-
-              // Lista de claves que son numéricas en tu FiltersData
-              const numericKeys: (keyof FiltersData)[] = [
-                "minPrice",
-                "maxPrice",
-                "minYear",
-                "maxYear",
-                "minKm",
-                "maxKm",
-                "doorFrom",
-                "doorTo",
-                "seatFrom",
-                "seatTo",
-                "minPower",
-                "maxPower",
-                "minEngineDisplacement",
-                "maxEngineDisplacement",
-              ];
-
-              // Lista de claves que son arrays de strings en tu FiltersData
-              const arrayKeys: (keyof FiltersData)[] = [
-                "brand",
-                "model",
-                "fuel",
-                "location",
-                "color",
-                "bodyType",
-                "transmission",
-                "environmentalTag",
-                "drivetrain",
-              ];
-
-              if (numericKeys.includes(filterKey) && !isNaN(Number(value))) {
-                // TypeScript sabrá aquí que filterKey es una de las claves numéricas
-                globalSetFilter(filterKey as NumberFilterKey, Number(value));
-              } else if (arrayKeys.includes(filterKey)) {
-                // Si el valor de la URL puede tener múltiples elementos separados por comas
-                value.split(",").forEach((part) => {
-                  // TypeScript sabrá que filterKey es una de las claves de array
-                  globalSetFilter(filterKey as ArrayFilterKey, part.trim());
-                });
-              } else {
-                // Fallback para otras claves que no sean ni numéricas ni arrays (si las hubiera)
-                // O si la clave no está en tus listas definidas (puede indicar un error o una nueva clave no manejada)
-                console.warn(
-                  `Clave de filtro no manejada explícitamente o tipo inesperado: ${key}`
-                );
-                // podrías decidir si intentar un casteo genérico o no hacer nada:
-                // globalSetFilter(filterKey as any, value); // Esto es menos seguro
+            if (numericKeys.includes(filterKey) && !isNaN(Number(value))) {
+              globalSetFilter(filterKey as NumberFilterKey, Number(value)); 
+            } else if (arrayKeys.includes(filterKey)) {
+              value.split(',').forEach(part => {
+                globalSetFilter(filterKey as ArrayFilterKey, part.trim());
+              });
+            } else {
+              if(!numericKeys.includes(filterKey) && !arrayKeys.includes(filterKey)){
+                 console.warn(`Clave de filtro no manejada explícitamente o tipo inesperado: ${key} con valor ${value}`);
+              } else if (!numericKeys.includes(filterKey) && isNaN(Number(value))) {
+                console.warn(`Valor no numérico para clave numérica esperada: ${key} con valor ${value}`);
               }
-            });
-          } else {
-            if (navigateToPath === "/coches-segunda-mano") {
-              globalClearFilters();
             }
-          }
-          router.push(navigateToPath);
-        } else if (redirectPathValue) {
-          if (step.action) {
-            step.action("", currentData);
-          }
-          if (step.openInNewTab !== false) {
-            setTimeout(() => {
-              if (typeof window !== "undefined") {
-                window.open(redirectPathValue, "_blank");
-              }
-            }, 1000);
-          } else {
-            setTimeout(() => router.push(redirectPathValue), 1000);
-          }
-        } else if (step.action && step.endFlow) {
-          step.action("", currentData);
+          });
+        } else {
+           if (navigateToPath === '/coches-segunda-mano') {
+              globalClearFilters();
+           }
         }
+        router.push(navigateToPath);
+
+      } else if (redirectPathValue) {
+         if (step.action) { step.action("", currentData); }
+        if (step.openInNewTab !== false) { 
+          setTimeout(() => {
+            if (typeof window !== "undefined") { window.open(redirectPathValue, '_blank'); }
+          }, 1000);
+        } else {
+          setTimeout(() => router.push(redirectPathValue), 1000);
+        }
+      } else if (step.action && step.endFlow) { 
+        step.action("", currentData);
       }
     },
-    [
-      addMessage,
-      router,
-      setCurrentStepIdInStore,
-      setHistoryInStore,
-      globalSetFilter,
-      globalClearFilters,
-    ]
+    [addMessage, router, setCurrentStepIdInStore, setHistoryInStore, globalSetFilter, globalClearFilters]
   );
 
   useEffect(() => {
@@ -10267,8 +10155,7 @@ export default function ChatBotInternal() {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -10281,40 +10168,25 @@ export default function ChatBotInternal() {
     let accumulatedUserDataChanges: Partial<UserData> = {};
 
     if (isButtonClick) {
-      const stepOptions =
-        typeof currentStep.options === "function"
-          ? currentStep.options(userData)
-          : currentStep.options;
-      const selectedOption = stepOptions?.find(
-        (opt) => opt.value === value || opt.label === value
-      );
+      const stepOptions = typeof currentStep.options === 'function' ? currentStep.options(userData) : currentStep.options;
+      const selectedOption = stepOptions?.find( opt => opt.value === value || opt.label === value ); 
+      
       if (selectedOption) {
         responseTextForChat = selectedOption.label;
         nextStepIdToGo = selectedOption.nextStepId;
         if (currentStepId === "start" && selectedOption.value) {
           accumulatedUserDataChanges.initialOption = selectedOption.value;
         }
-        // Ejecutar acción del PASO ACTUAL si es un botón y el paso no es de input, y la opción tiene un 'value'
-        if (
-          currentStep.action &&
-          !currentStep.isUserInput &&
-          selectedOption.value
-        ) {
-          const dataFromAction = await currentStep.action(
-            selectedOption.value,
-            userData
-          );
-          accumulatedUserDataChanges = {
-            ...accumulatedUserDataChanges,
-            ...dataFromAction,
-          };
+        if (currentStep.action && !currentStep.isUserInput && selectedOption.value) {
+          const dataFromAction = await currentStep.action( selectedOption.value, userData );
+          accumulatedUserDataChanges = { ...accumulatedUserDataChanges, ...dataFromAction, };
         }
       } else {
         console.warn("Opción de botón no encontrada para el valor:", value);
         responseTextForChat = value || "Acción no reconocida";
       }
     } else {
-      responseTextForChat = value; // El texto que el usuario escribió
+      responseTextForChat = value;
       if (currentStep.isUserInput) {
         if (currentStep.validation) {
           const error = currentStep.validation(value, userData);
@@ -10326,11 +10198,8 @@ export default function ChatBotInternal() {
         }
         setErrorMessageInStore(null);
         if (currentStep.action) {
-          const dataFromAction = await currentStep.action(value, userData); // 'value' es el input del usuario
-          accumulatedUserDataChanges = {
-            ...accumulatedUserDataChanges,
-            ...dataFromAction,
-          };
+          const dataFromAction = await currentStep.action(value, userData);
+          accumulatedUserDataChanges = { ...accumulatedUserDataChanges, ...dataFromAction, };
         }
         nextStepIdToGo = currentStep.nextStepIdAfterInput;
       }
@@ -10345,16 +10214,11 @@ export default function ChatBotInternal() {
     if (nextStepIdToGo) {
       setCurrentStepIdInStore(nextStepIdToGo);
       pushHistoryInStore(nextStepIdToGo);
-      // Es importante pasar la userData que incluye los cambios de esta interacción
-      processStep(nextStepIdToGo, {
-        ...userData,
-        ...accumulatedUserDataChanges,
-      });
+      processStep(nextStepIdToGo, { ...userData, ...accumulatedUserDataChanges, });
     }
   };
 
   const handleOptionClick = (option: ChatButtonOption) => {
-    // Usar option.value si está definido, sino option.label. Esto es para el primer argumento de handleUserResponse.
     handleUserResponse(option.value || option.label, true);
   };
 
@@ -10371,36 +10235,29 @@ export default function ChatBotInternal() {
     const targetPreviousStepId = popHistoryFromStore();
     if (!targetPreviousStepId) return;
 
-    setMessagesDirectlyInStore(
-      (prevMessages: ChatMessageInStore[]): ChatMessageInStore[] => {
-        if (prevMessages.length === 0) return [];
-        let cutOffIndex = prevMessages.length;
+    const messagesUpdater = ( prevMessages: ChatMessageInStore[] ): ChatMessageInStore[] => {
+      if (prevMessages.length === 0) return [];
+      let cutOffIndex = prevMessages.length;
+      const lastMessage = prevMessages[prevMessages.length - 1];
 
-        const lastMessage = prevMessages[prevMessages.length - 1];
-
-        if (
-          lastMessage?.sender === "user" &&
-          prevMessages.length > 1 &&
-          prevMessages[prevMessages.length - 2]?.sender === "bot"
-        ) {
-          cutOffIndex -= 2;
-        } else if (lastMessage?.sender === "bot") {
-          cutOffIndex -= 1;
-        }
-
-        const newMessages = prevMessages.slice(0, Math.max(0, cutOffIndex));
-        if (
-          targetPreviousStepId === "start" &&
-          ((newMessages.length === 0 && prevMessages.length > 0) ||
-            (newMessages.length === 1 &&
-              newMessages[0]?.text.startsWith("¡Hola! Soy Lebi"))) &&
-          prevMessages[0]?.text.startsWith("¡Hola! Soy Lebi")
-        ) {
-          return [prevMessages[0]];
-        }
-        return newMessages;
+      if ( lastMessage?.sender === "user" && prevMessages.length > 1 && prevMessages[prevMessages.length - 2]?.sender === "bot" ) {
+        cutOffIndex -= 2;
+      } else if (lastMessage?.sender === "bot") {
+        cutOffIndex -= 1;
       }
-    );
+
+      const newMessages = prevMessages.slice(0, Math.max(0, cutOffIndex));
+      if ( targetPreviousStepId === "start" &&
+        ((newMessages.length === 0 && prevMessages.length > 0) ||
+          (newMessages.length === 1 && newMessages[0]?.text.startsWith("¡Hola! Soy Lebi"))) &&
+        prevMessages[0]?.text.startsWith("¡Hola! Soy Lebi")
+      ) {
+        return [prevMessages[0]];
+      }
+      return newMessages;
+    };
+
+    setMessagesDirectlyInStore(messagesUpdater);
 
     setCurrentStepIdInStore(targetPreviousStepId);
     setTimeout(() => processStep(targetPreviousStepId, userData), 0);
@@ -10437,13 +10294,13 @@ export default function ChatBotInternal() {
               </p>
               {m.sender === "bot" && m.buttons && m.buttons.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {m.buttons.map((button, btnIdx) => (
+                  {m.buttons.map((button, btnIdx) => ( 
                     <Button
-                      key={btnIdx}
+                      key={`${button.value || button.label}-${btnIdx}`}
                       variant="default"
                       size="sm"
                       className="h-auto py-2 px-3 text-sm text-center bg-[#708BA0] hover:bg-[#5c7081] text-white border-0 
-                                 min-w-[calc(50%-0.25rem)] flex-grow basis-[calc(50%-0.25rem)] sm:flex-grow-0 sm:basis-auto"
+                                  flex-grow basis-[calc(50%-0.25rem)]"
                       onClick={() => handleOptionClick(button)}
                       tabIndex={0}
                       onKeyDown={(e) => {
@@ -10527,20 +10384,18 @@ export default function ChatBotInternal() {
     </>
   );
 }
-
 ```
 
 # src/features/chatbot/components/ChatBotPopupWrapper.tsx
 
 ```tsx
-// src/features/chatbot/components/ChatBotPopupWrapper.tsx
 "use client";
-import React, { useEffect, useState } from "react"; // Añadir useState
+import React, { useEffect, useState } from "react"; 
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot as BotIcon, X as XIcon, CornerDownLeft, ChevronsDownUp } from "lucide-react"; // ChevronsDownUp para "minimizar"
+import { Bot as BotIcon, X as XIcon, ChevronsDownUp } from "lucide-react";
 import ChatBotInternal from "./ChatBot";
-import { useChatStore } from "@/lib/chatStore"; // Para escuchar cambios
+import { useChatStore } from "@/lib/chatStore";
 import { chatFlow } from "@/lib/chatFlow";
 
 interface ChatBotPopupWrapperProps {
@@ -10549,11 +10404,10 @@ interface ChatBotPopupWrapperProps {
 }
 
 export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrapperProps) {
-  // Escuchar el currentStepId para detectar si se ha navegado a un paso con `navigateTo`
   const currentStepId = useChatStore((state) => state.currentStepId);
   
-  const [isCompactMode, setIsCompactMode] = useState(false); // Nuevo estado para modo compacto
-  const [hasNavigated, setHasNavigated] = useState(false); // Para saber si ya hemos navegado una vez
+  const [isCompactMode, setIsCompactMode] = useState(false); 
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     const body = document.body;
@@ -10563,7 +10417,6 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
 
     if (isOpen) {
       body.style.overflow = 'hidden';
-      // Solo fijar posición en pantallas grandes o si no está en modo compacto
       if (!isCompactMode || window.innerWidth >= 640 ) { 
         body.style.position = 'fixed';
         body.style.width = '100%';
@@ -10572,8 +10425,8 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
       body.style.overflow = originalOverflow;
       body.style.position = originalPosition;
       body.style.width = originalWidth;
-      setIsCompactMode(false); // Resetear modo compacto al cerrar
-      setHasNavigated(false); // Resetear estado de navegación
+      setIsCompactMode(false); 
+      setHasNavigated(false); 
     }
     return () => {
       body.style.overflow = originalOverflow;
@@ -10584,18 +10437,15 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
 
 
   useEffect(() => {
-    // Si el chat está abierto y el paso actual tiene 'navigateTo', activamos el modo compacto
-    // y marcamos que ha habido una navegación.
     if (isOpen && chatFlow && chatFlow[currentStepId]?.navigateTo && !hasNavigated) {
-        if (window.innerWidth < 640) { // Solo activar modo compacto en móviles
+        if (window.innerWidth < 640) { 
              setIsCompactMode(true);
         }
-        setHasNavigated(true); // Marcar que ya ocurrió una navegación
+        setHasNavigated(true); 
     }
-    // Si el usuario vuelve al paso 'start', desactivamos el modo compacto
     if (currentStepId === 'start' && hasNavigated) {
         setIsCompactMode(false);
-        setHasNavigated(false); // Resetear para la próxima navegación
+        setHasNavigated(false);
     }
   }, [currentStepId, isOpen, hasNavigated]);
 
@@ -10605,17 +10455,15 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
   }
 
   const popupHeightClass = isCompactMode 
-    ? "h-[60dvh] sm:h-[calc(100dvh-8rem)]" // Altura reducida en móvil, normal en SM+
-    : "h-[100dvh] sm:h-[calc(100dvh-8rem)]"; // Altura completa
+    ? "h-[60dvh] sm:h-[calc(100dvh-8rem)]" 
+    : "h-[100dvh] sm:h-[calc(100dvh-8rem)]";
 
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[999]" // Un poco menos opaco
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[999]" 
         onClick={() => {
             onOpenChange(false);
-            // setIsCompactMode(false); // Resetear al cerrar desde el overlay
-            // setHasNavigated(false);
         }}
         aria-hidden="true"
       ></div>
@@ -10626,19 +10474,19 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
                    bg-card shadow-2xl 
                    flex flex-col 
                    sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:max-h-[650px] sm:rounded-xl 
-                   z-[1000] overflow-hidden transition-all duration-300 ease-out`} // Añadida transición
+                   z-[1000] overflow-hidden transition-all duration-300 ease-out`} 
       >
         <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-100 dark:bg-gray-800 flex-shrink-0">
           <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100">
             <BotIcon className="text-primary h-5 w-5" /> Agente Virtual Lebi
           </CardTitle>
           <div className="flex items-center gap-1">
-            {isCompactMode && window.innerWidth < 640 && ( // Solo mostrar en móvil y modo compacto
+            {isCompactMode && window.innerWidth < 640 && (
                  <Button variant="ghost" size="icon" onClick={() => setIsCompactMode(false)} aria-label="Expandir chat" className="h-8 w-8 sm:h-9 sm:w-9">
                     <ChevronsDownUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300 rotate-180" />
                 </Button>
             )}
-             {!isCompactMode && hasNavigated && window.innerWidth < 640 && ( // Botón para volver a compacto
+             {!isCompactMode && hasNavigated && window.innerWidth < 640 && ( 
                 <Button variant="ghost" size="icon" onClick={() => setIsCompactMode(true)} aria-label="Minimizar chat" className="h-8 w-8 sm:h-9 sm:w-9">
                     <ChevronsDownUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300" />
                 </Button>
@@ -16011,22 +15859,40 @@ export function useYearDebounce({ minYear, maxYear, setMinYear, setMaxYear, setF
 # src/lib/chat-flows/buyCarFlow.ts
 
 ```ts
-// src/lib/chat-flows/buyCarFlow.ts
-import type { ChatStep, UserData, ChatButtonOption } from '../chatFlowTypes'; // Importar tipos
+import type { ChatStep } from '../chatFlowTypes';
 
-// Si necesitas funciones auxiliares específicas para este flujo, defínelas aquí
 const parseBuyCarQueryToFilters = (query: string, existingFiltersString?: string): string => {
-    // ... (lógica de parseo específica para la compra, como la que teníamos)
-    const lowerQuery = query.toLowerCase();
-    let filters = "";
-    if (lowerQuery.includes("electrico") || lowerQuery.includes("eléctrico")) filters += "fuel=Eléctrico&";
-    if (lowerQuery.includes("suv")) filters += "bodyType=SUV&";
-    const priceMatch = lowerQuery.match(/(?:menos de|hasta|presupuesto)\s*(\d+)/i);
-    if (priceMatch && priceMatch[1]) filters += `maxPrice=${priceMatch[1]}&`;
-    // ... más lógica de parseo ...
-    return filters.endsWith('&') ? filters.slice(0, -1) : filters;
-};
+  const lowerQuery = query.toLowerCase();
+  const currentParams = new URLSearchParams(existingFiltersString?.startsWith("?") ? existingFiltersString.substring(1) : existingFiltersString || "");
+  const filtersFromParams: Record<string, string | string[]> = {};
+  currentParams.forEach((value,key) => { filtersFromParams[key] = value; }); 
 
+  const newFilters: Record<string, string> = {}; 
+  
+  const fuelKeywords: Record<string, string> = { "electrico": "Eléctrico", "eléctrico": "Eléctrico", "diesel": "Diésel", "diésel": "Diésel", "gasolina": "Gasolina" };
+  for (const keyword in fuelKeywords) { if (lowerQuery.includes(keyword)) newFilters.fuel = fuelKeywords[keyword]; }
+
+  const bodyTypeKeywords: Record<string, string> = { "suv": "SUV", "berlina": "Berlina", "compacto": "Compacto" };
+  for (const keyword in bodyTypeKeywords) { if (lowerQuery.includes(keyword)) newFilters.bodyType = bodyTypeKeywords[keyword]; }
+  
+  const colorKeywords: Record<string, string> = { "rojo": "Rojo", "negro": "Negro", "blanco": "Blanco", "azul": "Azul", "gris": "Gris / Plata"};
+  for (const keyword in colorKeywords) { if (lowerQuery.includes(keyword)) newFilters.color = colorKeywords[keyword]; }
+
+  const priceMatch = lowerQuery.match(/(?:menos de|hasta|presupuesto)\s*(\d+)/i);
+  if (priceMatch && priceMatch[1]) newFilters.maxPrice = priceMatch[1];
+  
+  const knownBrands = ["audi", "bmw", "mercedes", "tesla", "seat", "peugeot", "renault"];
+  for (const brand of knownBrands) { if (lowerQuery.includes(brand)) { newFilters.brand = brand.charAt(0).toUpperCase() + brand.slice(1); break; } }
+  
+  const combinedFilters = { ...filtersFromParams, ...newFilters };
+
+  let queryString = "";
+  for (const key in combinedFilters) {
+    const value = combinedFilters[key];
+    queryString += `${key}=${encodeURIComponent(String(value))}&`;
+  }
+  return queryString.endsWith('&') ? queryString.slice(0, -1) : queryString;
+};
 
 export const buyCarFlowSteps: Record<string, ChatStep> = {
   buyCar_start: {
@@ -16034,20 +15900,20 @@ export const buyCarFlowSteps: Record<string, ChatStep> = {
     message: '¡Genial que quieras comprar un coche! ¿Tienes algún modelo o tipo en mente, o prefieres que te ayude a encontrar uno?',
     options: [
       { label: 'Tengo una idea', nextStepId: 'buyCar_askPreferences', value: 'buy_have_idea'},
-      { label: 'Ayúdame a elegir', nextStepId: 'recommend_start', value: 'buy_need_help_choosing'}, // Llama a un ID de otro flujo
-      { label: 'Ver coches eléctricos', nextStepId: 'showElectricCarsCatalog', value: 'buy_see_electric'}, // Llama a un ID de otro flujo/general
-      { label: 'Ver todo el catálogo', nextStepId: 'showAllCarsCatalog', value: 'buy_see_all'}, // Llama a un ID de otro flujo/general
-      { label: 'Volver', nextStepId: 'start', value: 'back_to_main_from_buy'} // Llama al 'start' general
+      { label: 'Ayúdame a elegir', nextStepId: 'recommend_start', value: 'buy_need_help_choosing'},
+      { label: 'Ver coches eléctricos', nextStepId: 'showElectricCarsCatalog', value: 'buy_see_electric'},
+      { label: 'Ver todo el catálogo', nextStepId: 'showAllCarsCatalog', value: 'buy_see_all'},
+      { label: 'Volver', nextStepId: 'start', value: 'back_to_main_from_buy'}
     ],
     previousStepId: 'start'
   },
   buyCar_askPreferences: {
     id: 'buyCar_askPreferences',
-    message: 'Perfecto. Dime qué características buscas (ej: marca, tipo, presupuesto...).',
+    message: 'Perfecto. Dime qué características buscas (ej: marca, tipo, presupuesto, color, combustible...).',
     isUserInput: true,
-    inputPlaceholder: 'Ej: SUV rojo, menos de 20000€...',
+    inputPlaceholder: 'Ej: SUV negro diésel hasta 25000€',
     action: async (input, userData) => {
-        const parsedQueryString = parseBuyCarQueryToFilters(input, userData.parsedFiltersForCatalog);
+        const parsedQueryString = parseBuyCarQueryToFilters(input); 
         return { 
             userSearchQuery: input,
             parsedFiltersForCatalog: parsedQueryString
@@ -16058,8 +15924,10 @@ export const buyCarFlowSteps: Record<string, ChatStep> = {
   },
   buyCar_showFilteredCatalog: {
     id: 'buyCar_showFilteredCatalog',
-    message: (userData) => `Entendido. Buscando coches con características similares a: "${userData.userSearchQuery || 'tus preferencias'}". Te mostraré lo que encuentre.`,
-    navigateTo: (userData) => `/coches-segunda-mano${userData.parsedFiltersForCatalog ? `?${userData.parsedFiltersForCatalog}` : ''}`,
+    message: (userData) => 
+        `Entendido. Buscando coches con características similares a: "${userData.userSearchQuery || 'tus preferencias'}". Te mostraré lo que encuentre.`,
+    navigateTo: (userData) => 
+        `/coches-segunda-mano${userData.parsedFiltersForCatalog ? `?${userData.parsedFiltersForCatalog}` : ''}`,
     options: [
         {label: 'Refinar búsqueda', nextStepId: 'buyCar_refineSearch', value: 'refine_search'},
         {label: 'Ayuda para elegir (guiado)', nextStepId: 'recommend_start', value: 'go_to_recommendation_flow'},
@@ -16074,23 +15942,42 @@ export const buyCarFlowSteps: Record<string, ChatStep> = {
     action: async (input, userData) => {
         const newParsedQueryString = parseBuyCarQueryToFilters(input, userData.parsedFiltersForCatalog);
         return { 
-            userSearchQuery: `${userData.userSearchQuery || ''}, ${input}`,
+            userSearchQuery: `${userData.userSearchQuery || ''}; refinado con: ${input}`,
             parsedFiltersForCatalog: newParsedQueryString 
         };
     },
     nextStepIdAfterInput: 'buyCar_showFilteredCatalog',
-    previousStepId: 'buyCar_showFilteredCatalog'
+    previousStepId: 'buyCar_showFilteredCatalog' 
   },
-  // Pasos genéricos de recolección de datos si se usan PRIMARIAMENTE en este flujo
-  // Si son muy genéricos, podrían ir a un "leadCollectionFlow.ts"
-  askName_buyCar: { // Renombrar para evitar colisiones si hay otros 'askName'
-    id: 'askName_buyCar', message: 'Para continuar con la compra, ¿tu nombre?',
+  askName_buyCar: {
+    id: 'askName_buyCar', message: 'Si quieres que un asesor te ayude personalmente, ¿cuál es tu nombre?',
     isUserInput: true, inputType: 'text', inputPlaceholder: 'Nombre completo',
-    action: async (input) => ({ name: input, initialOption: 'comprar_coche' }),
+    action: async (input, userData) => ({ name: input, initialOption: userData.initialOption || 'comprar_coche' }),
     nextStepIdAfterInput: 'askEmail_buyCar',
-    previousStepId: 'buyCar_start', // O el paso que lo llame
+    previousStepId: 'buyCar_start',
   },
-
+  askEmail_buyCar: { 
+    id: 'askEmail_buyCar', message: (userData) => `Gracias ${userData.name || ''}. ¿Y tu email?`,
+    isUserInput: true, inputType: 'email', inputPlaceholder: 'tu@email.com',
+    validation: (input) => (!/^\S+@\S+\.\S+$/.test(input) ? 'Email inválido.' : null),
+    action: async (input) => ({ email: input }),
+    nextStepIdAfterInput: 'askPhone_buyCar',
+    previousStepId: 'askName_buyCar',
+  },
+  askPhone_buyCar: {
+    id: 'askPhone_buyCar', message: (userData) => `Perfecto ${userData.name || ''}. ¿Tu teléfono?`,
+    isUserInput: true, inputType: 'tel', inputPlaceholder: '+34...',
+    validation: (input) => (!/^\+?[0-9\s-]{7,15}$/.test(input) ? 'Teléfono inválido.' : null),
+    action: async (input) => ({ phone: input }),
+    nextStepIdAfterInput: 'thankYou_buyCar',
+    previousStepId: 'askEmail_buyCar',
+  },
+  thankYou_buyCar: {
+    id: 'thankYou_buyCar', message: (userData) => `¡Gracias ${userData.name || ''}! Un asesor te contactará sobre tu interés en comprar un coche.`,
+    options: [ { label: 'Tengo otra duda', nextStepId: 'start' }, { label: 'Finalizar chat', nextStepId: 'endChat' } ],
+    endFlow: true, previousStepId: 'askPhone_buyCar',
+    action: async (input, userData) => { console.log("Lead Compra Coche (contacto):", userData); return {}; }
+  },
 };
 ```
 
@@ -16115,31 +16002,53 @@ export const generalFlowSteps: Record<string, ChatStep> = {
   endChat: {
     id: 'endChat',
     message: '¡Gracias por chatear con Lebi! Que tengas un buen día.',
-    options: [ { label: 'Iniciar nueva consulta', nextStepId: 'start', value: 'restart_chat' } ]
+    options: [ { label: 'Iniciar nueva consulta', nextStepId: 'start', value: 'restart_chat' } ],
   },
   redirectToTasacion: {
-    id: 'redirectToTasacion', message: 'Un momento, redirigiendo a tasación...', redirectPath: '/gestion-de-venta', openInNewTab: true,
-    options: [ { label: 'Tengo otra duda', nextStepId: 'start' }, { label: 'Finalizar chat', nextStepId: 'endChat' } ],
-    previousStepId: 'sellCar_thankYou', // Este previousStepId viene de sellCarFlow
-    action: async () => { console.log("Redir. tasación"); return {}; }
+    id: 'redirectToTasacion', 
+    message: 'Un momento, te estoy redirigiendo a nuestra página de tasación de vehículos...', 
+    redirectPath: '/gestion-de-venta', 
+    openInNewTab: true,
+    options: [ 
+        { label: 'Tengo otra duda', nextStepId: 'start', value: 'other_doubt_after_redirect_tasacion' },
+        { label: 'Finalizar chat', nextStepId: 'endChat', value: 'end_after_redirect_tasacion' },
+    ],
+    previousStepId: 'sellCar_thankYou',
+    action: async () => { console.log("Redir. tasación solicitada"); return {}; }
   },
   redirectToRentingPage: {
-    id: 'redirectToRentingPage', message: 'Perfecto, redirigiendo a renting...', redirectPath: '/renting', openInNewTab: true,
-    options: [ { label: 'Tengo otra duda', nextStepId: 'start' }, { label: 'Finalizar chat', nextStepId: 'endChat' } ],
-    previousStepId: 'renting_askName', // Este viene de rentingFlow
-    action: async () => { console.log("Redir. renting"); return {}; }
+    id: 'redirectToRentingPage', 
+    message: 'Perfecto, te llevaré a nuestras ofertas de renting...', 
+    redirectPath: '/renting', 
+    openInNewTab: true,      
+    options: [ 
+        { label: 'Tengo otra duda', nextStepId: 'start', value: 'other_doubt_after_redirect_renting' },
+        { label: 'Finalizar chat', nextStepId: 'endChat', value: 'end_after_redirect_renting' },
+    ],
+    previousStepId: 'renting_thankYou', 
+    action: async () => { console.log("Redir. renting solicitada"); return {}; }
   },
-  showElectricCarsCatalog: { // Movido aquí como un paso general de navegación
-    id: 'showElectricCarsCatalog', message: '¡Claro! Te mostraré nuestros coches eléctricos.', navigateTo: '/coches-segunda-mano?fuel=Eléctrico',
-    options: [ {label: '¿Qué características tienen?', nextStepId: 'askAboutElectricFeatures'}, {label: 'Volver', nextStepId: 'buyCar_start'} ], // askAboutElectricFeatures podría estar en recommendation o buyCar
-    previousStepId: 'buyCar_start' // Asume que se llama desde el flujo de compra
+  showElectricCarsCatalog: {
+    id: 'showElectricCarsCatalog', 
+    message: '¡Claro! Te mostraré nuestros coches eléctricos.', 
+    navigateTo: '/coches-segunda-mano?fuel=Eléctrico',
+    options: [ 
+        {label: '¿Qué características tienen?', nextStepId: 'askAboutElectricFeatures'}, 
+        {label: 'Volver', nextStepId: 'buyCar_start'} 
+    ],
+    previousStepId: 'buyCar_start' 
   },
-  showAllCarsCatalog: { // Movido aquí
-    id: 'showAllCarsCatalog', message: 'Perfecto, aquí tienes nuestro catálogo completo.', navigateTo: '/coches-segunda-mano',
-    options: [ {label: '¿Buscas algo específico?', nextStepId: 'buyCar_askPreferences'}, {label: 'Volver', nextStepId: 'buyCar_start'} ],
+  showAllCarsCatalog: { 
+    id: 'showAllCarsCatalog', 
+    message: 'Perfecto, aquí tienes nuestro catálogo completo.', 
+    navigateTo: '/coches-segunda-mano',
+    options: [ 
+        {label: '¿Buscas algo específico?', nextStepId: 'buyCar_askPreferences'},
+        {label: 'Volver', nextStepId: 'buyCar_start'} 
+    ],
     previousStepId: 'buyCar_start'
   },
-   error_unknown_prev_for_askname: {
+   error_unknown_prev_for_askname: { 
     id: 'error_unknown_prev_for_askname',
     message: "Error: No se pudo determinar el paso anterior. Volviendo al inicio.",
     options: [{label: "Ok", nextStepId: "start"}]
@@ -16150,52 +16059,349 @@ export const generalFlowSteps: Record<string, ChatStep> = {
 # src/lib/chat-flows/recommendationFlow.ts
 
 ```ts
+import type { ChatStep, UserData } from '../chatFlowTypes';
 
+export const recommendationFlowSteps: Record<string, ChatStep> = {
+    recommend_start: {
+        id: 'recommend_start', 
+        message: '¡Claro! Para recomendarte un coche, dime ¿qué tipo de coche buscas?',
+        options: [ 
+            {label: 'SUV', nextStepId: 'recommend_askBudget', value: 'suv_type_reco'},
+            {label: 'Berlina', nextStepId: 'recommend_askBudget', value: 'berlina_type_reco'},
+            {label: 'Compacto', nextStepId: 'recommend_askBudget', value: 'compacto_type_reco'},
+            {label: 'Eléctrico (cualquier tipo)', nextStepId: 'recommend_askBudget_electric', value: 'electric_any_type_reco'},
+            {label: 'No estoy seguro', nextStepId: 'recommend_askUsage', value: 'unsure_type_reco'},
+            {label: 'Volver', nextStepId: 'buyCar_start', value: 'back_to_buy_from_reco_start'}
+        ],
+        action: async (input) => { 
+            if(input === 'suv_type_reco') return {preferredBodyType: 'SUV'};
+            if(input === 'berlina_type_reco') return {preferredBodyType: 'Berlina'};
+            if(input === 'compacto_type_reco') return {preferredBodyType: 'Compacto'};
+            if(input === 'electric_any_type_reco') return {preferredFuel: 'Eléctrico'};
+            return {};
+        },
+        previousStepId: 'buyCar_start',
+    },
+    recommend_askBudget: {
+        id: 'recommend_askBudget', 
+        message: (ud: UserData) => `Entendido${ud.preferredBodyType ? `, buscas un ${ud.preferredBodyType}` : ''}${ud.preferredFuel ? `, y que sea ${ud.preferredFuel}` : ''}. ¿Cuál es tu presupuesto aproximado?`,
+        isUserInput: true, inputType: 'text', inputPlaceholder: 'Ej: 20000',
+        action: async (input) => {
+            const budget = parseInt(input.replace(/\D/g, ''), 10); 
+            return {budgetMax: isNaN(budget) ? undefined : budget};
+        },
+        nextStepIdAfterInput: 'recommend_generateLink', 
+        previousStepId: 'recommend_start'
+    },
+    recommend_askBudget_electric: {
+        id: 'recommend_askBudget_electric', 
+        message: "Perfecto, un eléctrico. ¿Cuál es tu presupuesto aproximado?",
+        isUserInput: true, inputType: 'text', inputPlaceholder: 'Ej: hasta 30000€',
+        action: async (input) => {
+            const budget = parseInt(input.replace(/\D/g, ''), 10);
+            return { budgetMax: isNaN(budget) ? undefined : budget, preferredFuel: 'Eléctrico' };
+        },
+        nextStepIdAfterInput: 'recommend_generateLink',
+        previousStepId: 'recommend_start'
+    },
+    recommend_askUsage: { 
+        id: 'recommend_askUsage', 
+        message: "No hay problema. Cuéntame, ¿para qué usarás el coche principalmente? (ej. ciudad, viajes largos, familia...)",
+        isUserInput: true, inputPlaceholder: 'Principalmente para...',
+        action: async (input, userData) => ({ ...userData, userSearchQuery: (userData.userSearchQuery || "") + ` Uso: ${input}` }), 
+        nextStepIdAfterInput: 'recommend_askBudget', 
+        previousStepId: 'recommend_start'
+    },
+    recommend_generateLink: {
+        id: 'recommend_generateLink', 
+        message: (ud: UserData) => {
+            let filters = "";
+            if(ud.preferredBodyType) filters += `bodyType=${ud.preferredBodyType}&`;
+            if(ud.preferredFuel) filters += `fuel=${ud.preferredFuel}&`;
+            if(ud.budgetMax) filters += `maxPrice=${ud.budgetMax}&`;
+            filters = filters.endsWith('&') ? filters.slice(0, -1) : filters;
+            (ud as UserData).parsedFiltersForCatalog = filters; // Actualizar para navigateTo
+            return `De acuerdo. Basado en tus preferencias, te mostraré algunos coches que podrían interesarte.`;
+        },
+        navigateTo: (ud: UserData) => `/coches-segunda-mano${ud.parsedFiltersForCatalog ? `?${ud.parsedFiltersForCatalog}` : ''}`,
+        options: [
+            {label: 'Nueva recomendación', nextStepId: 'recommend_start', value: 'reco_search_again'},
+            {label: 'Menú principal', nextStepId: 'start', value: 'reco_main_menu'}
+        ],
+        previousStepId: (ud: UserData) => ud.preferredFuel === 'Eléctrico' && !ud.preferredBodyType ? 'recommend_askBudget_electric' : 'recommend_askBudget',
+    },
+    askAboutElectricFeatures: {
+        id: 'askAboutElectricFeatures', 
+        message: 'Nuestros eléctricos tienen gran autonomía y carga rápida. ¿Algún modelo del catálogo te interesa?',
+        isUserInput: true, inputPlaceholder: 'Ej: Tesla Model 3...',
+        action: async (input) => ({ userQuestion: input }),
+        nextStepIdAfterInput: 'provideSpecificModelInfo', 
+        previousStepId: 'showElectricCarsCatalog'
+    },
+    provideSpecificModelInfo: {
+        id: 'provideSpecificModelInfo', 
+        message: (userData) => `Entendido. Buscando información sobre "${userData.userQuestion || 'ese modelo'}". (Actualmente, esta es una simulación. Aquí iría la lógica para buscar en la BBDD o FAQs avanzadas sobre ${userData.userQuestion})`,
+        options: [ {label: 'Gracias', nextStepId: 'start'}, {label: 'Buscar otro', nextStepId: 'askAboutElectricFeatures'} ],
+        previousStepId: 'askAboutElectricFeatures'
+    },
+};
 ```
 
 # src/lib/chat-flows/rentingFlow.ts
 
 ```ts
-
+import type { ChatStep } from '../chatFlowTypes';
+export const rentingFlowSteps: Record<string, ChatStep> = {
+    renting_askName: { 
+        id: 'renting_askName', message: 'Interesado en renting, ¡genial! Para empezar, ¿tu nombre?',
+        isUserInput: true, inputType: 'text',
+        action: async (input) => ({ name: input, initialOption: 'Renting' }),
+        nextStepIdAfterInput: 'askPhoneForRenting', 
+        previousStepId: 'start'
+    },
+    askPhoneForRenting: {
+        id: 'askPhoneForRenting', message: (userData) => `Gracias ${userData.name || ''}. ¿A qué teléfono te llamamos para el renting?`,
+        isUserInput: true, inputType: 'tel',
+        validation: (input) => (!/^\+?[0-9\s-]{7,15}$/.test(input) ? 'Teléfono inválido.' : null),
+        action: async (input) => ({ phone: input }),
+        nextStepIdAfterInput: 'thankYouLeadGeneral',
+        previousStepId: 'renting_askName',
+    },
+};
 ```
 
 # src/lib/chat-flows/sellCarFlow.ts
 
 ```ts
+import type { ChatStep, UserData } from '../chatFlowTypes';
 
+export const sellCarFlowSteps: Record<string, ChatStep> = {
+  sellCar_askName: {
+    id: 'sellCar_askName',
+    message: '¡Perfecto! Para tasar tu coche, primero dime tu nombre.',
+    isUserInput: true,
+    inputType: 'text',
+    inputPlaceholder: 'Escribe tu nombre...',
+    action: async (input) => ({ name: input, initialOption: 'Vender Coche' }),
+    nextStepIdAfterInput: 'sellCar_thankYou',
+    previousStepId: 'start',
+  },
+  sellCar_thankYou: {
+    id: 'sellCar_thankYou',
+    message: (userData) => `Gracias ${userData.name || ''}. ¿Prefieres ir a la tasación online o que te llamemos para gestionarlo?`,
+    options: [
+      { label: 'Ir a tasación online', nextStepId: 'redirectToTasacion', value: 'go_to_valuation' }, 
+      { label: 'Prefiero que me llaméis', nextStepId: 'askPhoneForSell', value: 'request_call_sell' },
+      { label: 'Tengo otra duda', nextStepId: 'start' },
+    ],
+    previousStepId: 'sellCar_askName',
+  },
+  askPhoneForSell: {
+    id: 'askPhoneForSell',
+    message: (userData) => `Entendido ${userData.name || ''}. ¿A qué teléfono te llamamos para la tasación?`,
+    isUserInput: true, inputType: 'tel', inputPlaceholder: '+34 ...',
+    validation: (input) => (!/^\+?[0-9\s-]{7,15}$/.test(input) ? 'Teléfono inválido.' : null),
+    action: async (input) => ({ phone: input }),
+    nextStepIdAfterInput: 'thankYouLeadGeneral_sell', 
+    previousStepId: 'sellCar_thankYou',
+  },
+  thankYouLeadGeneral_sell: { 
+    id: 'thankYouLeadGeneral_sell',
+    message: (userData) => `¡Gracias ${userData.name || ''}! Un asesor se pondrá en contacto contigo sobre la venta de tu coche.`,
+    options: [ { label: 'Tengo otra duda', nextStepId: 'start' }, { label: 'Finalizar chat', nextStepId: 'endChat' } ],
+    endFlow: true, previousStepId: 'askPhoneForSell',
+    action: async (input, userData) => { console.log("Lead Venta Coche (contacto):", userData); return {}; }
+  },
+};
 ```
 
 # src/lib/chat-flows/supportFlow.ts
 
 ```ts
+import type { ChatStep, UserData, ChatButtonOption } from '../chatFlowTypes';
 
+const faqData: Array<{ keywords: string[], answer: string }> = [
+  { keywords: ["horario", "abierto", "abre", "cierra", "hora"], answer: "Nuestro horario de atención es de Lunes a Viernes de 9:00 a 20:00 y Sábados de 10:00 a 14:00." },
+  { keywords: ["financiacion", "financiar", "pagar plazos", "cuotas"], answer: "Sí, ofrecemos diversas opciones de financiación adaptadas a tus necesidades. Uno de nuestros asesores puede darte más detalles. ¿Te gustaría que te llamemos para hablar sobre ello?" },
+  { keywords: ["garantia", "cubre"], answer: "Todos nuestros coches de segunda mano incluyen una garantía mínima legal de 12 meses. Puedes consultar con tu asesor las opciones de ampliación de garantía disponibles." },
+  { keywords: ["tasacion", "valorar coche", "tasar mi coche", "vender"], answer: "Claro, puedes solicitar una tasación gratuita y sin compromiso de tu vehículo a través de nuestra sección 'Vender mi coche' en la web, o visitándonos." },
+  { keywords: ["cita", "ver coche", "probar"], answer: "Te recomendamos solicitar cita previa para asegurar una atención personalizada y que el vehículo esté disponible. Puedes hacerlo por teléfono o a través del formulario de contacto en nuestra web." },
+  { keywords: ["documentacion necesaria", "papeles", "requisitos"], answer: "Para comprar un coche, generalmente necesitarás tu DNI/NIE y justificante de domicilio. Para financiar, se te pedirán documentos adicionales. Un asesor te guiará en el proceso." },
+  { keywords: ["electrico", "carga", "autonomia"], answer: "Los coches eléctricos tienen muchas ventajas, como menores costes de mantenimiento y cero emisiones. La autonomía varía por modelo. Ofrecemos asesoramiento en puntos de carga. ¿Te interesa algún modelo en particular?" }
+];
+
+const findFAQAnswer = (question: string): string | null => {
+  const lowerQuestion = question.toLowerCase().trim();
+  if (!lowerQuestion) return null;
+  for (const faq of faqData) {
+    if (faq.keywords.some(keyword => lowerQuestion.includes(keyword.toLowerCase()))) {
+      return faq.answer;
+    }
+  }
+  return null;
+};
+
+export { faqData, findFAQAnswer }; 
+
+export const supportFlowSteps: Record<string, ChatStep> = {
+  support_entry: { 
+    id: 'support_entry', 
+    message: 'Entendido, necesitas soporte. ¿Cómo prefieres que te ayudemos?', 
+    options: [ 
+      { label: 'Quiero que me llaméis', nextStepId: 'support_askCallbackName', value: 'callback_support' }, 
+      { label: 'Tengo una pregunta', nextStepId: 'support_askQuestion', value: 'ask_support_question' }, 
+      { label: 'Volver al inicio', nextStepId: 'start', value: 'back_to_start_from_support' }, 
+    ], 
+    previousStepId: 'start' 
+  },
+  support_askCallbackName: { 
+    id: 'support_askCallbackName', 
+    message: 'De acuerdo. Para poder llamarte, ¿me indicas tu nombre?', 
+    isUserInput: true, inputType: 'text', inputPlaceholder: 'Escribe tu nombre...', 
+    action: async (input) => ({ name: input }), 
+    nextStepIdAfterInput: 'support_askCallbackPhone', 
+    previousStepId: 'support_entry' 
+  },
+  support_askCallbackPhone: { 
+    id: 'support_askCallbackPhone', 
+    message: (userData) => `Gracias ${userData.name || ''}. ¿A qué número de teléfono podemos contactarte para ayudarte con tu consulta de soporte?`, 
+    isUserInput: true, inputType: 'tel', inputPlaceholder: '+34 6XX XXX XXX', 
+    validation: (input) => (!/^\+?[0-9\s-]{7,15}$/.test(input) ? 'Por favor, introduce un teléfono válido.' : null), 
+    action: async (input) => ({ phone: input }), 
+    nextStepIdAfterInput: 'support_callbackThankYou', 
+    previousStepId: 'support_askCallbackName' 
+  },
+  support_callbackThankYou: { 
+    id: 'support_callbackThankYou', 
+    message: (userData) => `¡Entendido ${userData.name || ''}! Hemos registrado tu solicitud con el teléfono ${userData.phone || ''}. Un miembro de nuestro equipo de soporte te llamará lo antes posible.`, 
+    options: [ 
+      { label: 'Hacer otra consulta', nextStepId: 'start', value: 'other_doubt_after_support_cb' }, 
+      { label: 'Finalizar chat', nextStepId: 'endChat', value: 'end_after_support_cb' }, 
+    ], 
+    endFlow: true, 
+    previousStepId: 'support_askCallbackPhone', 
+    action: async (input, userData) => { console.log("LEAD SOPORTE (Callback):", { ...userData, type: "Soporte - Llamada solicitada" }); return {}; } 
+  },
+  support_askQuestion: { 
+    id: 'support_askQuestion', 
+    message: 'Claro, escribe tu pregunta. Intentaré responderla.',
+    isUserInput: true, inputType: 'text', inputPlaceholder: 'Escribe tu duda aquí...',
+    action: async (input) => ({ faqAnswer: findFAQAnswer(input), userQuestion: input }), 
+    nextStepIdAfterInput: 'support_showAnswerOrContactOptions', 
+    previousStepId: 'support_entry',
+  },
+  support_showAnswerOrContactOptions: { 
+    id: 'support_showAnswerOrContactOptions', 
+    message: (userData: UserData) => (userData.faqAnswer ? `Sobre tu pregunta "${userData.userQuestion || ''}":\n\n${userData.faqAnswer}\n\n¿Esta información te ha sido útil?` : `Lo siento, no tengo información para tu pregunta: "${userData.userQuestion || ''}".\n¿Cómo prefieres que te ayudemos con esto?`), 
+    options: (userData: UserData): ChatButtonOption[] => (userData.faqAnswer ? 
+      [ { label: 'Sí, ¡gracias!', nextStepId: 'support_anotherQuestion_or_end', value: 'faq_util' }, { label: 'No me sirvió', nextStepId: 'support_offerContactNoAnswer', value: 'faq_not_useful_contact' }, { label: 'Otra pregunta', nextStepId: 'support_askQuestion', value: 'ask_another_faq' }, { label: 'Volver', nextStepId: 'start', value: 'back_to_start_after_faq' }, ] : 
+      [ { label: 'Contactar por Email', nextStepId: 'support_collectEmail_name', value: 'contact_via_email' }, { label: 'Solicitar una llamada', nextStepId: 'support_collectCallback_name_noFaq', value: 'request_call_no_faq' }, { label: 'Otra pregunta', nextStepId: 'support_askQuestion', value: 'try_another_faq_no_answer' }, { label: 'Volver', nextStepId: 'start', value: 'back_to_start_no_answer' }, ]
+    ), 
+    previousStepId: 'support_askQuestion' 
+  },
+  support_offerContactNoAnswer: { 
+    id: 'support_offerContactNoAnswer', 
+    message: 'Entendido. ¿Cómo prefieres que te ayudemos con tu consulta original?', 
+    options: [ 
+      { label: 'Contactar por Email', nextStepId: 'support_collectEmail_name', value: 'contact_via_email_after_failed_faq' }, 
+      { label: 'Solicitar una llamada', nextStepId: 'support_collectCallback_name_noFaq', value: 'request_call_after_failed_faq' }, 
+      { label: 'Volver al inicio', nextStepId: 'start', value: 'back_to_start_after_failed_faq' }, 
+    ], 
+    previousStepId: 'support_showAnswerOrContactOptions' 
+  },
+  support_collectEmail_name: { 
+    id: 'support_collectEmail_name', 
+    message: 'Para contactarte por email, ¿tu nombre y apellidos?', 
+    isUserInput: true, inputType: 'text', inputPlaceholder: 'Nombre y Apellidos', 
+    action: async (input) => ({ name: input }), 
+    nextStepIdAfterInput: 'support_collectEmail_email', 
+    previousStepId: 'support_showAnswerOrContactOptions' 
+  },
+  support_collectEmail_email: { 
+    id: 'support_collectEmail_email', 
+    message: (userData) => `Gracias ${userData.name || ''}. Ahora, ¿tu email?`, 
+    isUserInput: true, inputType: 'email', inputPlaceholder: 'tu@email.com', 
+    validation: (input) => (!/^\S+@\S+\.\S+$/.test(input) ? 'Email inválido.' : null), 
+    action: async (input) => ({ email: input }), 
+    nextStepIdAfterInput: 'support_collectEmail_phone', 
+    previousStepId: 'support_collectEmail_name' 
+  },
+  support_collectEmail_phone: { 
+    id: 'support_collectEmail_phone', 
+    message: (userData) => `Perfecto. Si quieres, déjanos un teléfono (Opcional).`, 
+    isUserInput: true, inputType: 'tel', inputPlaceholder: '+34 ... (Opcional)', 
+    validation: (input) => (input.trim() && !/^\+?[0-9\s-]{7,15}$/.test(input) ? 'Teléfono inválido.' : null), 
+    action: async (input) => (input.trim() ? { phone: input } : {}), 
+    nextStepIdAfterInput: 'support_emailLeadThankYou', 
+    previousStepId: 'support_collectEmail_email' 
+  },
+  support_emailLeadThankYou: { 
+    id: 'support_emailLeadThankYou', 
+    message: (userData) => `¡Gracias ${userData.name || ''}! Te responderemos a ${userData.email} sobre "${userData.userQuestion || 'tu consulta'}" pronto.`, 
+    options: [{ label: 'Otra consulta', nextStepId: 'start' }, { label: 'Finalizar', nextStepId: 'endChat' }], 
+    endFlow: true, 
+    previousStepId: 'support_collectEmail_phone', 
+    action: async (input, userData) => { console.log("LEAD SOPORTE (Email):", userData); return {}; } 
+  },
+  support_collectCallback_name_noFaq: { 
+    id: 'support_collectCallback_name_noFaq', 
+    message: 'Entendido, te llamaremos. ¿Tu nombre y apellidos?', 
+    isUserInput: true, inputType: 'text', inputPlaceholder: 'Nombre y Apellidos', 
+    action: async (input) => ({ name: input }), 
+    nextStepIdAfterInput: 'support_collectCallback_phone_noFaq', 
+    previousStepId: 'support_showAnswerOrContactOptions' 
+  },
+  support_collectCallback_phone_noFaq: { 
+    id: 'support_collectCallback_phone_noFaq', 
+    message: (userData) => `Gracias ${userData.name || ''}. ¿A qué teléfono te llamamos sobre "${userData.userQuestion || 'tu consulta'}"?`, 
+    isUserInput: true, inputType: 'tel', inputPlaceholder: '+34 ...', 
+    validation: (input) => (!/^\+?[0-9\s-]{7,15}$/.test(input) ? 'Teléfono inválido.' : null), 
+    action: async (input) => ({ phone: input }), 
+    nextStepIdAfterInput: 'support_callbackThankYou_noFaq', 
+    previousStepId: 'support_collectCallback_name_noFaq' 
+  },
+  support_callbackThankYou_noFaq: { 
+    id: 'support_callbackThankYou_noFaq', 
+    message: (userData) => `¡Entendido ${userData.name || ''}! Te llamaremos al ${userData.phone || ''}.`, 
+    options: [{ label: 'Otra consulta', nextStepId: 'start' }, { label: 'Finalizar', nextStepId: 'endChat' }], 
+    endFlow: true, 
+    previousStepId: 'support_collectCallback_phone_noFaq', 
+    action: async (input, userData) => { console.log("LEAD SOPORTE (Callback sin FAQ):", userData); return {}; } 
+  },
+  support_anotherQuestion_or_end: { 
+    id: 'support_anotherQuestion_or_end', 
+    message: '¡Estupendo! ¿Tienes alguna otra duda de soporte o puedo ayudarte con algo más general?', 
+    options: [ 
+      { label: 'Otra pregunta de soporte', nextStepId: 'support_askQuestion', value: 'another_support_q' }, 
+      { label: 'Necesito ayuda con otra cosa', nextStepId: 'start', value: 'other_general_help' }, 
+      { label: 'No, gracias (Finalizar)', nextStepId: 'endChat', value: 'end_after_support_helpful' }, 
+    ], 
+    previousStepId: 'support_showAnswerOrContactOptions' 
+  },
+};
 ```
 
 # src/lib/chatFlow.ts
 
 ```ts
-// src/lib/chatFlow.ts
-import type { ChatStep, UserData, ChatButtonOption } from './chatFlowTypes'; // Importar tipos
-
-// Importar los flujos modulares
-import { generalFlowSteps, initialChatOptionsBase } from './chat-flows/generalSteps'; // Asume que initialChatOptionsBase se mueve aquí
+import type { ChatStep, UserData, ChatButtonOption } from './chatFlowTypes';
+import { generalFlowSteps, initialChatOptionsBase } from './chat-flows/generalSteps';
 import { buyCarFlowSteps } from './chat-flows/buyCarFlow';
+import { sellCarFlowSteps } from './chat-flows/sellCarFlow';
+import { rentingFlowSteps } from './chat-flows/rentingFlow';
+import { supportFlowSteps, faqData as supportFaqData, findFAQAnswer as supportFindFAQAnswer } from './chat-flows/supportFlow';
+import { recommendationFlowSteps } from './chat-flows/recommendationFlow';
 
-
-// Exportar los tipos para que otros módulos puedan usarlos
 export type { UserData, ChatButtonOption, ChatStep };
-/* export { faqData, findFAQAnswer, initialChatOptionsBase }; */ // Exportar también las constantes/funciones necesarias
+export { initialChatOptionsBase, supportFaqData, supportFindFAQAnswer }; 
 
-// Combinar todos los pasos en un único objeto chatFlow
 export const chatFlow: Record<string, ChatStep> = {
   ...generalFlowSteps,
   ...buyCarFlowSteps,
- /*  ...sellCarFlowSteps,
+  ...sellCarFlowSteps,
   ...rentingFlowSteps,
   ...supportFlowSteps,
-  ...recommendationFlowSteps, */
-  // Puedes añadir aquí pasos "huérfanos" o muy específicos que no encajen en un flujo modular,
-  // pero es mejor intentar mantenerlos dentro de los módulos.
+  ...recommendationFlowSteps,
 };
 ```
 
@@ -16206,24 +16412,24 @@ export interface UserData {
   name?: string;
   email?: string;
   phone?: string;
-  initialOption?: string;
+  initialOption?: string; 
   faqAnswer?: string | null;
-  userQuestion?: string;
+  userQuestion?: string; 
   preferredBodyType?: string;
   budgetMax?: number;
   preferredFuel?: string;
-  parsedFiltersForCatalog?: string;
-  userSearchQuery?: string;
+  parsedFiltersForCatalog?: string; 
+  userSearchQuery?: string; 
 }
 
 export interface ChatButtonOption {
   label: string;
   nextStepId: string; 
-  value?: string;
+  value?: string; 
 }
 
 export interface ChatStep {
-  id: string; 
+  id: string;
   message: string | ((userData: UserData) => string);
   isUserInput?: boolean;
   inputType?: 'text' | 'email' | 'tel';
@@ -16231,22 +16437,13 @@ export interface ChatStep {
   validation?: (input: string, userData: UserData) => string | null;
   action?: (input: string, userData: UserData) => Promise<Partial<UserData>> | Partial<UserData>;
   options?: ChatButtonOption[] | ((userData: UserData) => ChatButtonOption[]);
-  nextStepIdAfterInput?: string;
+  nextStepIdAfterInput?: string; 
   endFlow?: boolean;
   previousStepId?: string | ((userData: UserData) => string);
   redirectPath?: string | ((userData: UserData) => string);
-  openInNewTab?: boolean;
-  navigateTo?: string | ((userData: UserData) => string);
+  openInNewTab?: boolean;   
+  navigateTo?: string | ((userData: UserData) => string);  
 }
-
-```
-
-# src/lib/chatStore.ts
-
-```ts
-// src/lib/chatStore.ts
-import { create } from 'zustand';
-import type { UserData, ChatButtonOption } from './chatFlow';
 
 export interface ChatMessageInStore {
   id: string;
@@ -16256,14 +16453,13 @@ export interface ChatMessageInStore {
   isTyping?: boolean;
 }
 
-interface ChatState {
+export interface ChatState {
   messages: ChatMessageInStore[];
   currentStepId: string;
   userData: UserData;
   history: string[];
   errorMessage: string | null;
   isChatInitialized: boolean;
-
   addMessageToStore: (sender: "user" | "bot", text: string, buttons?: ChatButtonOption[]) => void;
   setCurrentStepIdInStore: (stepId: string) => void;
   setUserDataInStore: (data: Partial<UserData> | ((prev: UserData) => Partial<UserData>)) => void;
@@ -16271,13 +16467,32 @@ interface ChatState {
   popHistoryFromStore: () => string | undefined;
   setHistoryInStore: (newHistory: string[]) => void;
   setErrorMessageInStore: (message: string | null) => void;
-  resetChatInStore: () => void; // Nombre consistente
+  resetChatInStore: () => void;
   clearButtonsFromBotMessagesInStore: () => void;
-   setMessagesDirectlyInStore: (messagesUpdater: ChatMessageInStore[] | ((prevMessages: ChatMessageInStore[]) => ChatMessageInStore[])) => void;
-  setIsChatInitializedInStore: (isInitialized: boolean) => void; // Nombre consistente
+  setMessagesDirectlyInStore: (messagesUpdater: ChatMessageInStore[] | ((prevMessages: ChatMessageInStore[]) => ChatMessageInStore[])) => void;
+  setIsChatInitializedInStore: (isInitialized: boolean) => void;
 }
+```
 
-const initialChatStoreState = {
+# src/lib/chatStore.ts
+
+```ts
+import { create } from 'zustand';
+import { ChatState } from './chatFlowTypes';
+
+const initialChatStoreState: Omit<ChatState, 
+  'addMessageToStore' | 
+  'setCurrentStepIdInStore' | 
+  'setUserDataInStore' | 
+  'pushHistoryInStore' |
+  'popHistoryFromStore' |
+  'setHistoryInStore' |
+  'setErrorMessageInStore' |
+  'resetChatInStore' |
+  'clearButtonsFromBotMessagesInStore' |
+  'setMessagesDirectlyInStore' |
+  'setIsChatInitializedInStore'
+> = {
   messages: [],
   currentStepId: 'start',
   userData: {},
@@ -16294,7 +16509,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     let prevMessagesCleaned = state.messages;
     if (sender === 'bot' && buttons && buttons.length > 0) {
         prevMessagesCleaned = state.messages.map(msg => 
-            msg.sender === 'bot' && msg.buttons ? { ...msg, buttons: undefined } : msg
+            (msg.sender === 'bot' && msg.buttons) ? { ...msg, buttons: undefined } : msg
         );
     }
     return { messages: [...prevMessagesCleaned, { id, sender, text, buttons, isTyping: false }] };
@@ -16312,8 +16527,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
     let previousStepId: string | undefined;
     set(state => {
         if (state.history.length <= 1) {
-            previousStepId = state.history[0] || 'start';
-            return { history: state.history }; 
+            previousStepId = state.history[0] || 'start'; 
+            return { history: state.history };
         }
         const newHistory = [...state.history];
         newHistory.pop(); 
@@ -16328,13 +16543,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
   setIsChatInitializedInStore: (isInitialized) => set({ isChatInitialized: isInitialized }),
   clearButtonsFromBotMessagesInStore: () => set(state => ({
     messages: state.messages.map(msg => 
-        msg.sender === 'bot' && msg.buttons ? { ...msg, buttons: undefined } : msg
+        (msg.sender === 'bot' && msg.buttons) ? { ...msg, buttons: undefined } : msg
     )
   })),
-    setMessagesDirectlyInStore: (messagesUpdater) => set(state => ({
+  setMessagesDirectlyInStore: (messagesUpdater) => set(state => ({
     messages: typeof messagesUpdater === 'function' ? messagesUpdater(state.messages) : messagesUpdater
   })),
-  resetChatInStore: () => { // <- Nombre consistente
+  resetChatInStore: () => {
     set(initialChatStoreState);
     set({ isChatInitialized: false });
   },

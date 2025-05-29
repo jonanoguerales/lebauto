@@ -16,6 +16,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Charger } from "@/lib/definitions";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer"; 
 
 const chargers: Charger[] = [
   {
@@ -87,9 +89,38 @@ const chargers: Charger[] = [
   },
 ];
 
+const sectionContainerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const headerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const chargerCardVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
 export default function ElectricChargersSection() {
   const [hasMounted, setHasMounted] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  const { ref, inView } = useInView({
+    triggerOnce: true, 
+    threshold: 0.1, 
+  });
 
   useEffect(() => {
     setHasMounted(true);
@@ -100,9 +131,15 @@ export default function ElectricChargersSection() {
   }
 
   return (
-    <section className="py-20">
+    <motion.section
+      className="py-20"
+      ref={ref}
+      variants={sectionContainerVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"} 
+    >
       <div className="container mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <motion.div className="text-center max-w-3xl mx-auto mb-12" variants={headerVariants}>
           <Badge className="mb-4" variant="outline">
             <Zap className="h-3 w-3 mr-1" /> Soluciones de carga
           </Badge>
@@ -110,14 +147,16 @@ export default function ElectricChargersSection() {
           <p className="text-lg text-muted-foreground">
             Ofrecemos soluciones de carga completas para tu vehículo eléctrico, desde la instalación hasta el mantenimiento.
           </p>
-        </div>
+        </motion.div>
 
         {isDesktop ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {chargers.map((charger) => (
-              <ChargerCard key={charger.id} charger={charger} />
+              <motion.div key={charger.id} variants={chargerCardVariants}>
+                <ChargerCard charger={charger} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
           <div className="relative overflow-hidden">
             <Carousel
@@ -131,7 +170,9 @@ export default function ElectricChargersSection() {
               <CarouselContent>
                 {chargers.map((charger) => (
                   <CarouselItem key={charger.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                    <ChargerCard charger={charger} />
+                    <motion.div variants={chargerCardVariants}> 
+                      <ChargerCard charger={charger} />
+                    </motion.div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -141,7 +182,7 @@ export default function ElectricChargersSection() {
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }
 
