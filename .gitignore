@@ -36,4 +36,4 @@ yarn-error.log*
 next-env.d.ts
 
 # codebase
-.codebase.md
+codebase.md

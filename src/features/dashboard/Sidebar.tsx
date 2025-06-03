@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/utils/utils"
-import { LayoutDashboard, Car, Menu, X, ListTodo } from "lucide-react"
+import { LayoutDashboard, Car, Menu, X, ListTodo, Zap } from "lucide-react" 
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import AuthButton from "./AuthButton"
@@ -20,9 +20,14 @@ const navItems = [
     icon: Car,
   },
   {
-    title: "Características",
+    title: "Características", 
     href: "/dashboard/caracteristicas",
     icon: ListTodo,
+  },
+  { 
+    title: "Cargadores",
+    href: "/dashboard/cargadores",
+    icon: Zap,
   },
 ]
 
@@ -55,7 +60,7 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsOpen(false)} 
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                   pathname === item.href ? "bg-primary text-primary-foreground" : "hover:bg-muted",
@@ -72,4 +77,3 @@ export function Sidebar() {
     </>
   )
 }
-

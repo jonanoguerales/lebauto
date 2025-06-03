@@ -159,14 +159,39 @@ export interface Charger {
   id: string;
   name: string;
   brand?: string;
-  power_kw: number; 
-  connector_type: string; 
+  power_kw: number;
+  connector_type: string;
   price_eur: number;
   installation_cost_eur?: number;
-  features?: string[]; 
+  features?: string[];
+  description?: string;
+  image_url?: string; 
+  category: "home" | "community" | "business";
+  slug?: string;
+  efficiency?: number; 
+  dimensions?: string;
+  weight_kg?: number;
+  warranty_years?: number;
+  compatibility_notes?: string; 
+  created_at?: string;
+}
+
+export type ChargerFormValues = {
+  id?: string;
+  name: string;
+  brand?: string;
+  power_kw: number;
+  connector_type: string;
+  price_eur: number;
+  installation_cost_eur?: number;
+  features?: string[];
   description?: string;
   image_url?: string;
   category: "home" | "community" | "business";
-  slug?: string; 
-}
+  efficiency?: number;
+  dimensions?: string;
+  weight_kg?: number;
+  warranty_years?: number;
+  compatibility_notes?: string;
+};
 

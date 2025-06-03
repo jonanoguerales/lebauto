@@ -15,3 +15,18 @@ export function generateVehicleSlug(vehicle: {
   const uniquePart = id.slice(0, 8);
   return `${baseSlug}-${uniquePart}`;
 }
+
+export function generateChargerSlug(charger: {
+  name: string;
+  brand?: string;
+  id: string;
+}): string {
+  const { name, brand, id } = charger;
+  const baseSlug = slugify(brand ? `${brand} ${name}` : name, {
+    lower: true,
+    strict: true,
+    remove: /[*+~.()'"!:@]/g 
+  });
+  const uniquePart = id.slice(0, 8);
+  return `${baseSlug}-${uniquePart}`;
+}

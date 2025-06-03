@@ -45,7 +45,7 @@ export default function RootLayout({
         <body
           className={`${inter.className} antialiased flex flex-col min-h-screen overflow-x-hidden bg-background text-foreground`}
         >
-          <main className="flex-1 w-screen" role="main">
+          <main className="flex-1" role="main">
             {children}
           </main>
           <Toaster />
