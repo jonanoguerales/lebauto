@@ -1,5 +1,3 @@
-import ContactButtons from "@/components/ContactButtons";
-import ScrollToTopOnMount from "@/components/ScrollToTopOnMount";
 import BrandGrid from "@/features/home/components/BrandGrid";
 import ChargersAdvisorBanner from "@/features/home/components/ChargersAdvisorBanner";
 import DudasAdvisorBanner from "@/features/home/components/DudasAdvisorBanner";
@@ -45,7 +43,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <ScrollToTopOnMount />
       <HeroSection />
       {/* <SearchSection /> */}
       <ElectricVehiclesSection />

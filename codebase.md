@@ -160,6 +160,7 @@ export default nextConfig;
     "react": "latest",
     "react-dom": "latest",
     "react-hook-form": "^7.54.2",
+    "react-intersection-observer": "^9.16.0",
     "react-markdown": "^10.1.0",
     "recharts": "^2.15.1",
     "remark-gfm": "^4.0.1",
@@ -1824,19 +1825,9 @@ export default async function Layout({
 # src/app/(site)/page.tsx
 
 ```tsx
-import ContactButtons from "@/components/ContactButtons";
-import BrandGrid from "@/features/home/components/BrandGrid";
-import ChargersAdvisorBanner from "@/features/home/components/ChargersAdvisorBanner";
-import DudasAdvisorBanner from "@/features/home/components/DudasAdvisorBanner";
-import ElectricChargersSection from "@/features/home/components/ElectricShargersSection";
-import ElectricVehiclesSection from "@/features/home/components/ElectricVehiclesSection";
-import HeroSection from "@/features/home/components/HeroSection";
-import LocationsSection from "@/features/home/components/LocationsSection";
-import RentingBanner from "@/features/home/components/RentingBanner";
-import SellYourCarSection from "@/features/home/components/SellYourCarSection";
-import TestimonialsSection from "@/features/home/components/TestimonialsSection";
+import ScrollToTopOnMount from "@/components/ScrollToTopOnMount";
+import HomePageSections from "@/features/home/components/HomePageSections";
 import { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title:
@@ -1844,24 +1835,14 @@ export const metadata: Metadata = {
   description:
     "Compra tu coche de segunda mano, ocasión, eléctricos o Km 0 en Lebauto. Vehículos revisados, con garantía y financiación. Ofrecemos soluciones de carga, financiación especializada y asesoramiento en ayudas y subvenciones para la movilidad sostenible.",
   keywords: [
-    "coches segunda mano",
-    "coches km0",
-    "concesionario coches",
-    "Lebauto",
-    "coches eléctricos",
-    "vehículos segunda mano",
-    "cargadores eléctricos",
-    "concesionario sostenible",
-    "km0",
-    "financiación vehículos eléctricos",
-    "ayudas movilidad eléctrica",
-    "concesionario de coches eléctricos",
+    "coches segunda mano", "coches km0", "concesionario coches", "Lebauto",
+    "coches eléctricos", "vehículos segunda mano", "cargadores eléctricos",
+    "concesionario sostenible", "km0", "financiación vehículos eléctricos",
+    "ayudas movilidad eléctrica", "concesionario de coches eléctricos",
   ],
   openGraph: {
-    title:
-      "Lebauto | Concesionario de Coches Eléctricos y de Segunda Mano | Vehículos Sostenibles",
-    description:
-      "Compra tu coche de segunda mano, ocasión, eléctricos o Km 0 en Lebauto. Vehículos revisados, con garantía y financiación. Ofrecemos soluciones de carga, financiación especializada y asesoramiento en ayudas y subvenciones para la movilidad sostenible.",
+    title: "Lebauto | Concesionario de Coches Eléctricos y de Segunda Mano | Vehículos Sostenibles",
+    description: "Compra tu coche de segunda mano, ocasión, eléctricos o Km 0 en Lebauto. Vehículos revisados, con garantía y financiación. Ofrecemos soluciones de carga, financiación especializada y asesoramiento en ayudas y subvenciones para la movilidad sostenible.",
     type: "website",
     locale: "es_ES",
     url: "https://lebauto.vercel.app",
@@ -1871,76 +1852,34 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <HeroSection />
-      {/* <SearchSection /> */}
-      <ElectricVehiclesSection />
-      {/* <ChatBot /> */}
-      <SellYourCarSection />
-      <RentingBanner />
-      <ElectricChargersSection />
-      <ChargersAdvisorBanner />
-      <BrandGrid />
-      <DudasAdvisorBanner />
-      <TestimonialsSection />
-      <LocationsSection />
-      {/* <ContactButtons estado="desktop" /> */}
+      <ScrollToTopOnMount />
+      <HomePageSections /> 
 
-      {/* Datos estructurados para SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
+            "@context": "https://schema.org", "@type": "Organization",
             name: "Lebauto",
-            description:
-              "Concesionario de Coches Eléctricos y de Segunda Mano. Especialistas en vehículos eléctricos de segunda mano, km0 y nuevos. Ofrecemos soluciones de carga, financiación especializada y asesoramiento en ayudas y subvenciones para la movilidad sostenible.",
+            description: "Concesionario de Coches Eléctricos y de Segunda Mano. Especialistas en vehículos eléctricos de segunda mano, km0 y nuevos. Ofrecemos soluciones de carga, financiación especializada y asesoramiento en ayudas y subvenciones para la movilidad sostenible.",
             url: "https://lebauto.vercel.app",
             telephone: "+34912345678",
             address: {
-              "@type": "PostalAddress",
-              streetAddress: "Avenida de los Coches, 123",
-              addressLocality: "Madrid",
-              postalCode: "28001",
-              addressCountry: "ES",
+              "@type": "PostalAddress", streetAddress: "Avenida de los Coches, 123",
+              addressLocality: "Madrid", postalCode: "28001", addressCountry: "ES",
             },
-            geo: {
-              "@type": "GeoCoordinates",
-              latitude: "40.4168",
-              longitude: "-3.7038",
-            },
+            geo: { "@type": "GeoCoordinates", latitude: "40.4168", longitude: "-3.7038" },
             openingHoursSpecification: [
-              {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: [
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                ],
-                opens: "09:00",
-                closes: "20:00",
-              },
-              {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: "Saturday",
-                opens: "10:00",
-                closes: "14:00",
-              },
+              { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "20:00" },
+              { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "10:00", closes: "14:00" },
             ],
-            sameAs: [
-              "https://www.facebook.com/lebauto",
-              "https://www.instagram.com/lebauto",
-              "https://twitter.com/lebauto",
-            ],
+            sameAs: ["https://www.facebook.com/lebauto", "https://www.instagram.com/lebauto", "https://twitter.com/lebauto"],
           }),
         }}
       />
     </>
   );
 }
-
 ```
 
 # src/app/actions/actions.ts
@@ -3102,7 +3041,7 @@ import { JSX, useState } from "react";
 import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
 
 export default function ContactButtons({ estado }: { estado: string }) {
-  const [isChatOpen, setIsChatOpen] = useState(false); // Estado para el chatbot
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const toggleChatbot = () => {
     setIsChatOpen((prev) => !prev);
@@ -3538,6 +3477,55 @@ export function PaginationControls({
     </div>
   );
 }
+```
+
+# src/components/ScrollToTopOnMount.tsx
+
+```tsx
+"use client";
+
+import { useEffect } from 'react';
+import { useUXStore } from '@/lib/uxStore'; 
+
+const SESSION_STORAGE_KEY = 'hasScrolledToTopOnceThisSession'; 
+
+const ScrollToTopOnMount: React.FC = () => {
+  const { hasAnimatedHomePageOnce, setHasAnimatedHomePageOnce } = useUXStore();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof window.performance !== "undefined") {
+      const navigationEntries = window.performance.getEntriesByType("navigation");
+      const navigationEntry = navigationEntries[0] as PerformanceNavigationTiming | undefined; 
+
+      const navigationType = navigationEntry?.type;
+
+      const hasVisitedInSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
+
+      if (navigationType === 'navigate' || navigationType === 'reload' || !hasVisitedInSession) {
+        if (!hasVisitedInSession) {
+            console.log("ScrollToTop: First visit to Home this session or fresh load. Scrolling to top & allowing animations.");
+        } else {
+            console.log(`ScrollToTop: Fresh load (${navigationType}). Scrolling to top & allowing animations.`);
+        }
+
+        window.history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+        sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
+        if (!hasAnimatedHomePageOnce) {
+            setHasAnimatedHomePageOnce(false);
+        }
+      } else { 
+        console.log(`ScrollToTop: Navigating back or already visited this session (${navigationType}). Restoring scroll & skipping initial animations.`);
+        window.history.scrollRestoration = 'auto';
+        setHasAnimatedHomePageOnce(true); 
+      }
+    }
+  }, [setHasAnimatedHomePageOnce]); 
+
+  return null;
+};
+
+export default ScrollToTopOnMount;
 ```
 
 # src/components/SellCarForm.tsx
@@ -13213,6 +13201,7 @@ import Image from "next/image";
 import { Link as ViewTransitionsLink } from "next-view-transitions";
 import { AnimatePresence } from "framer-motion";
 import CurvedNavPanel from "../curved-mobile-menu/components/CurvedNavPanel";
+import Link from "next/link";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -13271,7 +13260,7 @@ export default function Navbar() {
               : "justify-end"
           }`}
         >
-          <ViewTransitionsLink
+          <Link
             href="/"
             className={`text-2xl font-bold ${
               menuOpen ? "block" : scrolled ? "block" : "hidden"
@@ -13285,7 +13274,7 @@ export default function Navbar() {
               priority
               className="w-[50px] h-auto md:w-[70px]"
             />
-          </ViewTransitionsLink>
+          </Link>
 
           <div className="hidden md:flex items-center gap-x-4 lg:gap-x-6 text-sm">
             <ViewTransitionsLink href="/" className="hover:opacity-70 py-2">
@@ -13574,7 +13563,7 @@ export default function NavLink({ data, isActive, setSelectedIndicator, closeMen
         animate={isActive ? "open" : "closed"}
         className="w-2.5 h-2.5 bg-black rounded-full absolute -left-[20px] sm:-left-[30px]"
       />
-      <ViewTransitionsLink href={href} onClick={closeMenu} className="text-black hover:text-gray-500 transition-colors">
+      <ViewTransitionsLink href={href} onClick={closeMenu} className="text-black hover:text-gray-500 transition-colors w-full">
         {title}
       </ViewTransitionsLink>
     </motion.div>
@@ -13585,10 +13574,15 @@ export default function NavLink({ data, isActive, setSelectedIndicator, closeMen
 # src/features/home/components/BrandGrid.tsx
 
 ```tsx
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { useMediaQuery } from "@/hooks/useMediaQuery"; 
 
-const brands = [
+const brandsData = [ 
   { name: "Tesla", logo: "/logos-coches/tesla-logo.png" },
   { name: "Volkswagen", logo: "/logos-coches/vw-logo.png" },
   { name: "BMW", logo: "/logos-coches/bmw-logo.png" },
@@ -13603,14 +13597,62 @@ const brands = [
   { name: "Toyota", logo: "/logos-coches/toyota-logo.png" },
 ];
 
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const cardItemVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
+};
+
+const buttonVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.3 } },
+};
+
+
 export default function BrandGrid() {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const isMobile = useMediaQuery("(max-width: 767px)"); 
+
+  const brandsToShow = isMobile ? brandsData.slice(0, 6) : brandsData;
+
   return (
-    <section className="py-20">
+    <motion.section
+      className="py-20"
+      ref={ref}
+      variants={sectionVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+    >
       <div className="container mx-auto flex flex-col items-center gap-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-center">
+        <motion.h2
+          className="text-2xl md:text-3xl font-bold text-center"
+          variants={titleVariants}
+        >
           Encuentra tu marca favorita
-        </h2>
-        <div
+        </motion.h2>
+        <motion.div
           className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 xl:p-4"
           role="region"
           aria-labelledby="brand-grid-title"
@@ -13618,24 +13660,33 @@ export default function BrandGrid() {
           <h2 id="brand-grid-title" className="sr-only">
             Marcas de coches disponibles
           </h2>
-          {brands.map((brand, index) => (
-            <BrandCard key={brand.name} brand={brand} hidden={index >= 6} />
+          {brandsToShow.map((brand, index) => (
+            <motion.div
+              key={brand.name}
+              variants={cardItemVariants}
+              initial="hidden"
+              animate={inView ? "visible" : "hidden"} 
+            >
+              <BrandCard brand={brand} hidden={!isMobile && index >= 6} />
+            </motion.div>
           ))}
-        </div>
-        <Link
-          href="/coches-segunda-mano"
-          className="bg-black text-white font-semibold px-8 py-3 text-base md:text-lg rounded-lg hover:bg-gray-300 transition-colors hover:text-black w-max"
-        >
-          Ver todas las marcas
-        </Link>
+        </motion.div>
+        <motion.div variants={buttonVariants}>
+          <Link
+            href="/coches-segunda-mano"
+            className="bg-black text-white font-semibold px-8 py-3 text-base md:text-lg rounded-lg hover:bg-gray-300 transition-colors hover:text-black w-max"
+          >
+            Ver todas las marcas
+          </Link>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
 function BrandCard({
   brand,
-  hidden,
+  hidden, 
 }: {
   brand: { name: string; logo: string };
   hidden: boolean;
@@ -13644,7 +13695,7 @@ function BrandCard({
     <Link
       href={`/coches-segunda-mano?brand=${brand.name}`}
       className={`bg-gray-300 rounded-lg p-4 flex flex-col items-center gap-3 hover:shadow-md hover:border-gray-600 hover:border-4 border-4 border-transparent transition-shadow 
-      ${hidden ? "hidden md:flex" : ""}`}
+      ${hidden ? "hidden" : "flex"} md:flex`} 
       aria-label={`Explorar coches de la marca ${brand.name}`}
     >
       <div className="w-20 h-14 xl:w-24 xl:h-16 relative">
@@ -13660,7 +13711,6 @@ function BrandCard({
     </Link>
   );
 }
-
 ```
 
 # src/features/home/components/CategoriesSection.tsx
@@ -13827,39 +13877,72 @@ export default function CategoriesSection() {
 import Link from "next/link";
 import { ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer";
+
+const bannerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1, 
+    },
+  },
+};
+
+const childVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
 
 export default function ChargersAdvisorBanner() {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1, 
+  });
+
   return (
-    <section className="container mx-auto">
+    <motion.section
+      className="container mx-auto"
+      ref={ref}
+      variants={bannerVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"} 
+    >
       <div className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100">
         <div className="flex flex-col md:flex-row items-center">
           <div className="p-8 md:px-12 w-full">
-            <div className="flex items-center gap-4 mb-4">
+            <motion.div className="flex items-center gap-4 mb-4" variants={childVariants}>
               <div className="inline-flex items-center justify-center p-2 bg-blue-100 rounded-full">
                 <Zap className="h-5 w-5 text-blue-600" />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold">
+              <motion.h3 className="text-2xl md:text-3xl font-bold" variants={childVariants}>
                 Asesoramiento personalizado en soluciones de carga
-              </h3>
-            </div>
-            <p className="text-gray-600 mb-6">
+              </motion.h3>
+            </motion.div>
+            <motion.p className="text-gray-600 mb-6" variants={childVariants}>
               Nuestros expertos te ayudarán a encontrar la solución de carga
               perfecta para tu vehículo eléctrico, adaptada a tus necesidades
               específicas.
-            </p>
-            <Button className="group" asChild>
-              <Link href="/contacto">
-                Solicitar asesoramiento
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
+            </motion.p>
+            <motion.div variants={childVariants}>
+              <Button className="group" asChild>
+                <Link href="/contacto">
+                  Solicitar asesoramiento
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </motion.div>
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
-
 ```
 
 # src/features/home/components/DudasAdvisorBanner.tsx
@@ -13870,25 +13953,56 @@ export default function ChargersAdvisorBanner() {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+const bannerContentVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      staggerChildren: 0.15, 
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const childVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
 
 export default function DudasAdvisorBanner() {
   return (
     <section className="container mx-auto display flex items-center justify-center">
-      <div className="bg-[#e63946] rounded-xl overflow-hidden shadow-lg w-[400px] md:w-[990px]">
+      <motion.div
+        className="bg-[#e63946] rounded-xl overflow-hidden shadow-lg w-[400px] md:w-[990px]"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }} 
+        variants={bannerContentVariants}
+      >
         <div className="relative flex flex-col md:flex-row items-center">
           <div className="flex flex-col items-center justify-center w-full z-[1] px-4 py-8 md:pl-4 md:py-0 md:pr-0 lg:pl-12">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-4">
-              ¿Dudas entre tantos coches?
-            </h3>
-            <Button
-              className="bg-white text-[#193f58] hover:bg-blue-50"
-              size="lg"
-              asChild
+            <motion.h3
+              className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-4"
+              variants={childVariants}
             >
-              <Link href="/renting">Te llamamos</Link>
-            </Button>
+              ¿Dudas entre tantos coches?
+            </motion.h3>
+            <motion.div variants={childVariants}>
+              <Button
+                className="bg-white text-[#193f58] hover:bg-blue-50"
+                size="lg"
+                asChild
+              >
+                <Link href="/renting">Te llamamos</Link>
+              </Button>
+            </motion.div>
           </div>
-          <div className="w-full h-36 md:h-48">
+          <motion.div className="w-full h-36 md:h-48" variants={childVariants}> 
             <div className="absolute bottom-0 left-0 w-full flex justify-end">
               <Image
                 src="/dudas-rojo.png"
@@ -13899,13 +14013,12 @@ export default function DudasAdvisorBanner() {
                 priority
               />
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
-
 ```
 
 # src/features/home/components/ElectricShargersSection.tsx
@@ -13929,6 +14042,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Charger } from "@/lib/definitions";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer"; 
 
 const chargers: Charger[] = [
   {
@@ -14000,9 +14115,38 @@ const chargers: Charger[] = [
   },
 ];
 
+const sectionContainerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const headerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const chargerCardVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
 export default function ElectricChargersSection() {
   const [hasMounted, setHasMounted] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  const { ref, inView } = useInView({
+    triggerOnce: true, 
+    threshold: 0.1, 
+  });
 
   useEffect(() => {
     setHasMounted(true);
@@ -14013,9 +14157,15 @@ export default function ElectricChargersSection() {
   }
 
   return (
-    <section className="py-20">
+    <motion.section
+      className="py-20"
+      ref={ref}
+      variants={sectionContainerVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"} 
+    >
       <div className="container mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <motion.div className="text-center max-w-3xl mx-auto mb-12" variants={headerVariants}>
           <Badge className="mb-4" variant="outline">
             <Zap className="h-3 w-3 mr-1" /> Soluciones de carga
           </Badge>
@@ -14023,14 +14173,16 @@ export default function ElectricChargersSection() {
           <p className="text-lg text-muted-foreground">
             Ofrecemos soluciones de carga completas para tu vehículo eléctrico, desde la instalación hasta el mantenimiento.
           </p>
-        </div>
+        </motion.div>
 
         {isDesktop ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {chargers.map((charger) => (
-              <ChargerCard key={charger.id} charger={charger} />
+              <motion.div key={charger.id} variants={chargerCardVariants}>
+                <ChargerCard charger={charger} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
           <div className="relative overflow-hidden">
             <Carousel
@@ -14044,17 +14196,19 @@ export default function ElectricChargersSection() {
               <CarouselContent>
                 {chargers.map((charger) => (
                   <CarouselItem key={charger.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                    <ChargerCard charger={charger} />
+                    <motion.div variants={chargerCardVariants}> 
+                      <ChargerCard charger={charger} />
+                    </motion.div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:block left-2 z-10" />
-              <CarouselNext className="hidden md:block right-2 z-10" />
+              <CarouselPrevious className="hidden md:flex left-2 z-10" />
+              <CarouselNext className="hidden md:flex right-2 z-10" />
             </Carousel>
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -14122,7 +14276,6 @@ function ChargerCard({ charger }: { charger: Charger }) {
     </Card>
   );
 }
-
 ```
 
 # src/features/home/components/ElectricVehiclesSection.tsx
@@ -14138,6 +14291,7 @@ import { fetchElectricVehicles } from "@/app/supabase/supabase";
 import type { Car } from "@/lib/definitions";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -14146,12 +14300,49 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
 import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
+import { motion } from "framer-motion";
+import { useCarouselStore } from "@/lib/carouselStore";
 
-export default function ElectricVehiclesSection() {
+const sectionContainerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const headerItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const carCardVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const CAROUSEL_ID = "electricVehiclesCarousel"; 
+
+interface ElectricVehiclesSectionProps {
+  shouldAnimateEntry?: boolean;
+}
+
+export default function ElectricVehiclesSection({shouldAnimateEntry = true}: ElectricVehiclesSectionProps) {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [mounted, setMounted] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const initialAnimState = shouldAnimateEntry ? "hidden" : "visible";
+
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
+  const { setActiveSlide, getActiveSlide } = useCarouselStore();
 
   useEffect(() => {
     setMounted(true);
@@ -14169,30 +14360,67 @@ export default function ElectricVehiclesSection() {
         setIsLoading(false);
       }
     };
-
     loadElectricVehicles();
   }, []);
+
+  useEffect(() => {
+    if (!carouselApi || !mounted) {
+      return;
+    }
+
+    const savedIndex = getActiveSlide(CAROUSEL_ID);
+    if (typeof savedIndex === 'number' && savedIndex >= 0 && savedIndex < electricVehicles.length) {
+      console.log(`[${CAROUSEL_ID}] Restaurando al índice:`, savedIndex);
+      carouselApi.scrollTo(savedIndex, true); 
+    }
+
+    const handleSelect = () => {
+      const selectedIndex = carouselApi.selectedScrollSnap();
+      console.log(`[${CAROUSEL_ID}] Diapositiva seleccionada:`, selectedIndex);
+      setActiveSlide(CAROUSEL_ID, selectedIndex);
+    };
+
+    carouselApi.on("select", handleSelect);
+    return () => {
+      carouselApi.off("select", handleSelect);
+    };
+  }, [carouselApi, mounted, getActiveSlide, setActiveSlide, electricVehicles.length]);
+
 
   if (!mounted) {
     return null;
   }
 
+  const viewportSettings = {
+    once: true,
+    amount: isMobile ? 0.05 : 0.1
+  };
+
   return (
-    <section className="py-20">
+    <motion.section
+      className="py-20"
+      id="electric-vehicles-section"
+      variants={sectionContainerVariants}
+      initial={initialAnimState}
+      whileInView="visible"
+      viewport={viewportSettings}
+    >
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div>
+          <motion.div variants={headerItemVariants}>
             <h2 className="text-3xl font-bold">¿Buscas un vehículo eléctrico?</h2>
             <p className="text-muted-foreground mt-2">
               Descubre nuestra selección de vehículos 100% eléctricos
             </p>
-          </div>
-          <Button variant="outline" className="group" asChild>
-            <Link href="/coches-segunda-mano?fuel=Eléctrico">
-              Ver todos los vehículos eléctricos
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
+          </motion.div>
+          <motion.div variants={headerItemVariants}>
+            <Button variant="outline" className="group" asChild>
+              <Link href="/coches-segunda-mano?fuel=Eléctrico">
+                Ver todos los vehículos eléctricos
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </motion.div>
         </div>
 
         {isLoading ? (
@@ -14208,7 +14436,7 @@ export default function ElectricVehiclesSection() {
                 className="w-full"
                 opts={{
                   align: "start",
-                  loop: true,
+                  loop: true, 
                   containScroll: false,
                 }}
               >
@@ -14219,60 +14447,68 @@ export default function ElectricVehiclesSection() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-2 z-10" />
-                <CarouselNext className="right-2 z-10" />
+                <CarouselPrevious className="hidden md:flex left-2 z-10 " />
+                <CarouselNext className="hidden md:flex right-2 z-10" />
               </Carousel>
             </div>
           )
         ) : (
           <>
-            {/* Vista de escritorio: Grid */}
             {isDesktop && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {electricVehicles.map((vehicle) => (
-                  <CarCardGrid key={vehicle.id} car={vehicle} />
+                  <motion.div
+                    key={vehicle.id}
+                    variants={carCardVariants}
+                  >
+                    <CarCardGrid car={vehicle} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
-
-            {/* Vista móvil y tablet: Carrusel */}
-            {!isDesktop && (
+            {!isDesktop && electricVehicles.length > 0 && ( 
               <div className="relative overflow-hidden">
                 <Carousel
                   className="w-full"
                   opts={{
                     align: "start",
-                    loop: true,
+                    loop: true, 
                     containScroll: false,
                   }}
+                  setApi={setCarouselApi} 
                 >
                   <CarouselContent>
                     {electricVehicles.map((vehicle) => (
                       <CarouselItem key={vehicle.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                        <CarCardGrid car={vehicle} />
+                        <motion.div variants={carCardVariants}>
+                          <CarCardGrid car={vehicle} />
+                        </motion.div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="hidden md:block left-2 z-10" />
-                  <CarouselNext className="hidden md:block right-2 z-10" />
+                  <CarouselPrevious className="hidden md:flex left-2 z-10 " />
+                  <CarouselNext className="hidden md:flex right-2 z-10" />
                 </Carousel>
               </div>
             )}
           </>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }
-
 ```
 
 # src/features/home/components/HeroSection.tsx
 
 ```tsx
+"use client";
+
 import { ebGaramond, montserrat } from "@/utils/fonts";
 import { Battery, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import React from "react"; 
 
 const btnLink = [
   {
@@ -14290,7 +14526,7 @@ const btnLink = [
     label: "Renting",
     ariaLabel: "Ver opciones de renting",
   },
-]
+];
 
 const cardsData = [
   {
@@ -14309,6 +14545,36 @@ const cardsData = [
     icon: <ShieldCheck className="size-4 md:size-8 text-white" />,
   },
 ];
+
+const textRevealVariants = {
+  hidden: { clipPath: 'inset(0 100% 0 0)' }, 
+  visible: { clipPath: 'inset(0 0% 0 0)', transition: { duration: 0.8, ease: 'easeOut' } } 
+};
+
+const buttonContainerVariants = {
+  hidden: { opacity: 0 }, 
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1, 
+      delayChildren: 1.5 
+    }
+  }
+};
+
+const individualButtonVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
+
+const cardVariants = {
+  initial: { opacity: 0, x: -50 },
+  animate: (index: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.5, delay: 1 + index * 0.2 },
+  }),
+};
 
 export default function HeroSection() {
   return (
@@ -14338,35 +14604,54 @@ export default function HeroSection() {
       <div className="relative flex flex-col justify-between z-10 container mx-auto px-0 pb-0 pt-16 md:px-8 md:pb-12 md:pt-24 flex-1">
         <div className="max-w-2xl flex flex-col items-center gap-6 mt-2 md:mt-20 short:mt-4 ">
           <div className="flex flex-col items-center gap-1">
-            <h1
-              className={`${montserrat.className} text-4xl md:text-5xl lg:text-6xl text-center font-extrabold text-white`}
+            <motion.h1
+              className={`${montserrat.className} text-4xl md:text-5xl lg:text-6xl text-center font-extrabold text-white overflow-hidden`}
+              variants={textRevealVariants}
+              initial="hidden"
+              animate="visible"
+              style={{ whiteSpace: 'nowrap' }}
             >
               LEBAUTO
-            </h1>
-            <p
-              className={`${ebGaramond.className} italic max-md:font-semibold text-2xl md:text-3xl lg:text-5xl text-gray-200`}
+            </motion.h1>
+            <motion.p
+              className={`${ebGaramond.className} italic max-md:font-semibold text-2xl md:text-3xl lg:text-5xl text-gray-200 overflow-hidden`}
+              variants={textRevealVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.3, ...textRevealVariants.visible.transition }}
+              style={{ whiteSpace: 'nowrap' }}
             >
               La referencia en coches eléctricos
-            </p>
+            </motion.p>
           </div>
-          <div className="flex items-center gap-2">
+          <motion.div
+            className="flex items-center gap-2"
+            variants={buttonContainerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {btnLink.map((btn, index) => (
-              <Link
-                key={index}
-                href={btn.href}
-                className="bg-white text-black font-semibold px-4 py-2 text-base md:text-lg rounded-[0.5rem] hover:opacity-80 w-[100px] text-center"
-                aria-label={btn.ariaLabel}
-              >
-                {btn.label}
-              </Link>
+              <motion.div key={index} variants={individualButtonVariants}>
+                <Link
+                  href={btn.href}
+                  className="bg-white text-black font-semibold px-4 py-2 text-base md:text-lg rounded-[0.5rem] hover:opacity-80 w-[100px] text-center"
+                  aria-label={btn.ariaLabel}
+                >
+                  {btn.label}
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-2 md:gap-6 mt-8 max-w-5xl mx-auto pb-6 px-4 md:p-0">
           {cardsData.map((card, index) => (
-            <div
+            <motion.div
               key={index}
               className="md:bg-black/40 backdrop-blur-sm p-2 md:p-6 rounded-xl flex items-center gap-4 text-white"
+              variants={cardVariants}
+              initial="initial"
+              animate="animate"
+              custom={index}
             >
               <div className="bg-white/10 p-3 rounded-full">{card.icon}</div>
               <div>
@@ -14377,11 +14662,50 @@ export default function HeroSection() {
                   {card.description}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
     </section>
+  );
+}
+```
+
+# src/features/home/components/HomePageSections.tsx
+
+```tsx
+"use client";
+
+import { useUXStore } from "@/lib/uxStore";
+
+import ElectricVehiclesSection from "@/features/home/components/ElectricVehiclesSection";
+import SellYourCarSection from "@/features/home/components/SellYourCarSection";
+import RentingBanner from "@/features/home/components/RentingBanner";
+import ElectricChargersSection from "@/features/home/components/ElectricShargersSection";
+import ChargersAdvisorBanner from "@/features/home/components/ChargersAdvisorBanner";
+import BrandGrid from "@/features/home/components/BrandGrid";
+import DudasAdvisorBanner from "@/features/home/components/DudasAdvisorBanner";
+import TestimonialsSection from "@/features/home/components/TestimonialsSection";
+import LocationsSection from "@/features/home/components/LocationsSection";
+import HeroSection from "./HeroSection";
+
+export default function HomePageSections() {
+  const { hasAnimatedHomePageOnce } = useUXStore();
+  const shouldAnimate = !hasAnimatedHomePageOnce;
+
+  return (
+    <>
+      <HeroSection />
+      <ElectricVehiclesSection shouldAnimateEntry={shouldAnimate} />
+      <SellYourCarSection />
+      <RentingBanner />
+      <ElectricChargersSection />
+      <ChargersAdvisorBanner />
+      <BrandGrid />
+      <DudasAdvisorBanner />
+      <TestimonialsSection />
+      <LocationsSection />
+    </>
   );
 }
 
@@ -14395,6 +14719,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Clock } from "lucide-react"
 import { useEffect, useState } from "react"
+import { motion } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery"; 
+
 
 type Location = {
   id: number
@@ -14452,10 +14779,36 @@ const locations: Location[] = [
     hours: ["Lunes a viernes de 9:00 a 20:00"],
     hoursWeekend: ["Sábados de 10:00 a 14:00"],
   },
-]
+];
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const cardItemVariants = { 
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
 
 export default function LocationsSection() {
   const [mounted, setMounted] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   useEffect(() => {
     setMounted(true);
@@ -14463,10 +14816,26 @@ export default function LocationsSection() {
 
   if (!mounted) return null;
 
+  const viewportSettings = {
+    once: true,
+    amount: isMobile ? 0.05 : 0.1
+  };
+
   return (
-    <section className="pb-20">
+    <motion.section
+      className="pb-20"
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportSettings} 
+    >
       <div className="container mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Encuentra tu centro Lebauto</h2>
+        <motion.h2
+          className="text-2xl md:text-3xl font-bold mb-8 text-center"
+          variants={titleVariants}
+        >
+          Encuentra tu centro Lebauto
+        </motion.h2>
           <div className="relative overflow-hidden flex justify-center items-center">
             <Carousel
               className="w-full md:max-w-[88%] lg:max-w-[91%] static"
@@ -14479,7 +14848,9 @@ export default function LocationsSection() {
               <CarouselContent>
                 {locations.map((location) => (
                   <CarouselItem key={location.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                    <LocationCard location={location} />
+                    <motion.div variants={cardItemVariants}> 
+                      <LocationCard location={location} />
+                    </motion.div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -14488,7 +14859,7 @@ export default function LocationsSection() {
             </Carousel>
           </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
@@ -14533,8 +14904,6 @@ function LocationCard({ location }: { location: Location }) {
     </Card>
   )
 }
-
-
 ```
 
 # src/features/home/components/RentingBanner.tsx
@@ -14546,31 +14915,65 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer"; 
+
+const sectionContainerVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+      when: "beforeChildren", 
+      staggerChildren: 0.15, 
+    },
+  },
+};
+
+const contentVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
 
 export default function RentingBanner() {
+  const { ref, inView } = useInView({
+    triggerOnce: true, 
+    threshold: 0.1, 
+  });
+
   return (
-    <section className="sm:pt-16 container mx-auto flex items-center justify-center">
+    <motion.section
+      className="sm:pt-16 container mx-auto flex items-center justify-center"
+      ref={ref}
+      variants={sectionContainerVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"} 
+    >
       <div className="bg-gradient-to-r from-[#708ba0] to-[#193f58] rounded-xl overflow-hidden shadow-lg w-[400px] md:w-[1440px]">
         <div className="relative flex flex-col md:flex-row items-center">
-          <div className="p-8 lg:pr-16 md:px-12 md:w-1/2 lg:w-2/3">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+          <motion.div className="p-8 lg:pr-16 md:px-12 md:w-1/2 lg:w-2/3" variants={contentVariants}>
+            <motion.h3 className="text-2xl md:text-3xl font-bold text-white mb-4" variants={contentVariants}>
               ¡Renting a tu medida sin entrada inicial!
-            </h3>
-            <p className="text-blue-100 mb-6">
+            </motion.h3>
+            <motion.p className="text-blue-100 mb-6" variants={contentVariants}>
               Disfruta de tu vehículo con todo incluido: seguro, mantenimiento,
               asistencia y mucho más por una cuota mensual fija.
-            </p>
-            <Button
-              className="bg-white text-[#193f58] hover:bg-blue-50"
-              size="lg"
-              asChild
-            >
-              <Link href="/renting">
-                Más información
-                <ArrowRight className="ml-2 h-4 w-4 text-[#193f58]" />
-              </Link>
-            </Button>
-          </div>
+            </motion.p>
+            <motion.div variants={contentVariants}>
+              <Button
+                className="bg-white text-[#193f58] hover:bg-blue-50"
+                size="lg"
+                asChild
+              >
+                <Link href="/renting">
+                  Más información
+                  <ArrowRight className="ml-2 h-4 w-4 text-[#193f58]" />
+                </Link>
+              </Button>
+            </motion.div>
+          </motion.div>
           <div className="md:w-1/2 lg:w-1/3 w-full h-64 md:h-auto">
             <div className="absolute bottom-0 left-0 w-full flex justify-end">
               <Image
@@ -14585,10 +14988,9 @@ export default function RentingBanner() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
-
 ```
 
 # src/features/home/components/RentingInfoSection.tsx
@@ -15031,10 +15433,14 @@ export default function SearchSection() {
 # src/features/home/components/SellYourCarSection.tsx
 
 ```tsx
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const benefits = [
   "Valoración gratuita de tu vehículo",
@@ -15044,53 +15450,155 @@ const benefits = [
   "Nos encargamos de todo el proceso",
 ];
 
+const sectionOverallVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.1 } },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut", delay: 0.2 } 
+  }
+};
+
+const descriptionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.4 } }, 
+};
+
+const listContainerVariants = {
+  hidden: {}, 
+  visible: {
+    transition: {
+      delayChildren: 0.6,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const listItemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: "easeOut" } },
+};
+
+const buttonVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut", delay: 0.2 } },
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut", delay: 0.1 } },
+};
+
+const infoCardVariants = {
+  hidden: { opacity: 0, y: 25 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: 0.4 } },
+};
+
 export default function SellYourCarSection() {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const mobileTopPadding = "pt-20";
+  const viewportAmountGeneral = 0.15;
+  const buttonViewportAmount = isDesktop ? 0.4 : 0.2;
+
   return (
-    <section className="pb-20 sm:pt-20" role="region" aria-labelledby="sell-your-car-title">
-      <div className="container mx-auto grid md:grid-cols-2 gap-28 md:gap-12 items-center">
-        <div className="order-2 md:order-1">
-          <h2 id="sell-your-car-title" className="text-3xl md:text-4xl font-bold mb-6">
+    <motion.section
+      className="pb-20 sm:pt-20 initially-hidden"
+      role="region"
+      aria-labelledby="sell-your-car-title"
+      variants={sectionOverallVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.05 }}
+    >
+      <div className="container mx-auto grid md:grid-cols-2 gap-x-12 pt gap-y-8 md:gap-y-12 items-center">
+        <div className={`order-2 md:order-1 ${!isDesktop ? mobileTopPadding : ""}`}>
+          <motion.h2
+            id="sell-your-car-title"
+            className="text-3xl md:text-4xl font-bold mb-6" 
+            variants={titleVariants} 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: viewportAmountGeneral }}
+          >
             Gestionamos la venta de tu coche
-          </h2>
-          <p className="text-lg text-gray-700 mb-8">
+          </motion.h2>
+
+          <motion.p
+            className="text-lg text-gray-700 mb-8"
+            variants={descriptionVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: viewportAmountGeneral }}
+          >
             ¿Quieres vender tu coche sin complicaciones? Nosotros nos encargamos de todo el proceso, desde la
             valoración hasta la gestión de la documentación, para que tú solo tengas que preocuparte de recibir el dinero.
-          </p>
+          </motion.p>
 
-          <ul className="space-y-3 mb-8">
-            {benefits.map((benefit, index) => (
-              <li key={index} className="flex items-center gap-3">
+          <motion.ul
+            className="space-y-3 mb-8"
+            variants={listContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: viewportAmountGeneral }}
+          >
+            {benefits.map((benefit) => (
+              <motion.li key={benefit} className="flex items-center gap-3" variants={listItemVariants}>
                 <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                 <span>{benefit}</span>
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
 
-          <Button asChild size="lg" className="group" aria-label="Ir a la página de gestión de venta">
-            <Link href="/gestion-de-venta">
-              Vender mi coche
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
+          <motion.div
+            variants={buttonVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: buttonViewportAmount }}
+          >
+            <Button asChild size="lg" className="group" aria-label="Ir a la página de gestión de venta">
+              <Link href="/gestion-de-venta">
+                Vender mi coche
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </motion.div>
         </div>
 
         <div className="order-1 md:order-2 relative flex justify-center">
-          <div className="relative w-full max-w-xs md:max-w-lg h-[250px] md:h-[500px] rounded-lg overflow-hidden shadow-xl">
-            <Image 
-              src="/seccion-gestion-coche.webp" 
-              alt="Imagen de la gestión de venta de coches" 
-              fill 
-              className="object-cover" 
-              priority 
+          <motion.div
+            className="relative w-full max-w-xs md:max-w-lg h-[250px] md:h-[500px] rounded-lg overflow-hidden shadow-xl"
+            variants={imageVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: viewportAmountGeneral }}
+          >
+            <Image
+              src="/seccion-gestion-coche.webp"
+              alt="Imagen de la gestión de venta de coches"
+              fill
+              className="object-cover"
+              priority
             />
-          </div>
-          <div className="absolute -bottom-[5.5rem] md:-bottom-6 -right-2 md:left-auto md:right-6 bg-primary text-white p-4 rounded-lg shadow-lg text-center w-48 md:w-auto">
+          </motion.div>
+          <motion.div
+            className="absolute -bottom-[5.5rem] md:-bottom-6 -right-2 md:left-auto md:right-6 bg-primary text-white p-4 rounded-lg shadow-lg text-center w-48 md:w-auto"
+            variants={infoCardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }} 
+          >
             <p className="text-xl font-bold">¡Valoración gratuita!</p>
             <p>Sin compromiso</p>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 ```
@@ -15177,9 +15685,11 @@ export default function SubsidiesSection() {
 
 ```tsx
 "use client";
-import React, { useEffect, useRef, useState } from "react";
 
-// Sample testimonial data
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion"; 
+import { useInView } from "react-intersection-observer"; 
+
 const testimonials = [
   {
     id: 1,
@@ -15210,34 +15720,46 @@ const testimonials = [
   },
 ];
 
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const carouselContainerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut", delay: 0.2 } },
+};
+
 const TestimonialsSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
   const testimonialRef = useRef<HTMLDivElement>(null);
 
+  const { ref: inViewTriggerRef, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("opacity-100");
-            entry.target.classList.remove("opacity-0");
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
     if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+      (inViewTriggerRef as React.RefCallback<HTMLDivElement>)(sectionRef.current);
     }
+  }, [inViewTriggerRef]);
 
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -15266,12 +15788,24 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section ref={sectionRef} className="py-20">
+    <motion.section
+      className="py-20"
+      ref={sectionRef}
+      variants={sectionVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"} 
+    >
       <div className="container mx-auto">
-        <h2 className="text-2xl sm:text-3xl mx-auto w-full font-bold text-center mb-4">
+        <motion.h2
+          className="text-2xl sm:text-3xl mx-auto w-full font-bold text-center mb-4"
+          variants={titleVariants}
+        >
           Las opiniones de nuestros clientes
-        </h2>
-        <div className="max-w-4xl mx-auto relative">
+        </motion.h2>
+        <motion.div
+          className="max-w-4xl mx-auto relative"
+          variants={carouselContainerVariants}
+        >
           <div
             ref={testimonialRef}
             className="relative overflow-hidden min-h-[480px] sm:min-h-[370px] md:min-h-[270px] lg:min-h-[240px]"
@@ -15328,14 +15862,13 @@ const TestimonialsSection = () => {
               />
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
 export default TestimonialsSection;
-
 ```
 
 # src/features/home/components/WhyElectricSection.tsx
@@ -15854,6 +16387,30 @@ export function useYearDebounce({ minYear, maxYear, setMinYear, setMaxYear, setF
     
       return { debouncedValidateMaxYear, debouncedValidateMinYear };
 }
+```
+
+# src/lib/carouselStore.ts
+
+```ts
+import { create } from 'zustand';
+
+interface CarouselState {
+  activeSlideIndexes: Record<string, number>;
+  setActiveSlide: (carouselId: string, index: number) => void;
+  getActiveSlide: (carouselId: string) => number | undefined;
+}
+
+export const useCarouselStore = create<CarouselState>((set, get) => ({
+  activeSlideIndexes: {},
+  setActiveSlide: (carouselId, index) =>
+    set((state) => ({
+      activeSlideIndexes: {
+        ...state.activeSlideIndexes,
+        [carouselId]: index,
+      },
+    })),
+  getActiveSlide: (carouselId) => get().activeSlideIndexes[carouselId],
+}));
 ```
 
 # src/lib/chat-flows/buyCarFlow.ts
@@ -17152,6 +17709,22 @@ export const createClient = async () => {
 
 ```
 
+# src/lib/uxStore.ts
+
+```ts
+import { create } from 'zustand';
+
+interface UXState {
+  hasAnimatedHomePageOnce: boolean;
+  setHasAnimatedHomePageOnce: (animated: boolean) => void;
+}
+
+export const useUXStore = create<UXState>((set) => ({
+  hasAnimatedHomePageOnce: false,
+  setHasAnimatedHomePageOnce: (animated) => set({ hasAnimatedHomePageOnce: animated }),
+}));
+```
+
 # src/lib/validations.ts
 
 ```ts
@@ -17218,7 +17791,7 @@ html {
   background-color: var(--bg-primary);
 }
 
-body.filters-open-no-navbar nav { 
+body.filters-open-no-navbar nav {
   display: none !important;
 }
 
@@ -17236,6 +17809,7 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -17349,6 +17923,7 @@ input[type="number"]::-webkit-outer-spin-button {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -17357,24 +17932,28 @@ input[type="number"]::-webkit-outer-spin-button {
 @layer utilities {
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #d1d5db #ffffff; 
+    scrollbar-color: #d1d5db #ffffff;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px; 
+    width: 6px;
     background-color: transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full; 
+    @apply bg-gray-300 rounded-full;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-white; 
+    @apply bg-white;
   }
 
   .custom-scrollbar::-webkit-scrollbar-button {
-    display: none; 
+    display: none;
+  }
+
+  .initially-hidden {
+    opacity: 0;
   }
 }
 

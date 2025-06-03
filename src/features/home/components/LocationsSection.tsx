@@ -1,11 +1,8 @@
 "use client"
-
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Clock } from "lucide-react"
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer"; 
 
 type Location = {
   id: number
@@ -65,37 +62,8 @@ const locations: Location[] = [
   },
 ]
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-      when: "beforeChildren",
-      staggerChildren: 0.08, 
-    },
-  },
-};
-
-const titleVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
-const cardItemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
 export default function LocationsSection() {
   const [mounted, setMounted] = useState(false);
-
-  const { ref, inView } = useInView({
-    triggerOnce: true, 
-    threshold: 0.1, 
-  });
 
   useEffect(() => {
     setMounted(true);
@@ -104,20 +72,9 @@ export default function LocationsSection() {
   if (!mounted) return null;
 
   return (
-    <motion.section
-      className="pb-20"
-      ref={ref}
-      variants={sectionVariants}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-    >
+    <section className="pb-20">
       <div className="container mx-auto">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold mb-8 text-center"
-          variants={titleVariants}
-        >
-          Encuentra tu centro Lebauto
-        </motion.h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Encuentra tu centro Lebauto</h2>
           <div className="relative overflow-hidden flex justify-center items-center">
             <Carousel
               className="w-full md:max-w-[88%] lg:max-w-[91%] static"
@@ -130,18 +87,16 @@ export default function LocationsSection() {
               <CarouselContent>
                 {locations.map((location) => (
                   <CarouselItem key={location.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                    <motion.div variants={cardItemVariants}>
-                      <LocationCard location={location} />
-                    </motion.div>
+                    <LocationCard location={location} />
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:block left-2 z-10" />
-              <CarouselNext className="hidden md:block right-2 z-10" />
+              <CarouselPrevious className="hidden md:flex left-2 z-10" />
+              <CarouselNext className="hidden md:flex right-2 z-10" />
             </Carousel>
           </div>
       </div>
-    </motion.section>
+    </section>
   )
 }
 
@@ -186,3 +141,4 @@ function LocationCard({ location }: { location: Location }) {
     </Card>
   )
 }
+

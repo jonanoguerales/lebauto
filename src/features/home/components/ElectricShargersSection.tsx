@@ -16,33 +16,31 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Charger } from "@/lib/definitions";
-import { motion } from "framer-motion"; 
-import { useInView } from "react-intersection-observer"; 
 
 const chargers: Charger[] = [
   {
     id: "1",
     name: "Cargador Doméstico Básico",
-    power: "7.4 kW",
-    type: "Tipo 2",
-    price: 899,
-    installationPrice: 350,
+    power_kw: 7.4 ,
+    connector_type: "Tipo 2",
+    price_eur: 899,
+    installation_cost_eur: 350,
     features: [
       "Instalación en garaje privado",
       "Carga completa en 6-8 horas",
       "Compatible con todos los vehículos eléctricos",
       "Gestión inteligente de carga",
     ],
-    image: "/cargadores/cargador2.png",
+    image_url: "/cargadores/cargador2.png",
     category: "home",
   },
   {
     id: "2",
     name: "Cargador Doméstico Avanzado",
-    power: "11 kW",
-    type: "Tipo 2",
-    price: 1299,
-    installationPrice: 450,
+    power_kw: 11,
+    connector_type: "Tipo 2",
+    price_eur: 1299,
+    installation_cost_eur: 450,
     features: [
       "Instalación en garaje privado",
       "Carga completa en 4-6 horas",
@@ -50,16 +48,16 @@ const chargers: Charger[] = [
       "Gestión inteligente de carga",
       "Conectividad WiFi y control por app",
     ],
-    image: "/cargadores/cargador3.png",
+    image_url: "/cargadores/cargador3.png",
     category: "home",
   },
   {
     id: "3",
     name: "Cargador Comunitario",
-    power: "22 kW",
-    type: "Tipo 2",
-    price: 1899,
-    installationPrice: 750,
+    power_kw: 22,
+    connector_type: "Tipo 2",
+    price_eur: 1899,
+    installation_cost_eur: 750,
     features: [
       "Instalación en garajes comunitarios",
       "Carga completa en 2-4 horas",
@@ -67,16 +65,16 @@ const chargers: Charger[] = [
       "Sistema de identificación de usuarios",
       "Gestión de pagos y facturación",
     ],
-    image: "/cargadores/cargador1.png",
+    image_url: "/cargadores/cargador1.png",
     category: "community",
   },
   {
     id: "4",
     name: "Cargador Rápido Comercial",
-    power: "50 kW",
-    type: "CCS / CHAdeMO",
-    price: 24999,
-    installationPrice: 3500,
+    power_kw: 50,
+    connector_type: "CCS / CHAdeMO",
+    price_eur: 24999,
+    installation_cost_eur: 3500,
     features: [
       "Instalación en negocios y comercios",
       "Carga del 10% al 80% en 30 minutos",
@@ -84,43 +82,14 @@ const chargers: Charger[] = [
       "Sistema de pago integrado",
       "Monitorización remota y mantenimiento",
     ],
-    image: "/cargadores/cargador4.png",
+    image_url: "/cargadores/cargador4.png",
     category: "business",
   },
 ];
 
-const sectionContainerVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: "easeOut",
-      when: "beforeChildren",
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const headerVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-const chargerCardVariants = {
-  hidden: { opacity: 0, y: 50, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
-};
-
 export default function ElectricChargersSection() {
   const [hasMounted, setHasMounted] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-
-  const { ref, inView } = useInView({
-    triggerOnce: true, 
-    threshold: 0.1, 
-  });
 
   useEffect(() => {
     setHasMounted(true);
@@ -131,15 +100,9 @@ export default function ElectricChargersSection() {
   }
 
   return (
-    <motion.section
-      className="py-20"
-      ref={ref}
-      variants={sectionContainerVariants}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"} 
-    >
+    <section className="py-20">
       <div className="container mx-auto">
-        <motion.div className="text-center max-w-3xl mx-auto mb-12" variants={headerVariants}>
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <Badge className="mb-4" variant="outline">
             <Zap className="h-3 w-3 mr-1" /> Soluciones de carga
           </Badge>
@@ -147,16 +110,14 @@ export default function ElectricChargersSection() {
           <p className="text-lg text-muted-foreground">
             Ofrecemos soluciones de carga completas para tu vehículo eléctrico, desde la instalación hasta el mantenimiento.
           </p>
-        </motion.div>
+        </div>
 
         {isDesktop ? (
-          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {chargers.map((charger) => (
-              <motion.div key={charger.id} variants={chargerCardVariants}>
-                <ChargerCard charger={charger} />
-              </motion.div>
+              <ChargerCard key={charger.id} charger={charger} />
             ))}
-          </motion.div>
+          </div>
         ) : (
           <div className="relative overflow-hidden">
             <Carousel
@@ -170,19 +131,17 @@ export default function ElectricChargersSection() {
               <CarouselContent>
                 {chargers.map((charger) => (
                   <CarouselItem key={charger.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                    <motion.div variants={chargerCardVariants}> 
-                      <ChargerCard charger={charger} />
-                    </motion.div>
+                    <ChargerCard charger={charger} />
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:block left-2 z-10" />
-              <CarouselNext className="hidden md:block right-2 z-10" />
+              <CarouselPrevious className="hidden md:flex left-2 z-10" />
+              <CarouselNext className="hidden md:flex right-2 z-10" />
             </Carousel>
           </div>
         )}
       </div>
-    </motion.section>
+    </section>
   );
 }
 
@@ -191,7 +150,7 @@ function ChargerCard({ charger }: { charger: Charger }) {
     <Card className="overflow-hidden h-full flex flex-col">
       <div className="relative h-48">
         <Image
-          src={charger.image || "/placeholder.svg"}
+          src={charger.image_url || "/placeholder.svg"}
           alt={charger.name}
           fill
           className="object-contain p-4"
@@ -216,14 +175,14 @@ function ChargerCard({ charger }: { charger: Charger }) {
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-1">{charger.name}</h3>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{charger.power}</span>
+            <span>{charger.power_kw} kw</span>
             <span>•</span>
-            <span>{charger.type}</span>
+            <span>{charger.connector_type}</span>
           </div>
         </div>
 
         <ul className="space-y-2 mb-6 flex-grow">
-          {charger.features.map((feature, index) => (
+          {charger.features?.map((feature, index) => (
             <li key={index} className="flex items-start gap-2 text-sm">
               <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
               <span>{feature}</span>
@@ -235,11 +194,11 @@ function ChargerCard({ charger }: { charger: Charger }) {
           <div className="flex justify-between items-end mb-4">
             <div>
               <p className="text-sm text-muted-foreground">Precio</p>
-              <p className="text-[#e63946] text-xl font-bold">{charger.price.toLocaleString()} €</p>
+              <p className="text-[#e63946] text-xl font-bold">{charger.price_eur.toLocaleString()} €</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Instalación desde</p>
-              <p className="text-lg font-semibold">{charger.installationPrice} €</p>
+              <p className="text-lg font-semibold">{charger.installation_cost_eur} €</p>
             </div>
           </div>
           <Button className="w-full" variant="outline" asChild>

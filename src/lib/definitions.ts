@@ -155,15 +155,18 @@ export type ContactFormState = {
   submitting: boolean
 }
 
-export type Charger = {
+export interface Charger {
   id: string;
   name: string;
-  power: string;
-  type: string;
-  price: number;
-  installationPrice: number;
-  features: string[];
-  image: string;
+  brand?: string;
+  power_kw: number; 
+  connector_type: string; 
+  price_eur: number;
+  installation_cost_eur?: number;
+  features?: string[]; 
+  description?: string;
+  image_url?: string;
   category: "home" | "community" | "business";
-};
+  slug?: string; 
+}
 

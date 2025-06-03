@@ -8,6 +8,7 @@ import { fetchElectricVehicles } from "@/app/supabase/supabase";
 import type { Car } from "@/lib/definitions";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -16,43 +17,20 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
 import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
-import { motion } from "framer-motion"; 
-import { useInView } from "react-intersection-observer"; 
+import { useCarouselStore } from "@/lib/carouselStore"; 
 
-const sectionContainerVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-      when: "beforeChildren", 
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const headerItemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-const carCardVariants = {
-  hidden: { opacity: 0, y: 50, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
-};
+const ELECTRIC_VEHICLES_CAROUSEL_ID = "electricVehiclesSectionCarousel";
 
 export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)"); 
   const [mounted, setMounted] = useState(false);
 
-  const { ref, inView } = useInView({
-    triggerOnce: true, 
-    threshold: 0.1, 
-  });
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
+  const { setActiveSlide, getActiveSlide } = useCarouselStore();
+  const initialCarouselIndex = getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
+
 
   useEffect(() => {
     setMounted(true);
@@ -62,47 +40,61 @@ export default function ElectricVehiclesSection() {
     const loadElectricVehicles = async () => {
       setIsLoading(true);
       try {
-        const vehicles = await fetchElectricVehicles(4);
+        const vehicles = await fetchElectricVehicles(8); 
         setElectricVehicles(vehicles);
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching electric vehicles:", error);
       } finally {
         setIsLoading(false);
       }
     };
-
     loadElectricVehicles();
   }, []);
+
+  useEffect(() => {
+    if (!isDesktop && carouselApi) {
+      const currentStoredIndex = getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
+
+      if (currentStoredIndex !== carouselApi.selectedScrollSnap()) {
+        carouselApi.scrollTo(currentStoredIndex, true); 
+      }
+
+      const onSelect = () => {
+        if (carouselApi) {
+          setActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID, carouselApi.selectedScrollSnap());
+        }
+      };
+      carouselApi.on("select", onSelect);
+
+      return () => {
+        if (carouselApi) { 
+          carouselApi.off("select", onSelect);
+        }
+      };
+    }
+  }, [isDesktop, carouselApi, setActiveSlide, getActiveSlide]); 
+
 
   if (!mounted) {
     return null;
   }
 
   return (
-    <motion.section
-      className="py-20"
-      id="electric-vehicles-section"
-      ref={ref}
-      variants={sectionContainerVariants}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-    >
+    <section className="py-20" id="electric-vehicles-section">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <motion.div variants={headerItemVariants}>
+          <div>
             <h2 className="text-3xl font-bold">¿Buscas un vehículo eléctrico?</h2>
             <p className="text-muted-foreground mt-2">
               Descubre nuestra selección de vehículos 100% eléctricos
             </p>
-          </motion.div>
-          <motion.div variants={headerItemVariants}>
-            <Button variant="outline" className="group" asChild>
-              <Link href="/coches-segunda-mano?fuel=Eléctrico">
-                Ver todos los vehículos eléctricos
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
-          </motion.div>
+          </div>
+          <Button variant="outline" className="group" asChild>
+            <Link href="/coches-segunda-mano?fuel=Eléctrico">
+              Ver todos los vehículos eléctricos
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Button>
         </div>
 
         {isLoading ? (
@@ -114,65 +106,53 @@ export default function ElectricVehiclesSection() {
             </div>
           ) : (
             <div className="relative overflow-hidden">
-              <Carousel
-                className="w-full"
-                opts={{
-                  align: "start",
-                  loop: true,
-                  containScroll: false,
-                }}
-              >
+              <Carousel className="w-full">
                 <CarouselContent>
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <CarouselItem key={i} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <CarouselItem key={i} className="md:basis-[48%] sm:basis-[65%] basis-[85%]">
                       <CarCardSkeleton />
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="hidden md:block left-2 z-10" />
-                <CarouselNext className="hidden md:block right-2 z-10" />
               </Carousel>
             </div>
           )
         ) : (
           <>
-            {isDesktop && (
-              <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {electricVehicles.map((vehicle) => (
-                  <motion.div key={vehicle.id} variants={carCardVariants}>
-                    <CarCardGrid car={vehicle} />
-                  </motion.div>
+            {isDesktop && ( 
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {electricVehicles.slice(0, 4).map((vehicle) => (
+                  <CarCardGrid key={vehicle.id} car={vehicle} />
                 ))}
-              </motion.div>
+              </div>
             )}
 
-            {!isDesktop && (
+            {!isDesktop && ( 
               <div className="relative overflow-hidden">
                 <Carousel
                   className="w-full"
+                  setApi={setCarouselApi}
                   opts={{
                     align: "start",
                     loop: true,
-                    containScroll: false,
+                    startIndex: initialCarouselIndex,
                   }}
                 >
                   <CarouselContent>
                     {electricVehicles.map((vehicle) => (
-                      <CarouselItem key={vehicle.id} className="md:basis-[48%] lg:basis-[32%] sm:basis-[65%] basis-[85%]">
-                        <motion.div variants={carCardVariants}>
-                          <CarCardGrid car={vehicle} />
-                        </motion.div>
+                      <CarouselItem key={vehicle.id} className="md:basis-[48%] sm:basis-[65%] basis-[85%]">
+                        <CarCardGrid car={vehicle} />
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="hidden md:block left-2 z-10" />
-                  <CarouselNext className="hidden md:block right-2 z-10" />
+                  <CarouselPrevious className="hidden sm:flex left-2 z-10" />
+                  <CarouselNext className="hidden sm:flex right-2 z-10" />
                 </Carousel>
               </div>
             )}
           </>
         )}
       </div>
-    </motion.section>
+    </section>
   );
 }
