@@ -93,7 +93,7 @@ export function ImageManagerDialog({
     setIsUploading(true);
     setUploadProgress(0);
 
-    const newImages: string[] = [...images];
+    const newImagesArray: string[] = [...images];
     const totalFiles = files.length;
     let processedFiles = 0;
     let successCount = 0;
@@ -103,31 +103,38 @@ export function ImageManagerDialog({
       try {
         const file = files[i];
         if (!vehicle.id) {
-          console.error("Vehicle ID is undefined");
+          console.error("Vehicle ID is undefined in ImageManagerDialog");
           errorCount++;
-          continue;
+          processedFiles++;
+          setUploadProgress(Math.round((processedFiles / totalFiles) * 100));
+          continue; 
         }
 
-        const imageUrl = await uploadImage(file, `cars/${vehicle.id}`);
+        const imageUrl = await uploadImage(file, 'cars', vehicle.id); 
 
         if (imageUrl) {
-          newImages.push(imageUrl);
+          newImagesArray.push(imageUrl);
           successCount++;
         } else {
           errorCount++;
         }
       } catch (error) {
-        console.error("Error uploading file:", error);
+        console.error("Error uploading file in ImageManagerDialog:", error);
         errorCount++;
       } finally {
-        processedFiles++;
-        setUploadProgress(Math.round((processedFiles / totalFiles) * 100));
+        if (totalFiles > 0) { 
+            processedFiles++;
+            setUploadProgress(Math.round((processedFiles / totalFiles) * 100));
+        }
       }
     }
 
-    setImages(newImages);
+    setImages(newImagesArray); 
     setIsUploading(false);
-    e.target.value = "";
+    if (e.target) { 
+        e.target.value = ""; 
+    }
+
 
     if (successCount > 0) {
       toast({
