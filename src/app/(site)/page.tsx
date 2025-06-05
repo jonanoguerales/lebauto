@@ -6,7 +6,7 @@ import ElectricVehiclesSection from "@/features/home/components/ElectricVehicles
 import HeroSection from "@/features/home/components/HeroSection";
 import LocationsSection from "@/features/home/components/LocationsSection";
 import RentingBanner from "@/features/home/components/RentingBanner";
-import SellYourCarSection from "@/features/home/components/SellYourCarSection";
+import SellYourCarSection from "@/features/home/components/SellYourCarSection"; 
 import TestimonialsSection from "@/features/home/components/TestimonialsSection";
 import { Metadata } from "next";
 
@@ -56,7 +56,6 @@ export default function HomePage() {
       <TestimonialsSection />
       <LocationsSection />
       {/* <ContactButtons estado="desktop" /> */}
-
       {/* Datos estructurados para SEO */}
       <script
         type="application/ld+json"

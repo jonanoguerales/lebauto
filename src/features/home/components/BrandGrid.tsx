@@ -18,7 +18,11 @@ const brands = [
 
 export default function BrandGrid() {
   return (
-    <section className="py-20">
+    <section
+      className="py-20"
+      role="region"
+      aria-labelledby="brand-grid-title"
+    >
       <div className="container mx-auto flex flex-col items-center gap-8">
         <h2 className="text-2xl md:text-3xl font-bold text-center">
           Encuentra tu marca favorita
@@ -32,7 +36,7 @@ export default function BrandGrid() {
             Marcas de coches disponibles
           </h2>
           {brands.map((brand, index) => (
-            <BrandCard key={brand.name} brand={brand} hidden={index >= 6} />
+            <BrandCard key={brand.name} brand={brand} hidden={index >= 6}  />
           ))}
         </div>
         <Link

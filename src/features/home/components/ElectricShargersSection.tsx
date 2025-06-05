@@ -2,25 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-// import Image from "next/image"; // Ya no es necesario aquí directamente
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card"; // Ya no es necesario aquí directamente
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Zap } from "lucide-react"; // Check, Home, Building2 eliminados si no se usan aquí
+import { ArrowRight, Zap } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  type CarouselApi, // Importar CarouselApi
+  type CarouselApi,
 } from "@/components/ui/carousel";
-import type { Charger } from "@/lib/definitions"; // Asegúrate que Charger esté bien definido
-import { fetchChargers } from "@/app/supabase/supabase"; // Necesitaremos esta función
-import ChargerCard from "@/features/chargers/components/ChargerCard"; // Importamos el nuevo ChargerCard
-import { ChargerCardSkeleton } from "@/features/chargers/skeletons/ChargerSkeletons"; // Importamos el skeleton
-import { useCarouselStore } from "@/lib/carouselStore"; // Para persistencia del slide activo
+import type { Charger } from "@/lib/definitions";
+import { fetchChargers } from "@/app/supabase/supabase";
+import ChargerCard from "@/features/chargers/components/ChargerCard";
+import { ChargerCardSkeleton } from "@/features/chargers/skeletons/ChargerSkeletons";
+import { useCarouselStore } from "@/lib/carouselStore";
 
 const CHARGERS_SECTION_CAROUSEL_ID = "homeChargersSectionCarousel";
 
@@ -31,18 +29,35 @@ export default function ElectricChargersSection() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
-  const { setActiveSlide, getActiveSlide } = useCarouselStore();
-  const initialCarouselIndex = getActiveSlide(CHARGERS_SECTION_CAROUSEL_ID) || 0;
+  const { setActiveSlide: setCarouselStoreActiveSlide, getActiveSlide: getCarouselStoreActiveSlide } = useCarouselStore();
+  
 
+  const [initialCarouselIndex, setInitialCarouselIndex] = useState(() => {
+    return getCarouselStoreActiveSlide(CHARGERS_SECTION_CAROUSEL_ID) || 0;
+  });
 
   useEffect(() => {
     setHasMounted(true);
     const loadChargers = async () => {
       setIsLoading(true);
       try {
-        // Podrías querer filtrar por categoría aquí o tomar solo algunos
         const fetchedChargers = await fetchChargers();
-        setChargers(fetchedChargers.slice(0, 4)); // Tomar solo 4 para la home, por ejemplo
+        const itemsToDisplay = fetchedChargers.slice(0, 8);
+        setChargers(itemsToDisplay);
+
+        const numItems = itemsToDisplay.length;
+        let currentStoredIndex = getCarouselStoreActiveSlide(CHARGERS_SECTION_CAROUSEL_ID) || 0;
+
+        if (numItems > 0) {
+          if (currentStoredIndex >= numItems) {
+            currentStoredIndex = numItems - 1;
+            setCarouselStoreActiveSlide(CHARGERS_SECTION_CAROUSEL_ID, currentStoredIndex);
+          }
+        } else {
+          currentStoredIndex = 0;
+          setCarouselStoreActiveSlide(CHARGERS_SECTION_CAROUSEL_ID, currentStoredIndex);
+        }
+        setInitialCarouselIndex(currentStoredIndex);
       } catch (error) {
         console.error("Error fetching chargers for home section:", error);
       } finally {
@@ -53,44 +68,55 @@ export default function ElectricChargersSection() {
   }, []);
 
   useEffect(() => {
-    if (!isDesktop && carouselApi) {
-      const currentStoredIndex = getActiveSlide(CHARGERS_SECTION_CAROUSEL_ID) || 0;
-      if (currentStoredIndex !== carouselApi.selectedScrollSnap()) {
-        carouselApi.scrollTo(currentStoredIndex, true);
-      }
-      const onSelect = () => {
-        if (carouselApi) {
-          setActiveSlide(CHARGERS_SECTION_CAROUSEL_ID, carouselApi.selectedScrollSnap());
-        }
-      };
-      carouselApi.on("select", onSelect);
-      return () => {
-        if (carouselApi) {
-          carouselApi.off("select", onSelect);
-        }
-      };
+    if (isDesktop || !carouselApi) {
+      return;
     }
-  }, [isDesktop, carouselApi, setActiveSlide, getActiveSlide]);
+    if (carouselApi.selectedScrollSnap() !== initialCarouselIndex) {
+      carouselApi.scrollTo(initialCarouselIndex, true);
+    }
+    const onSelect = () => {
+      if (carouselApi) {
+        setCarouselStoreActiveSlide(
+          CHARGERS_SECTION_CAROUSEL_ID,
+          carouselApi.selectedScrollSnap()
+        );
+      }
+    };
+    carouselApi.on("select", onSelect);
+    return () => {
+      if (carouselApi) {
+        carouselApi.off("select", onSelect);
+      }
+    };
+  }, [isDesktop, carouselApi, setCarouselStoreActiveSlide, initialCarouselIndex]);
+
 
 
   if (!hasMounted) {
-    return null; // O un skeleton básico si prefieres para evitar FOUC
+    return null;
   }
 
   return (
-    <section className="py-20">
+    <section
+      className="py-20"
+      role="region"
+      aria-labelledby="electric-chargers-title"
+    >
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
           <div>
             <Badge className="mb-3" variant="outline">
               <Zap className="h-3 w-3 mr-1.5" /> Soluciones de Carga
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">Cargadores para tu Vehículo Eléctrico</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Cargadores para tu Vehículo Eléctrico
+            </h2>
             <p className="text-lg text-muted-foreground mt-2 max-w-2xl">
-              Instalamos el punto de carga que necesitas en tu vivienda, comunidad o empresa.
+              Instalamos el punto de carga que necesitas en tu vivienda,
+              comunidad o empresa.
             </p>
           </div>
-           <Button variant="outline" className="group shrink-0" asChild>
+          <Button variant="outline" className="group shrink-0" asChild>
             <Link href="/cargadores">
               Ver todos los cargadores
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -99,17 +125,21 @@ export default function ElectricChargersSection() {
         </div>
 
         {isLoading ? (
-          // Skeleton mientras cargan los datos
           isDesktop ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 4 }).map((_, i) => <ChargerCardSkeleton key={i} />)}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <ChargerCardSkeleton key={i} />
+              ))}
             </div>
           ) : (
             <div className="relative overflow-hidden">
-               <Carousel className="w-full" opts={{ align: "start" }}>
+              <Carousel className="w-full" opts={{ align: "start" }}>
                 <CarouselContent>
                   {Array.from({ length: 2 }).map((_, i) => (
-                    <CarouselItem key={i} className="md:basis-[48%] sm:basis-[65%] basis-[85%]">
+                    <CarouselItem
+                      key={i}
+                      className="md:basis-[48%] sm:basis-[65%] basis-[85%]"
+                    >
                       <ChargerCardSkeleton />
                     </CarouselItem>
                   ))}
@@ -118,42 +148,45 @@ export default function ElectricChargersSection() {
             </div>
           )
         ) : chargers.length === 0 ? (
-            <p className="text-center text-muted-foreground">No hay cargadores destacados en este momento.</p>
+          <p className="text-center text-muted-foreground">
+            No hay cargadores destacados en este momento.
+          </p>
+        ) : isDesktop ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {chargers.slice(0,4).map((charger) => (
+              <ChargerCard key={charger.id} charger={charger} />
+            ))}
+          </div>
         ) : (
-          // Renderizar cargadores una vez cargados
-          isDesktop ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {chargers.map((charger) => (
-                <ChargerCard key={charger.id} charger={charger} />
-              ))}
-            </div>
-          ) : (
-            <div className="relative overflow-hidden">
-              <Carousel
-                className="w-full"
-                setApi={setCarouselApi}
-                opts={{
-                  align: "start",
-                  loop: chargers.length > 1, // Activar loop si hay más de un item
-                  startIndex: initialCarouselIndex,
-                }}
-              >
-                <CarouselContent>
-                  {chargers.map((charger) => (
-                    <CarouselItem key={charger.id} className="md:basis-[48%] sm:basis-[65%] basis-[85%]">
-                      <ChargerCard charger={charger} />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                {chargers.length > 1 && ( // Mostrar botones solo si hay más de un item
-                  <>
-                    <CarouselPrevious className="hidden md:flex left-2 z-10" />
-                    <CarouselNext className="hidden md:flex right-2 z-10" />
-                  </>
-                )}
-              </Carousel>
-            </div>
-          )
+          <div className="relative overflow-hidden">
+            <Carousel
+              className="w-full"
+              setApi={setCarouselApi}
+              opts={{
+                align: "start",
+                loop: chargers.length > 1,
+                startIndex: initialCarouselIndex,
+                duration: 25,
+              }}
+            >
+              <CarouselContent>
+                {chargers.map((charger) => (
+                  <CarouselItem
+                    key={charger.id}
+                    className="md:basis-[48%] sm:basis-[65%] basis-[85%]"
+                  >
+                    <ChargerCard charger={charger} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {chargers.length > 1 && (
+                <>
+                  <CarouselPrevious className="hidden md:flex left-2 z-10" />
+                  <CarouselNext className="hidden md:flex right-2 z-10" />
+                </>
+              )}
+            </Carousel>
+          </div>
         )}
       </div>
     </section>

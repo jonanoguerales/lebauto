@@ -17,31 +17,46 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
 import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
-import { useCarouselStore } from "@/lib/carouselStore"; 
+import { useCarouselStore } from "@/lib/carouselStore";
 
 const ELECTRIC_VEHICLES_CAROUSEL_ID = "electricVehiclesSectionCarousel";
+
 
 export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const isDesktop = useMediaQuery("(min-width: 1024px)"); 
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [mounted, setMounted] = useState(false);
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
   const { setActiveSlide, getActiveSlide } = useCarouselStore();
-  const initialCarouselIndex = getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
 
+  const [initialCarouselIndex, setInitialCarouselIndex] = useState(() => {
+    return getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
+  });
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  useEffect(() => {
     const loadElectricVehicles = async () => {
       setIsLoading(true);
       try {
-        const vehicles = await fetchElectricVehicles(8); 
+        const vehicles = await fetchElectricVehicles(8);
         setElectricVehicles(vehicles);
+
+        const numItems = vehicles.length;
+        let currentStoredIndex = getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
+        
+        if (numItems > 0) {
+            if (currentStoredIndex >= numItems) {
+                currentStoredIndex = numItems - 1;
+                setActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID, currentStoredIndex);
+            }
+        } else {
+            currentStoredIndex = 0;
+            setActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID, currentStoredIndex);
+        }
+        setInitialCarouselIndex(currentStoredIndex);
+
       } catch (error) {
         console.error("Error fetching electric vehicles:", error);
       } finally {
@@ -52,27 +67,30 @@ export default function ElectricVehiclesSection() {
   }, []);
 
   useEffect(() => {
-    if (!isDesktop && carouselApi) {
-      const currentStoredIndex = getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
-
-      if (currentStoredIndex !== carouselApi.selectedScrollSnap()) {
-        carouselApi.scrollTo(currentStoredIndex, true); 
-      }
-
-      const onSelect = () => {
-        if (carouselApi) {
-          setActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID, carouselApi.selectedScrollSnap());
-        }
-      };
-      carouselApi.on("select", onSelect);
-
-      return () => {
-        if (carouselApi) { 
-          carouselApi.off("select", onSelect);
-        }
-      };
+    if (isDesktop || !carouselApi) {
+      return;
     }
-  }, [isDesktop, carouselApi, setActiveSlide, getActiveSlide]); 
+    
+    if (carouselApi.selectedScrollSnap() !== initialCarouselIndex) {
+        carouselApi.scrollTo(initialCarouselIndex, true); 
+    }
+
+    const onSelect = () => {
+      if (carouselApi) {
+        setActiveSlide(
+          ELECTRIC_VEHICLES_CAROUSEL_ID,
+          carouselApi.selectedScrollSnap()
+        );
+      }
+    };
+    carouselApi.on("select", onSelect);
+
+    return () => {
+      if (carouselApi) {
+        carouselApi.off("select", onSelect);
+      }
+    };
+  }, [isDesktop, carouselApi, setActiveSlide, initialCarouselIndex]);
 
 
   if (!mounted) {
@@ -80,7 +98,7 @@ export default function ElectricVehiclesSection() {
   }
 
   return (
-    <section className="py-20" id="electric-vehicles-section">
+    <section className="py-20">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
@@ -89,7 +107,7 @@ export default function ElectricVehiclesSection() {
               Descubre nuestra selección de vehículos 100% eléctricos
             </p>
           </div>
-          <Button variant="outline" className="group" asChild>
+          <Button variant="outline" className="group shrink-0" asChild>
             <Link href="/coches-segunda-mano?fuel=Eléctrico">
               Ver todos los vehículos eléctricos
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -106,7 +124,7 @@ export default function ElectricVehiclesSection() {
             </div>
           ) : (
             <div className="relative overflow-hidden">
-              <Carousel className="w-full">
+              <Carousel className="w-full" opts={{align: "start"}}>
                 <CarouselContent>
                   {Array.from({ length: 2 }).map((_, i) => (
                     <CarouselItem key={i} className="md:basis-[48%] sm:basis-[65%] basis-[85%]">
@@ -117,9 +135,11 @@ export default function ElectricVehiclesSection() {
               </Carousel>
             </div>
           )
-        ) : (
+        ) : electricVehicles.length === 0 ? (
+            <p className="text-center text-muted-foreground">No hay vehículos eléctricos destacados en este momento.</p>
+        ) :(
           <>
-            {isDesktop && ( 
+            {isDesktop && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {electricVehicles.slice(0, 4).map((vehicle) => (
                   <CarCardGrid key={vehicle.id} car={vehicle} />
@@ -127,15 +147,16 @@ export default function ElectricVehiclesSection() {
               </div>
             )}
 
-            {!isDesktop && ( 
+            {!isDesktop && (
               <div className="relative overflow-hidden">
                 <Carousel
                   className="w-full"
                   setApi={setCarouselApi}
                   opts={{
                     align: "start",
-                    loop: true,
+                    loop: electricVehicles.length > 1,
                     startIndex: initialCarouselIndex,
+                    duration: 25,
                   }}
                 >
                   <CarouselContent>
@@ -145,8 +166,12 @@ export default function ElectricVehiclesSection() {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="hidden sm:flex left-2 z-10" />
-                  <CarouselNext className="hidden sm:flex right-2 z-10" />
+                  {electricVehicles.length > 1 && (
+                    <>
+                      <CarouselPrevious className="hidden sm:flex left-2 z-10" />
+                      <CarouselNext className="hidden sm:flex right-2 z-10" />
+                    </>
+                  )}
                 </Carousel>
               </div>
             )}

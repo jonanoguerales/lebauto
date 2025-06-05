@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,6 @@ const benefits = [
   "Sin complicaciones ni intermediarios",
   "Nos encargamos de todo el proceso",
 ];
-
 export default function SellYourCarSection() {
   return (
     <section className="pb-20 sm:pt-20" role="region" aria-labelledby="sell-your-car-title">
@@ -33,7 +34,7 @@ export default function SellYourCarSection() {
             ))}
           </ul>
 
-          <Button asChild size="lg" className="group" aria-label="Ir a la página de gestión de venta">
+          <Button asChild size="lg" className="group" aria-label="Ir a la página de gestión de venta" >
             <Link href="/gestion-de-venta">
               Vender mi coche
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
