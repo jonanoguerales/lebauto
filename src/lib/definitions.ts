@@ -5,37 +5,44 @@ export interface Car {
   variant?: string;
   condition: string;
   price: number;
-  location?: string; 
+  location?: string;
   year: number;
-  mileage: number; 
+  mileage: number;
   bodyType: string;
-  fuel: string; 
-  transmission: string; 
+  fuel: string;
+  transmission: string;
   environmentalTag: string;
   drivetrain?: string;
   power?: number;
-  engineDisplacement?: number; 
+  engineDisplacement?: number;
   color: string;
   doors: number;
   seats: number;
-  electricRange?: number; 
-  batteryCapacity?: number; 
-  chargingTime?: number; 
-  fastCharge?: boolean; 
+  electricRange?: number;
+  batteryCapacity?: number;
+  chargingTime?: number;
+  fastCharge?: boolean;
   chargingPort?: string;
-  images: string[]; 
-  ivaDeductible?: boolean; 
-  monthlyPrice?: number; 
+  images: string[];
+  ivaDeductible?: boolean;
+  monthlyPrice?: number;
   financePrice?: number;
-  features?: string[]; 
-  description?: string; 
+  features?: string[];
+  description?: string;
   slug?: string;
+  // dimensions?: { length?: string; width?: string; height?: string };
+  // weight_kg?: number;
+  // trunk_capacity_liters?: string | number; // Puede ser string como "-" o un número
+  // fuel_tank_capacity_liters?: string | number;
+  // max_speed_kmh?: string | number;
+  // acceleration_0_100_sec?: string | number;
+  // fuel_consumption_combined_l_100km?: string | number;
+  // co2_emissions_g_km?: string | number;
 }
 
-
 export interface CatalogClientProps extends FiltersData {
-  allCars: Car[]
-  initialCars: Car[]
+  allCars: Car[];
+  initialCars: Car[];
 }
 
 export interface FilterState {
@@ -44,11 +51,11 @@ export interface FilterState {
   fuel?: string[];
   location?: string[];
   color?: string[];
-  bodyType?: string[]; 
-  doorFrom?: number;   
-  doorTo?: number;     
-  seatFrom?: number;   
-  seatTo?: number;     
+  bodyType?: string[];
+  doorFrom?: number;
+  doorTo?: number;
+  seatFrom?: number;
+  seatTo?: number;
   minPrice?: number;
   maxPrice?: number;
   minYear?: number;
@@ -58,20 +65,20 @@ export interface FilterState {
 }
 
 export interface CarImage {
-  id: string
-  car_id: string
-  image_url: string
-  created_at?: string
+  id: string;
+  car_id: string;
+  image_url: string;
+  created_at?: string;
 }
 
 export interface Feature {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 export interface CarFeature {
-  car_id: string
-  feature_id: string
+  car_id: string;
+  feature_id: string;
 }
 export interface FiltersData {
   brand?: string[];
@@ -79,7 +86,7 @@ export interface FiltersData {
   fuel?: string[];
   location?: string[];
   color?: string[];
-  bodyType?: string[]; 
+  bodyType?: string[];
   transmission?: string[];
   environmentalTag?: string[];
   drivetrain?: string[];
@@ -87,10 +94,10 @@ export interface FiltersData {
   maxPower?: number;
   minEngineDisplacement?: number;
   maxEngineDisplacement?: number;
-  doorFrom?: number;    
-  doorTo?: number;      
-  seatFrom?: number;    
-  seatTo?: number;     
+  doorFrom?: number;
+  doorTo?: number;
+  seatFrom?: number;
+  seatTo?: number;
   minPrice?: number;
   maxPrice?: number;
   minYear?: number;
@@ -100,10 +107,33 @@ export interface FiltersData {
 }
 
 // Claves que son array de string
-export type ArrayFilterKey = "brand" | "model" | "fuel" | "location" | "color" | "bodyType" | "transmission" | "environmentalTag" | "drivetrain";
+export type ArrayFilterKey =
+  | "brand"
+  | "model"
+  | "fuel"
+  | "location"
+  | "color"
+  | "bodyType"
+  | "transmission"
+  | "environmentalTag"
+  | "drivetrain";
 
 // Claves que son numéricas
-export type NumberFilterKey = "minPrice" | "maxPrice" | "minYear" | "maxYear" | "minKm" | "maxKm" | "doorFrom" | "doorTo" | "seatFrom" | "seatTo" | "minPower" | "maxPower" | "minEngineDisplacement" | "maxEngineDisplacement";
+export type NumberFilterKey =
+  | "minPrice"
+  | "maxPrice"
+  | "minYear"
+  | "maxYear"
+  | "minKm"
+  | "maxKm"
+  | "doorFrom"
+  | "doorTo"
+  | "seatFrom"
+  | "seatTo"
+  | "minPower"
+  | "maxPower"
+  | "minEngineDisplacement"
+  | "maxEngineDisplacement";
 
 // Union de todas las claves
 export type FilterKey = ArrayFilterKey | NumberFilterKey;
@@ -126,34 +156,34 @@ export interface FilterStateStore {
 }
 
 export type SellCarFormState = {
-  success: boolean | null
-  message: string
+  success: boolean | null;
+  message: string;
   errors: {
-    email?: string[]
-    name?: string[]
-    phone?: string[]
-    brand?: string[]
-    model?: string[]
-    year?: string[]
-    kilometers?: string[]
-    fuel?: string[]
-    comments?: string[]
-  }
-  submitting: boolean
-}
+    email?: string[];
+    name?: string[];
+    phone?: string[];
+    brand?: string[];
+    model?: string[];
+    year?: string[];
+    kilometers?: string[];
+    fuel?: string[];
+    comments?: string[];
+  };
+  submitting: boolean;
+};
 
 export type ContactFormState = {
-  success: boolean | null
-  message: string
+  success: boolean | null;
+  message: string;
   errors: {
-    name?: string[]
-    surnames?: string[]
-    email?: string[]
-    phone?: string[]
-    message?: string[]
-  }
-  submitting: boolean
-}
+    name?: string[];
+    surnames?: string[];
+    email?: string[];
+    phone?: string[];
+    message?: string[];
+  };
+  submitting: boolean;
+};
 
 export interface Charger {
   id: string;
@@ -165,14 +195,14 @@ export interface Charger {
   installation_cost_eur?: number;
   features?: string[];
   description?: string;
-  image_url?: string; 
+  image_url?: string;
   category: "home" | "community" | "business";
   slug?: string;
-  efficiency?: number; 
+  efficiency?: number;
   dimensions?: string;
   weight_kg?: number;
   warranty_years?: number;
-  compatibility_notes?: string; 
+  compatibility_notes?: string;
   created_at?: string;
 }
 
@@ -194,4 +224,3 @@ export type ChargerFormValues = {
   warranty_years?: number;
   compatibility_notes?: string;
 };
-
