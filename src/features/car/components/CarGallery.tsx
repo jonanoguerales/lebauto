@@ -1,12 +1,18 @@
-// src/components/cars/CarGallery.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react"; 
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X as XIcon, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription, 
+} from "@/components/ui/dialog";
 
 interface CarGalleryProps {
   images: string[];
@@ -17,12 +23,17 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true);
   const [thumbnailLoadingStates, setThumbnailLoadingStates] = useState<Record<number, boolean>>({});
-  const [direction, setDirection] = useState(0); // Para la dirección de la animación de slide
+  const [direction, setDirection] = useState(0);
+
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
+  const [isLightboxImageLoading, setIsLightboxImageLoading] = useState(true);
+  const [lightboxDirection, setLightboxDirection] = useState(0);
 
   const totalImages = images?.length || 0;
 
   useEffect(() => {
-    if (totalImages > 0 && images[currentImageIndex]) { // Verifica que la imagen exista
+    if (totalImages > 0 && images[currentImageIndex]) {
       setIsCurrentImageLoading(true);
     }
   }, [currentImageIndex, images, totalImages]);
@@ -55,9 +66,8 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
     if (totalImages === 0) return;
     const newIndex = (currentImageIndex + newDirection + totalImages) % totalImages;
     if (newIndex !== currentImageIndex) {
-        setDirection(newDirection); // Establece la dirección para la animación
+        setDirection(newDirection);
         setCurrentImageIndex(newIndex);
-        // setIsCurrentImageLoading(true); // Ya se maneja en el useEffect de currentImageIndex
     }
   };
 
@@ -65,10 +75,55 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
     if (index !== currentImageIndex) {
         setDirection(index > currentImageIndex ? 1 : -1);
         setCurrentImageIndex(index);
-        // setIsCurrentImageLoading(true); // Ya se maneja en el useEffect de currentImageIndex
     }
-  }
+  };
 
+  const openLightbox = (index: number) => {
+    setLightboxImageIndex(index);
+    setIsLightboxImageLoading(true);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = useCallback(() => {
+    setIsLightboxOpen(false);
+  }, []);
+
+  const paginateLightbox = (newDirection: number) => {
+    if (totalImages === 0) return;
+    setLightboxDirection(newDirection);
+    setLightboxImageIndex((prevIndex) => {
+        const newIndex = (prevIndex + newDirection + totalImages) % totalImages;
+        setIsLightboxImageLoading(true);
+        return newIndex;
+    });
+  };
+  
+  useEffect(() => {
+    if (isLightboxOpen && images[lightboxImageIndex]) {
+        setIsLightboxImageLoading(true);
+    }
+  }, [lightboxImageIndex, isLightboxOpen, images]);
+
+  const handleLightboxImageLoad = () => setIsLightboxImageLoading(false);
+  const handleLightboxImageError = () => {
+    setIsLightboxImageLoading(false);
+    if (images && images[lightboxImageIndex]) {
+      console.warn(`Error al cargar imagen en lightbox: ${images[lightboxImageIndex]}`);
+    }
+  };
+
+  const imageVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? "100%" : "-100%", opacity: 0, scale: 0.98,
+    }),
+    center: {
+      zIndex: 1, x: 0, opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+    },
+    exit: (direction: number) => ({
+      zIndex: 0, x: direction < 0 ? "100%" : "-100%", opacity: 0, scale: 0.98, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+    }),
+  };
+  
   if (!images || totalImages === 0) {
     return (
       <div className="mb-8">
@@ -82,120 +137,187 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
     );
   }
 
-  // Variantes de animación para la imagen principal
-  const imageVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? "100%" : "-100%",
-      opacity: 0,
-      scale: 0.98, // Un ligero encogimiento al entrar/salir puede ayudar
-    }),
-    center: {
-      zIndex: 1, // La imagen activa debe estar encima
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
-    },
-    exit: (direction: number) => ({
-      zIndex: 0, // La imagen que sale debe estar detrás
-      x: direction < 0 ? "100%" : "-100%",
-      opacity: 0,
-      scale: 0.98,
-      transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
-    }),
-  };
-
   return (
-    <div className="mb-8" role="region" aria-labelledby="gallery-title">
-      <h2 id="gallery-title" className="sr-only">Galería de imágenes del vehículo</h2>
-      
-      <div className="relative h-[200px] xxs:h-[250px] xs:h-[300px] sm:h-[400px] md:h-[500px] rounded-lg overflow-hidden bg-muted">
-        <AnimatePresence initial={false} custom={direction} mode="popLayout"> 
-        {/* mode="popLayout" puede ayudar con cambios de tamaño si las imágenes son diferentes */}
-          <motion.div
-            key={currentImageIndex} // Crucial para que AnimatePresence funcione
-            custom={direction}
-            variants={imageVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            className="absolute inset-0 w-full h-full" // Ocupa todo el espacio del contenedor
-          >
-            {/* Esqueleto para la imagen actual mientras carga */}
-            {isCurrentImageLoading && (
-              <Skeleton className="absolute inset-0 w-full h-full rounded-lg" />
-            )}
-            <Image
-              src={images[currentImageIndex] || "/placeholder.svg"}
-              alt={`${altPrefix} ${currentImageIndex + 1} de ${totalImages}`}
-              fill
-              className={`object-cover transition-opacity duration-150 ${isCurrentImageLoading ? 'opacity-0' : 'opacity-100'}`}
-              priority={currentImageIndex === 0} // Prioridad solo para la primera imagen de la galería
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              sizes="(max-width: 420px) 100vw, (max-width: 520px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 60vw, 66vw" // ¡AJUSTA ESTO!
-            />
-          </motion.div>
-        </AnimatePresence>
+    <>
+      <div className="mb-8" role="region" aria-labelledby="gallery-title">
+        <h2 id="gallery-title" className="sr-only">Galería de imágenes del vehículo</h2>
+        
+        <div 
+            className="relative h-[200px] xxs:h-[250px] xs:h-[300px] sm:h-[400px] md:h-[500px] rounded-lg overflow-hidden bg-muted group cursor-pointer"
+            onClick={() => openLightbox(currentImageIndex)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openLightbox(currentImageIndex);}}
+            tabIndex={0}
+            aria-label="Abrir galería en pantalla completa"
+        >
+          <AnimatePresence initial={false} custom={direction} mode="popLayout"> 
+            <motion.div
+              key={currentImageIndex} 
+              custom={direction}
+              variants={imageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0 w-full h-full" 
+            >
+              {isCurrentImageLoading && (
+                <Skeleton className="absolute inset-0 w-full h-full rounded-lg" />
+              )}
+              <Image
+                src={images[currentImageIndex] || "/placeholder.svg"}
+                alt={`${altPrefix} ${currentImageIndex + 1} de ${totalImages}`}
+                fill
+                className={`object-cover transition-opacity duration-150 ${isCurrentImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                priority={currentImageIndex === 0} 
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+                sizes="(max-width: 420px) 100vw, (max-width: 520px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 60vw, 66vw" 
+              />
+            </motion.div>
+          </AnimatePresence>
 
-        {/* Controles de Navegación y Contador */}
+            <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-black/40 hover:bg-black/60 text-white rounded-full w-9 h-9 sm:w-10 sm:h-10"
+                    aria-label="Expandir imagen"
+                    onClick={(e) => { e.stopPropagation(); openLightbox(currentImageIndex);}} 
+                >
+                    <Expand className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
+            </div>
+
+          {totalImages > 1 && (
+            <>
+              <div className="absolute inset-0 flex items-center justify-between p-1 sm:p-2 z-10 pointer-events-none"> 
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={(e) => { e.stopPropagation(); paginate(-1);}} 
+                  className="bg-black/30 hover:bg-black/50 text-white rounded-full pointer-events-auto w-8 h-8 sm:w-10 sm:h-10" 
+                  aria-label="Imagen anterior"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={(e) => { e.stopPropagation(); paginate(1);}}
+                  className="bg-black/30 hover:bg-black/50 text-white rounded-full pointer-events-auto w-8 h-8 sm:w-10 sm:h-10" 
+                  aria-label="Imagen siguiente"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5" />
+                </Button>
+              </div>
+              <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs z-10">
+                {currentImageIndex + 1} / {totalImages}
+              </div>
+            </>
+          )}
+        </div>
+
         {totalImages > 1 && (
-          <>
-            <div className="absolute inset-0 flex items-center justify-between p-1 sm:p-2 z-10 pointer-events-none"> {/* Contenedor de botones */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => paginate(-1)} 
-                className="bg-black/30 hover:bg-black/50 text-white rounded-full pointer-events-auto w-8 h-8 sm:w-10 sm:h-10" 
-                aria-label="Imagen anterior"
+          <div className="grid grid-cols-4 xs:grid-cols-6 sm:grid-cols-8 gap-1.5 sm:gap-2 mt-2">
+            {images.map((imageSrc, index) => (
+              <button
+                key={`thumb-${index}`}
+                onClick={() => selectThumbnail(index)}
+                className={`relative aspect-square rounded-md overflow-hidden bg-muted
+                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
+                            ${currentImageIndex === index ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-75 transition-opacity"}`}
+                aria-label={`Ver imagen ${index + 1}`}
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => paginate(1)} 
-                className="bg-black/30 hover:bg-black/50 text-white rounded-full pointer-events-auto w-8 h-8 sm:w-10 sm:h-10" 
-                aria-label="Imagen siguiente"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5" />
-              </Button>
-            </div>
-            <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs z-10">
-              {currentImageIndex + 1} / {totalImages}
-            </div>
-          </>
+                {thumbnailLoadingStates[index] && (
+                  <Skeleton className="absolute inset-0 w-full h-full rounded-md" />
+                )}
+                <Image
+                  src={imageSrc || "/placeholder.svg"}
+                  alt={`Miniatura ${index + 1}`}
+                  fill
+                  className={`object-cover transition-opacity duration-150 ${thumbnailLoadingStates[index] ? 'opacity-0' : 'opacity-100'}`}
+                  onLoad={() => handleThumbnailLoad(index)}
+                  onError={() => handleThumbnailError(index)}
+                  sizes="100px"
+                />
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Miniaturas */}
-      {totalImages > 1 && (
-        <div className="grid grid-cols-4 xs:grid-cols-6 sm:grid-cols-8 gap-1.5 sm:gap-2 mt-2">
-          {images.map((imageSrc, index) => (
-            <button
-              key={`thumb-${index}`}
-              onClick={() => selectThumbnail(index)}
-              className={`relative aspect-square rounded-md overflow-hidden bg-muted
-                          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
-                          ${currentImageIndex === index ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-75 transition-opacity"}`}
-              aria-label={`Ver imagen ${index + 1}`}
+      <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
+        <DialogContent className="p-0 m-0 max-w-none w-screen h-screen sm:w-[95vw] sm:h-[95vh] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center border-0 rounded-none sm:rounded-lg">
+          <DialogHeader className="sr-only"> 
+            <DialogTitle>Visor de Imágenes del Vehículo</DialogTitle>
+            <DialogDescription>
+              Navega por las imágenes del vehículo en tamaño completo. Imagen actual {lightboxImageIndex + 1} de {totalImages}.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeLightbox}
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 z-50 text-white hover:bg-white/20 hover:text-white w-10 h-10 sm:w-12 sm:h-12"
+                aria-label="Cerrar galería"
             >
-              {thumbnailLoadingStates[index] && (
-                <Skeleton className="absolute inset-0 w-full h-full rounded-md" />
-              )}
-              <Image
-                src={imageSrc || "/placeholder.svg"}
-                alt={`Miniatura ${index + 1}`}
-                fill
-                className={`object-cover transition-opacity duration-150 ${thumbnailLoadingStates[index] ? 'opacity-0' : 'opacity-100'}`}
-                onLoad={() => handleThumbnailLoad(index)}
-                onError={() => handleThumbnailError(index)}
-                sizes="100px"
-              />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+                <XIcon className="w-6 h-6 sm:w-7 sm:h-7" />
+            </Button>
+
+            <AnimatePresence initial={false} custom={lightboxDirection} mode="popLayout">
+                <motion.div
+                    key={`lightbox-${lightboxImageIndex}`}
+                    custom={lightboxDirection}
+                    variants={imageVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="relative w-[90%] h-[85%] sm:w-[85%] sm:h-[85%]"
+                >
+                    {isLightboxImageLoading && (
+                        <Skeleton className="absolute inset-0 w-full h-full bg-gray-700/50" />
+                    )}
+                    <Image
+                        src={images[lightboxImageIndex] || "/placeholder.svg"}
+                        alt={`${altPrefix} ${lightboxImageIndex + 1} de ${totalImages} (ampliada)`}
+                        fill
+                        className={`object-contain transition-opacity duration-150 ${isLightboxImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                        onLoad={handleLightboxImageLoad}
+                        onError={handleLightboxImageError}
+                        sizes="90vw"
+                    />
+                </motion.div>
+            </AnimatePresence>
+
+            {totalImages > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => paginateLightbox(-1)}
+                  className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-50 bg-black/30 hover:bg-black/50 text-white rounded-full w-10 h-10 sm:w-12 sm:h-12"
+                  aria-label="Imagen anterior en galería"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => paginateLightbox(1)}
+                  className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-50 bg-black/30 hover:bg-black/50 text-white rounded-full w-10 h-10 sm:w-12 sm:h-12"
+                  aria-label="Imagen siguiente en galería"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm z-50">
+                  {lightboxImageIndex + 1} / {totalImages}
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -83,9 +83,9 @@ export default function CarDimensionsPerformance({ car }: CarDimensionsPerforman
   const lineClasses = "absolute bg-slate-400";
 
   return (
-    <div className="py-12 md:py-16 bg-slate-50 rounded-xl my-8 shadow-lg border border-slate-200">
+    <div className="py-8 bg-slate-50 rounded-xl my-8 shadow-lg border border-slate-200">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 md:mb-16 text-slate-800">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8 text-slate-800">
           Descubre tu próximo vehículo
         </h2>
         
@@ -97,7 +97,7 @@ export default function CarDimensionsPerformance({ car }: CarDimensionsPerforman
               <h3 className="relative inline-block text-sm font-semibold uppercase tracking-wider text-muted-foreground bg-slate-50 px-4">Dimensiones</h3>
             </div>
             
-            <div className="flex flex-row justify-center items-end w-full max-w-lg mx-auto gap-x-6 sm:gap-x-8 md:gap-x-10 lg:gap-x-12 mb-6 px-2">
+            <div className="flex flex-row justify-center items-end w-full max-w-lg mx-auto gap-x-6 sm:gap-x-8 md:gap-x-10 lg:gap-x-12 mb-6 px-8">
               <DimensionFigureWithCuesCSS
                 svgSrc="/icons/car-side-silhouette.svg"
                 altText="Dimensiones laterales del vehículo"
@@ -139,7 +139,7 @@ export default function CarDimensionsPerformance({ car }: CarDimensionsPerforman
               <hr className="absolute left-0 right-0 top-1/2 -translate-y-1/2 border-slate-300/80" />
               <h3 className="relative inline-block text-sm font-semibold uppercase tracking-wider text-muted-foreground bg-slate-50 px-4">Prestaciones y Consumo</h3>
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 w-full max-w-xs sm:max-w-sm mx-auto">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-6 w-full max-w-xs sm:max-w-sm mx-auto">
               <PerformanceMetric icon={<TrendingUp className="w-5 h-5 text-sky-500"/>} value={performance.maxSpeed} unit="km/h" label="Velocidad Máxima" />
               <PerformanceMetric icon={<Timer className="w-5 h-5 text-sky-500"/>} value={performance.zeroToHundred} unit="seg" label="0-100km/h" />
               <PerformanceMetric icon={<Droplets className="w-5 h-5 text-sky-500"/>} value={performance.fuelConsumption} unit={car.fuel === "Eléctrico" ? "kWh/100" : "L/100"} label="Consumo Mixto" />

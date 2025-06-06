@@ -44,9 +44,9 @@ export default function CarFinancingSimulator({ car }: CarFinancingSimulatorProp
   }, [selectedPeriod, priceToFinance]);
 
   return (
-    <div className="py-8 md:py-12 my-8 border-t border-b">
+    <div className="space-y-6 pt-6 border-t">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8 text-slate-800">
           Elige la cuota que mejor se te adapta
         </h2>
         <div className="grid lg:grid-cols-[1fr_2fr] gap-8 lg:gap-12 items-center">

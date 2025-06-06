@@ -33,11 +33,9 @@ export default function Navbar() {
   }, [menuOpen]);
 
   useEffect(() => {
-    // Cierra el menú si la ruta cambia
     if (menuOpen) {
       setMenuOpen(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
@@ -45,14 +43,14 @@ export default function Navbar() {
   const isHome = pathname === "/";
 
   const navbarClasses = `fixed top-0 w-screen z-30 transition-all duration-300 ${
-    menuOpen ? "hidden" : // Si el menú está abierto, el navbar principal se oculta para dar paso al menú curvo
+    menuOpen ? "hidden" : 
     isHome
       ? scrolled
-        ? "bg-white shadow-md transition-shadow text-black" // Home con scroll
-        : "bg-transparent text-white" // Home sin scroll
-      : scrolled // No es home
-      ? "bg-white shadow-md transition-shadow text-black" // No es home, con scroll
-      : "bg-white text-black" // No es home, sin scroll
+        ? "bg-white shadow-md transition-shadow text-black" 
+        : "bg-transparent text-white"
+      : scrolled 
+      ? "bg-white shadow-md transition-shadow text-black"
+      : "bg-white text-black"
   }`;
 
   return (
@@ -66,7 +64,7 @@ export default function Navbar() {
           <ViewTransitionsLink
             href="/"
             className={`text-2xl font-bold ${
-              menuOpen ? "block" : scrolled ? "block" : "hidden" // Siempre visible si está abierto o con scroll
+              menuOpen ? "block" : scrolled ? "block" : "hidden" 
             }`}
           >
             <Image
@@ -95,7 +93,7 @@ export default function Navbar() {
               Coches de ocasión
             </ViewTransitionsLink>
             <ViewTransitionsLink
-              href="/cargadores" // Nuevo enlace
+              href="/cargadores" 
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname.startsWith("/cargadores")
                   ? `${isHome && !scrolled && !menuOpen ? "border-white" : "border-primary"} font-semibold`
@@ -135,7 +133,6 @@ export default function Navbar() {
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
           >
-            {/* El ícono del menú se manejará dentro de CurvedNavPanel o aquí si es necesario */}
             <Menu className="h-6 w-6" />
           </button>
         </div>

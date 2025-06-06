@@ -38,6 +38,15 @@ export interface Car {
   // acceleration_0_100_sec?: string | number;
   // fuel_consumption_combined_l_100km?: string | number;
   // co2_emissions_g_km?: string | number;
+  //location?: string; // Nombre general de la ciudad/zona
+  dealership_name?: string; // Nombre específico del concesionario
+  dealership_address?: string; // Dirección completa del concesionario
+  latitude?: number;          // Para el mapa
+  longitude?: number;         // Para el mapa
+  dealership_hours_weekdays?: string;
+  dealership_hours_saturday?: string;
+  dealership_hours_sunday_status?: "Abierto" | "Cerrado" | string; // ej. "Cerrado" o "10:00 a 13:00"
+  dealership_phone?: string;
 }
 
 export interface CatalogClientProps extends FiltersData {
