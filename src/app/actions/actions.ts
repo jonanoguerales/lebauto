@@ -1,28 +1,32 @@
-"use server"
+"use server";
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/lib/supabase/server";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer";
-import { contactFormSchema, sellCarSchema } from "@/lib/validations";
+import {
+  contactFormSchema,
+  type ContactFormData,
+  sellCarSchema,
+} from "@/lib/validations";
 import { createServerClient } from "@supabase/ssr";
+import type { UserData } from "@/lib/chatFlowTypes";
 
-export async function submitSellCarForm(_: any, formData: FormData) {
-  const rawData = Object.fromEntries(formData.entries())
-  const result = sellCarSchema.safeParse(rawData)
-
-  if (!result.success) {
-    return {
-      success: false,
-      message: "Por favor, revisa los campos del formulario.",
-      errors: result.error.flatten().fieldErrors,
-      submitting: false,
-    }
-  }
-
-  const data = result.data
-
+async function sendValuationEmail(
+  data: {
+    name: string;
+    email: string;
+    phone: string;
+    brand: string;
+    model: string;
+    year: string;
+    kilometers: string;
+    fuel: string;
+    comments?: string;
+  },
+  source: "Formulario Web" | "Chatbot" = "Formulario Web"
+) {
   const transporter = nodemailer.createTransport({
     host: process.env.CORREO_HOST,
     port: Number(process.env.CORREO_PORT),
@@ -31,160 +35,190 @@ export async function submitSellCarForm(_: any, formData: FormData) {
       user: process.env.CORREO_USUARIO,
       pass: process.env.CORREO_PASS,
     },
-  })
+  });
 
-  // ------------------------------
-  // PLANTILLA HTML PARA EL CLIENTE
-  // ------------------------------
   const clientEmailHtml = `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Copia de tu Solicitud de Tasación</title>
-      <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #008060; color: #fff; padding: 10px; text-align: center; }
-        .content { padding: 20px; }
-        .footer {
-          margin-top: 20px;
-          font-size: 12px;
-          text-align: center;
-          color: #777;
-          border-top: 1px solid #ddd;
-          padding-top: 20px;
-        }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
-        .logo {
-          width: 80px;
-          margin-bottom: 5px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Confirmación de Solicitud de Tasación</h1>
-        </div>
-        <div class="content">
-          <p>Hola ${data.name},</p>
-          <p>Gracias por contactarnos. Hemos recibido tu solicitud de tasación de vehículo. Aquí tienes una copia de los datos que enviaste:</p>
-          <table>
-            <tr><th>Nombre</th><td>${data.name}</td></tr>
-            <tr><th>Email</th><td>${data.email}</td></tr>
-            <tr><th>Teléfono</th><td>${data.phone}</td></tr>
-            <tr><th>Marca</th><td>${data.brand}</td></tr>
-            <tr><th>Modelo</th><td>${data.model}</td></tr>
-            <tr><th>Año</th><td>${data.year}</td></tr>
-            <tr><th>Kilómetros</th><td>${data.kilometers}</td></tr>
-            <tr><th>Combustible</th><td>${data.fuel}</td></tr>
-            <tr><th>Comentarios</th><td>${data.comments || '-'}</td></tr>
-          </table>
-          <p>En breves momentos nos pondremos en contacto contigo para ofrecerte una valoración personalizada.</p>
-        </div>
-        <div class="footer">
-          <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-          <div><strong>Lebauto</strong></div>
-          <div>© 2025 Lebauto, S.L.</div>
-        </div>
-      </div>
-    </body>
-  </html>
-  `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Copia de tu Solicitud de Tasación</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .header { background-color: #111827; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { padding: 20px; }
+            .footer { margin-top: 20px; font-size: 12px; text-align: center; color: #777; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+            th { width: 120px; color: #555; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Confirmación de Solicitud de Tasación</h1>
+            </div>
+            <div class="content">
+              <p>Hola ${data.name},</p>
+              <p>Gracias por contactarnos. Hemos recibido tu solicitud de tasación de vehículo. Aquí tienes una copia de los datos que enviaste:</p>
+              <table>
+                <tr><th>Nombre</th><td>${data.name}</td></tr>
+                <tr><th>Email</th><td>${data.email}</td></tr>
+                <tr><th>Teléfono</th><td>${data.phone}</td></tr>
+                <tr><th>Marca</th><td>${data.brand}</td></tr>
+                <tr><th>Modelo</th><td>${data.model}</td></tr>
+                <tr><th>Año</th><td>${data.year}</td></tr>
+                <tr><th>Kilómetros</th><td>${data.kilometers}</td></tr>
+                <tr><th>Combustible</th><td>${data.fuel}</td></tr>
+                <tr><th>Comentarios</th><td>${data.comments || "-"}</td></tr>
+              </table>
+              <p>En breves momentos nos pondremos en contacto contigo para ofrecerte una valoración personalizada.</p>
+            </div>
+            <div class="footer">
+              <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
+              <div><strong>Lebauto</strong> © ${new Date().getFullYear()}</div>
+            </div>
+          </div>
+        </body>
+      </html>
+      `;
 
-  // ------------------------------
-  // PLANTILLA HTML PARA LA EMPRESA
-  // ------------------------------
   const companyEmailHtml = `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Nueva Solicitud de Tasación</title>
-      <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #004080; color: #fff; padding: 10px; text-align: center; }
-        .content { padding: 20px; }
-        .footer { margin-top: 20px; font-size: 12px; text-align: center; color: #777; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Nueva Solicitud de Tasación</h1>
-        </div>
-        <div class="content">
-          <p>Se ha recibido la siguiente solicitud:</p>
-          <table>
-            <tr><th>Nombre</th><td>${data.name}</td></tr>
-            <tr><th>Email</th><td>${data.email}</td></tr>
-            <tr><th>Teléfono</th><td>${data.phone}</td></tr>
-            <tr><th>Marca</th><td>${data.brand}</td></tr>
-            <tr><th>Modelo</th><td>${data.model}</td></tr>
-            <tr><th>Año</th><td>${data.year}</td></tr>
-            <tr><th>Kilómetros</th><td>${data.kilometers}</td></tr>
-            <tr><th>Combustible</th><td>${data.fuel}</td></tr>
-            <tr><th>Comentarios</th><td>${data.comments || '-'}</td></tr>
-          </table>
-        </div>
-        <div class="footer">
-          <p>Este correo es confidencial y para uso interno.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-  `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Nueva Solicitud de Tasación (${source})</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .header { background-color: #1d4ed8; color: #fff; padding: 10px; text-align: center; border-radius: 8px 8px 0 0; }
+            h1 { margin: 0; }
+            .content { padding: 20px; }
+            .footer { margin-top: 20px; font-size: 12px; text-align: center; color: #777; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+            th { width: 120px; background-color: #f9f9f9; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Nueva Solicitud de Tasación (desde ${source})</h1>
+            </div>
+            <div class="content">
+              <p>Se ha recibido la siguiente solicitud:</p>
+              <table>
+                <tr><th>Nombre</th><td>${data.name}</td></tr>
+                <tr><th>Email</th><td>${data.email}</td></tr>
+                <tr><th>Teléfono</th><td>${data.phone}</td></tr>
+                <tr><th>Marca</th><td>${data.brand}</td></tr>
+                <tr><th>Modelo</th><td>${data.model}</td></tr>
+                <tr><th>Año</th><td>${data.year}</td></tr>
+                <tr><th>Kilómetros</th><td>${data.kilometers}</td></tr>
+                <tr><th>Combustible</th><td>${data.fuel}</td></tr>
+                <tr><th>Comentarios</th><td>${data.comments || "-"}</td></tr>
+              </table>
+            </div>
+            <div class="footer"><p>Este correo es confidencial y para uso interno.</p></div>
+          </div>
+        </body>
+      </html>
+      `;
+
+  await transporter.sendMail({
+    from: process.env.CORREO_USUARIO,
+    to: process.env.CORREO_USUARIO,
+    subject: `Solicitud de tasación (${source}) - ${data.name}`,
+    html: companyEmailHtml,
+  });
+
+  await transporter.sendMail({
+    from: process.env.CORREO_USUARIO,
+    to: data.email,
+    subject: "Copia de tu solicitud de tasación",
+    html: clientEmailHtml,
+  });
+}
+
+export async function submitSellCarForm(_: any, formData: FormData) {
+  const rawData = Object.fromEntries(formData.entries());
+  const result = sellCarSchema.safeParse(rawData);
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: "Por favor, revisa los campos del formulario.",
+      errors: result.error.flatten().fieldErrors,
+      submitting: false,
+    };
+  }
 
   try {
-    await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: process.env.CORREO_USUARIO,
-      subject: `Solicitud de tasación de coche - ${data.name}`,
-      html: companyEmailHtml,
-    })
-
-    await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: data.email,
-      subject: "Copia de tu solicitud de tasación",
-      html: clientEmailHtml,
-    })
-
+    await sendValuationEmail(result.data, "Formulario Web");
     return {
       success: true,
-      message: "Solicitud enviada correctamente. Revisa tu correo para confirmar.",
+      message:
+        "Solicitud enviada correctamente. Revisa tu correo para confirmar.",
       errors: {},
       submitting: false,
-    }
-  } catch (error: any) {
+    };
+  } catch (error) {
+    console.error("Error al enviar email de tasación desde formulario:", error);
     return {
       success: false,
       message: "Error al enviar el formulario. Intenta más tarde.",
       errors: {},
       submitting: false,
-    }
+    };
   }
 }
 
-export async function submitContactForm(_: any, formData: FormData) {
-  const rawData = Object.fromEntries(formData.entries())
-  const result = contactFormSchema.safeParse(rawData)
-
-  if (!result.success) {
-    return {
-      success: false,
-      message: "Por favor, revisa los campos del formulario.",
-      errors: result.error.flatten().fieldErrors,
-      submitting: false,
-    }
+export async function submitSellCarChatLead(userData: UserData) {
+  if (
+    !userData.name ||
+    !userData.email ||
+    !userData.phone ||
+    !userData.brand ||
+    !userData.model ||
+    !userData.year ||
+    !userData.kilometers ||
+    !userData.fuel
+  ) {
+    console.error(
+      "Faltan datos en el lead del chatbot para la tasación:",
+      userData
+    );
+    return { success: false, message: "Faltan datos del lead." };
   }
 
-  const data = result.data
+  const valuationData = {
+    name: userData.name,
+    email: userData.email,
+    phone: userData.phone,
+    brand: userData.brand,
+    model: userData.model,
+    year: userData.year,
+    kilometers: userData.kilometers,
+    fuel: userData.fuel,
+    comments: userData.comments || "Sin comentarios adicionales.",
+  };
+
+  try {
+    await sendValuationEmail(valuationData, "Chatbot");
+    return { success: true, message: "Email de tasación desde chat enviado." };
+  } catch (error) {
+    console.error("Error al enviar email de tasación desde chatbot:", error);
+    return { success: false, message: "Error al enviar el email." };
+  }
+}
+
+export async function submitPhoneValuationLead(userData: UserData) {
+  if (!userData.name || !userData.phone || !userData.brand || !userData.model) {
+    console.error("Faltan datos en el lead de tasación telefónica:", userData);
+    return { success: false, message: "Faltan datos del lead." };
+  }
 
   const transporter = nodemailer.createTransport({
     host: process.env.CORREO_HOST,
@@ -194,8 +228,88 @@ export async function submitContactForm(_: any, formData: FormData) {
       user: process.env.CORREO_USUARIO,
       pass: process.env.CORREO_PASS,
     },
-  })
+  });
 
+  const companyEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Solicitud de Tasación Telefónica (Chatbot)</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .header { background-color: #f97316; color: #fff; padding: 10px; text-align: center; border-radius: 8px 8px 0 0; }
+            h1 { margin: 0; }
+            .content { padding: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+            th { width: 120px; background-color: #f9f9f9; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Solicitud de Tasación Telefónica (Chatbot)</h1>
+            </div>
+            <div class="content">
+              <p>Un usuario ha solicitado una llamada para tasar su vehículo:</p>
+              <table>
+                <tr><th>Nombre</th><td>${userData.name}</td></tr>
+                <tr><th>Teléfono</th><td><strong>${userData.phone}</strong></td></tr>
+                <tr><th>Marca</th><td>${userData.brand}</td></tr>
+                <tr><th>Modelo</th><td>${userData.model}</td></tr>
+              </table>
+              <p><strong>Por favor, contactar con el cliente para completar la tasación.</strong></p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+  try {
+    await transporter.sendMail({
+      from: process.env.CORREO_USUARIO,
+      to: process.env.CORREO_USUARIO,
+      subject: `Solicitud de LLAMADA para tasación - ${userData.name}`,
+      html: companyEmailHtml,
+    });
+    return {
+      success: true,
+      message: "Notificación de llamada para tasación enviada.",
+    };
+  } catch (error) {
+    console.error("Error al enviar email de tasación telefónica:", error);
+    return {
+      success: false,
+      message: "Error al enviar el email de notificación.",
+    };
+  }
+}
+
+export async function submitContactForm(data: ContactFormData) {
+  const result = contactFormSchema.safeParse(data);
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: "Los datos enviados no son válidos.",
+      errors: result.error.flatten().fieldErrors,
+      submitting: false,
+    };
+  }
+
+  const validatedData = result.data;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.CORREO_HOST,
+    port: Number(process.env.CORREO_PORT),
+    secure: true,
+    auth: {
+      user: process.env.CORREO_USUARIO,
+      pass: process.env.CORREO_PASS,
+    },
+  });
   // ------------------------------
   // PLANTILLA HTML PARA EL CLIENTE
   // ------------------------------
@@ -235,7 +349,8 @@ export async function submitContactForm(_: any, formData: FormData) {
       </div>
     </body>
   </html>
-  `
+  `;
+
   // ------------------------------
   // PLANTILLA HTML PARA LA EMPRESA
   // ------------------------------
@@ -247,71 +362,225 @@ export async function submitContactForm(_: any, formData: FormData) {
       <title>Nueva Solicitud de Contacto</title>
       <style>
         body { font-family: Arial, sans-serif; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #004080; color: #fff; padding: 10px; text-align: center; }
-        .content { padding: 20px; }        
-        .footer {
-          margin-top: 20px;
-          font-size: 12px;
-          text-align: center;
-          color: #777;
-          border-top: 1px solid #ddd;
-          padding-top: 20px;
-        }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .header { background-color: #1d4ed8; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { padding: 20px; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        th { width: 120px; font-weight: bold; background-color: #f9f9f9; }
       </style>
     </head>
     <body>
       <div class="container">
-        <div class="header">
-          <h1>Nueva Solicitud de Contacto</h1>
-        </div>
+        <div class="header"><h1>Nueva Solicitud de Contacto</h1></div>
         <div class="content">
           <p>Se ha recibido la siguiente solicitud:</p>
           <table>
             <tr><th>Nombre</th><td>${data.name}</td></tr>
             <tr><th>Apellidos</th><td>${data.surnames}</td></tr>
             <tr><th>Email</th><td>${data.email}</td></tr>
-            <tr><th>Teléfono</th><td>${data.phone || '-'}</td></tr>            
-            <tr><th>Mensaje</th><td>${data.message}</td></tr>
+            <tr><th>Teléfono</th><td>${data.phone}</td></tr>
+            <tr><th>Mensaje</th><td><p style="white-space: pre-wrap;">${data.message}</p></td></tr>
           </table>
-        </div>        
-        <div class="footer">
-          <p>Este correo es confidencial y para uso interno.</p>
         </div>
       </div>
     </body>
   </html>
-  `
+  `;
 
   try {
     await transporter.sendMail({
       from: process.env.CORREO_USUARIO,
       to: process.env.CORREO_USUARIO,
-      subject: "Nueva Solicitud de Contacto",
+      subject: `Nueva Solicitud de Contacto - ${validatedData.name}`,
       html: companyEmailHtml,
-    })
+    });
     await transporter.sendMail({
       from: process.env.CORREO_USUARIO,
       to: data.email,
       subject: "Confirmación de Contacto",
       html: clientEmailHtml,
-    })
+    });
     return {
       success: true,
-      message: "Gracias por contactarnos. Nos pondremos en contacto contigo lo antes posible.",
-      errors: {},
-      submitting: false,
-    }
+      message:
+        "Gracias por contactarnos. Nos pondremos en contacto contigo lo antes posible.",
+    };
   } catch (error) {
-    console.error("Error al enviar el correo:", error)
+    console.error("Error al enviar el correo:", error);
     return {
       success: false,
       message: "Error al enviar el formulario. Intenta más tarde.",
-      errors: {},
-      submitting: false,
+    };
+  }
+}
+
+export async function submitSupportCallbackLead(userData: UserData) {
+    console.log("--- DEBUG: Iniciando 'submitSupportCallbackLead' ---");
+    console.log("DEBUG: Datos recibidos:", userData); // <--- ESTE LOG ES CRUCIAL
+
+    if (!userData.name || !userData.phone || !userData.email || !userData.userQuestion) {
+        console.error("ERROR: Faltan datos en el lead de soporte por llamada. Proceso detenido.");
+        // Comprobar qué campo falta
+        if (!userData.name) console.error("Falta: name");
+        if (!userData.phone) console.error("Falta: phone");
+        if (!userData.email) console.error("Falta: email");
+        if (!userData.userQuestion) console.error("Falta: userQuestion");
+        return { success: false, message: "Faltan datos del lead." };
     }
+
+  try {
+    console.log("DEBUG: Creando transportador de Nodemailer...");
+    const transporter = nodemailer.createTransport({
+      host: process.env.CORREO_HOST,
+      port: Number(process.env.CORREO_PORT),
+      secure: true,
+      auth: {
+        user: process.env.CORREO_USUARIO,
+        pass: process.env.CORREO_PASS,
+      },
+    });
+    console.log("DEBUG: Transportador creado. Preparando emails.");
+
+    const companyEmailHtml = `
+      <h1>Solicitud de Llamada de Soporte (Chatbot)</h1>
+      <p>Un cliente ha solicitado una llamada para recibir soporte:</p>
+      <ul>
+        <li><strong>Nombre:</strong> ${userData.name}</li>
+        <li><strong>Teléfono:</strong> ${userData.phone}</li>
+        <li><strong>Email:</strong> ${userData.email}</li>
+        <li><strong>Consulta inicial:</strong> ${userData.userQuestion}</li>
+      </ul>`;
+
+    const clientEmailHtml = `
+      <h1>Confirmación de tu solicitud de llamada</h1>
+      <p>Hola ${userData.name},</p>
+      <p>Hemos recibido tu solicitud para que te llamemos sobre: "${userData.userQuestion}".</p>
+      <p>Un miembro de nuestro equipo te contactará en el teléfono <strong>${userData.phone}</strong> lo antes posible.</p>`;
+
+    console.log(
+      `DEBUG: Enviando email a la empresa (${process.env.CORREO_USUARIO})...`
+    );
+    const companyMailResult = await transporter.sendMail({
+      from: process.env.CORREO_USUARIO,
+      to: process.env.CORREO_USUARIO,
+      subject: `Soporte: Solicitud de LLAMADA de ${userData.name}`,
+      html: companyEmailHtml,
+    });
+    console.log(
+      "DEBUG: Email a la empresa enviado. Resultado:",
+      companyMailResult
+    );
+
+    console.log(
+      `DEBUG: Enviando email de confirmación al cliente (${userData.email})...`
+    );
+    const clientMailResult = await transporter.sendMail({
+      from: process.env.CORREO_USUARIO,
+      to: userData.email,
+      subject: `Hemos recibido tu solicitud de llamada - Lebauto`,
+      html: clientEmailHtml,
+    });
+    console.log(
+      "DEBUG: Email al cliente enviado. Resultado:",
+      clientMailResult
+    );
+
+    console.log(
+      "--- DEBUG: 'submitSupportCallbackLead' completado con éxito. ---"
+    );
+    return { success: true };
+  } catch (error) {
+    console.error(
+      "--- ERROR CATASTRÓFICO en 'submitSupportCallbackLead' ---:",
+      error
+    );
+    return { success: false, message: "No se pudo enviar la notificación." };
+  }
+}
+
+// --- NUEVA ACCIÓN PARA SOPORTE - CONSULTA POR EMAIL ---
+export async function submitSupportEmailLead(userData: UserData) {
+  console.log("--- DEBUG: Iniciando 'submitSupportEmailLead' ---");
+  console.log("DEBUG: Datos recibidos:", userData);
+
+  if (!userData.name || !userData.email || !userData.userQuestion) {
+    console.error(
+      "ERROR: Faltan datos en el lead de soporte por email. Proceso detenido."
+    );
+    return { success: false, message: "Faltan datos del lead." };
+  }
+
+  try {
+    console.log("DEBUG: Creando transportador de Nodemailer...");
+    const transporter = nodemailer.createTransport({
+      host: process.env.CORREO_HOST,
+      port: Number(process.env.CORREO_PORT),
+      secure: true,
+      auth: {
+        user: process.env.CORREO_USUARIO,
+        pass: process.env.CORREO_PASS,
+      },
+    });
+    console.log("DEBUG: Transportador creado. Preparando emails.");
+    const companyEmailHtml = `
+      <h1>Nueva Consulta de Soporte por Email (Chatbot)</h1>
+      <p>Un cliente ha enviado una consulta a través del chat:</p>
+      <ul>
+        <li><strong>Nombre:</strong> ${userData.name}</li>
+        <li><strong>Email:</strong> ${userData.email}</li>
+        <li><strong>Teléfono:</strong> ${
+          userData.phone || "No proporcionado"
+        }</li>
+        <li><strong>Consulta:</strong><br/><p style="white-space: pre-wrap;">${
+          userData.userQuestion
+        }</p></li>
+      </ul>`;
+
+    const clientEmailHtml = `
+      <h1>Confirmación de tu consulta</h1>
+      <p>Hola ${userData.name},</p>
+      <p>Hemos recibido tu consulta y te responderemos al email <strong>${userData.email}</strong> lo antes posible.</p>
+      <p><strong>Tu pregunta fue:</strong> "${userData.userQuestion}"</p>
+      <p>Gracias por contactar con Lebauto.</p>`;
+    console.log(
+      `DEBUG: Enviando email a la empresa (${process.env.CORREO_USUARIO})...`
+    );
+    const companyMailResult = await transporter.sendMail({
+      from: process.env.CORREO_USUARIO,
+      to: process.env.CORREO_USUARIO,
+      subject: `Soporte: Nueva consulta de ${userData.name}`,
+      html: companyEmailHtml,
+    });
+    console.log(
+      "DEBUG: Email a la empresa enviado. Resultado:",
+      companyMailResult
+    );
+
+    console.log(
+      `DEBUG: Enviando email de confirmación al cliente (${userData.email})...`
+    );
+    const clientMailResult = await transporter.sendMail({
+      from: process.env.CORREO_USUARIO,
+      to: userData.email,
+      subject: `Hemos recibido tu consulta - Lebauto`,
+      html: clientEmailHtml,
+    });
+    console.log(
+      "DEBUG: Email al cliente enviado. Resultado:",
+      clientMailResult
+    );
+
+    console.log(
+      "--- DEBUG: 'submitSupportEmailLead' completado con éxito. ---"
+    );
+    return { success: true };
+  } catch (error) {
+    console.error(
+      "--- ERROR CATASTRÓFICO en 'submitSupportEmailLead' ---:",
+      error
+    );
+    return { success: false, message: "No se pudo enviar la notificación." };
   }
 }
 
@@ -325,7 +594,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/sign-up",
-      "Email y contraseña son requeridos",
+      "Email y contraseña son requeridos"
     );
   }
 
@@ -344,7 +613,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "success",
       "/sign-up",
-      "Gracias por registrarte, te hemos enviado un email de confirmación",
+      "Gracias por registrarte, te hemos enviado un email de confirmación"
     );
   }
 };
@@ -376,7 +645,11 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error || !data.session) {
-    return encodedRedirect("error", "/sign-in", error?.message || "Error en la autenticación");
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      error?.message || "Error en la autenticación"
+    );
   }
 
   return redirect("/dashboard");
@@ -401,7 +674,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Fallo al restablecer la contraseña",
+      "Fallo al restablecer la contraseña"
     );
   }
 
@@ -412,7 +685,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Cheque su correo para restablecer la contraseña",
+    "Cheque su correo para restablecer la contraseña"
   );
 };
 
@@ -426,7 +699,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/protected/reset-password",
-      "Contraseña y confirmar contraseña son requeridos",
+      "Contraseña y confirmar contraseña son requeridos"
     );
   }
 
@@ -434,7 +707,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/protected/reset-password",
-      "Las contraseñas no coinciden",
+      "Las contraseñas no coinciden"
     );
   }
 
@@ -446,7 +719,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/protected/reset-password",
-      "Fallo al actualizar la contraseña",
+      "Fallo al actualizar la contraseña"
     );
   }
 
@@ -458,4 +731,3 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
-

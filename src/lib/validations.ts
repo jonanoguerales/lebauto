@@ -15,12 +15,14 @@ export const sellCarSchema = z.object({
 export type SellCarFormData = z.infer<typeof sellCarSchema>
 
 export const contactFormSchema = z.object({
-  name: z.string().min(2),
-  surnames: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  message: z.string().min(5),
-})
+  name: z.string().min(2, "El nombre es obligatorio."),
+  surnames: z.string().min(2, "Los apellidos son obligatorios."),
+  email: z.string().email("Email inválido."),
+  phone: z.string().min(9, "El teléfono debe tener al menos 9 dígitos."),
+  message: z.string().min(10, "Es necesario un mensaje de al menos 10 caracteres, con lo que nos ayudes a entender mejor tu consulta."),
+});
+
+export type ContactFormData = z.infer<typeof contactFormSchema>;
 
 export const chargerSchema = z.object({
   id: z.string().optional(),

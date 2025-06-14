@@ -10,6 +10,13 @@ export interface UserData {
   preferredFuel?: string;
   parsedFiltersForCatalog?: string; 
   userSearchQuery?: string; 
+  brand?: string;
+  model?: string;
+  year?: string;
+  kilometers?: string;
+  fuel?: string;
+  comments?: string;
+  formSubmitted?: boolean;
 }
 
 export interface ChatButtonOption {
@@ -22,10 +29,10 @@ export interface ChatStep {
   id: string;
   message: string | ((userData: UserData) => string);
   isUserInput?: boolean;
-  inputType?: 'text' | 'email' | 'tel';
+  inputType?: 'text' | 'email' | 'tel' | 'number'; 
   inputPlaceholder?: string;
   validation?: (input: string, userData: UserData) => string | null;
-  action?: (input: string, userData: UserData) => Promise<Partial<UserData>> | Partial<UserData>;
+  action?: (input: string | any, userData: UserData) => Promise<Partial<UserData>> | Partial<UserData>;
   options?: ChatButtonOption[] | ((userData: UserData) => ChatButtonOption[]);
   nextStepIdAfterInput?: string; 
   endFlow?: boolean;

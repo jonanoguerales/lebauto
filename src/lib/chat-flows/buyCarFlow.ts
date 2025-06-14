@@ -37,6 +37,7 @@ export const buyCarFlowSteps: Record<string, ChatStep> = {
   buyCar_start: {
     id: 'buyCar_start',
     message: '¡Genial que quieras comprar un coche! ¿Tienes algún modelo o tipo en mente, o prefieres que te ayude a encontrar uno?',
+    action: async () => ({ formSubmitted: false }),
     options: [
       { label: 'Tengo una idea', nextStepId: 'buyCar_askPreferences', value: 'buy_have_idea'},
       { label: 'Ayúdame a elegir', nextStepId: 'recommend_start', value: 'buy_need_help_choosing'},
