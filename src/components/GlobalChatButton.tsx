@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,24 +12,24 @@ import {
 import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
 
 export default function GlobalChatButton() {
-  const [isChatUIVisible, setIsChatUIVisible] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleToggleChat = () => {
-    setIsChatUIVisible((prev) => !prev);
+    setIsChatOpen((prev) => !prev);
   };
 
   return (
     <>
-      <div className="fixed flex flex-col gap-2 right-6 bottom-6 z-[998]">
+      <div className="fixed bottom-6 right-6 z-50">
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-14 w-14 shadow-lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-10 w-10 shadow-lg"
                 onClick={handleToggleChat}
                 aria-label="Abrir chat de agente virtual"
-                aria-expanded={isChatUIVisible}
+                aria-expanded={isChatOpen}
               >
                 <Bot className="h-7 w-7" />
               </Button>
@@ -39,7 +40,7 @@ export default function GlobalChatButton() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <ChatBotPopupWrapper isOpen={isChatUIVisible} onOpenChange={setIsChatUIVisible} />
+      <ChatBotPopupWrapper isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
     </>
   );
 }

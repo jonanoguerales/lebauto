@@ -415,173 +415,120 @@ export async function submitContactForm(data: ContactFormData) {
   }
 }
 
+// --- ACCIÓN PARA SOPORTE - SOLICITUD DE LLAMADA (LISTA PARA PRODUCCIÓN) ---
 export async function submitSupportCallbackLead(userData: UserData) {
-    console.log("--- DEBUG: Iniciando 'submitSupportCallbackLead' ---");
-    console.log("DEBUG: Datos recibidos:", userData); // <--- ESTE LOG ES CRUCIAL
-
     if (!userData.name || !userData.phone || !userData.email || !userData.userQuestion) {
-        console.error("ERROR: Faltan datos en el lead de soporte por llamada. Proceso detenido.");
-        // Comprobar qué campo falta
-        if (!userData.name) console.error("Falta: name");
-        if (!userData.phone) console.error("Falta: phone");
-        if (!userData.email) console.error("Falta: email");
-        if (!userData.userQuestion) console.error("Falta: userQuestion");
-        return { success: false, message: "Faltan datos del lead." };
+        console.error("Error en Server Action: Faltan datos en el lead de soporte por llamada.", { userName: userData.name });
+        return { success: false, message: "Faltan datos para procesar la solicitud." };
     }
 
-  try {
-    console.log("DEBUG: Creando transportador de Nodemailer...");
-    const transporter = nodemailer.createTransport({
-      host: process.env.CORREO_HOST,
-      port: Number(process.env.CORREO_PORT),
-      secure: true,
-      auth: {
-        user: process.env.CORREO_USUARIO,
-        pass: process.env.CORREO_PASS,
-      },
-    });
-    console.log("DEBUG: Transportador creado. Preparando emails.");
+    try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.CORREO_HOST,
+            port: Number(process.env.CORREO_PORT),
+            secure: true,
+            auth: {
+                user: process.env.CORREO_USUARIO,
+                pass: process.env.CORREO_PASS,
+            },
+        });
 
-    const companyEmailHtml = `
-      <h1>Solicitud de Llamada de Soporte (Chatbot)</h1>
-      <p>Un cliente ha solicitado una llamada para recibir soporte:</p>
-      <ul>
-        <li><strong>Nombre:</strong> ${userData.name}</li>
-        <li><strong>Teléfono:</strong> ${userData.phone}</li>
-        <li><strong>Email:</strong> ${userData.email}</li>
-        <li><strong>Consulta inicial:</strong> ${userData.userQuestion}</li>
-      </ul>`;
+        const companyEmailHtml = `
+          <h1>Solicitud de Llamada de Soporte (Chatbot)</h1>
+          <p>Un cliente ha solicitado una llamada para recibir soporte:</p>
+          <ul>
+            <li><strong>Nombre:</strong> ${userData.name}</li>
+            <li><strong>Teléfono:</strong> ${userData.phone}</li>
+            <li><strong>Email:</strong> ${userData.email}</li>
+            <li><strong>Consulta inicial:</strong> ${userData.userQuestion}</li>
+          </ul>`;
 
-    const clientEmailHtml = `
-      <h1>Confirmación de tu solicitud de llamada</h1>
-      <p>Hola ${userData.name},</p>
-      <p>Hemos recibido tu solicitud para que te llamemos sobre: "${userData.userQuestion}".</p>
-      <p>Un miembro de nuestro equipo te contactará en el teléfono <strong>${userData.phone}</strong> lo antes posible.</p>`;
+        const clientEmailHtml = `
+          <h1>Confirmación de tu solicitud de llamada</h1>
+          <p>Hola ${userData.name},</p>
+          <p>Hemos recibido tu solicitud para que te llamemos sobre: "${userData.userQuestion}".</p>
+          <p>Un miembro de nuestro equipo te contactará en el teléfono <strong>${userData.phone}</strong> lo antes posible.</p>
+          <p>Gracias por contactar con Lebauto.</p>`;
 
-    console.log(
-      `DEBUG: Enviando email a la empresa (${process.env.CORREO_USUARIO})...`
-    );
-    const companyMailResult = await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: process.env.CORREO_USUARIO,
-      subject: `Soporte: Solicitud de LLAMADA de ${userData.name}`,
-      html: companyEmailHtml,
-    });
-    console.log(
-      "DEBUG: Email a la empresa enviado. Resultado:",
-      companyMailResult
-    );
+        await Promise.all([
+            transporter.sendMail({
+                from: process.env.CORREO_USUARIO,
+                to: process.env.CORREO_USUARIO,
+                subject: `Soporte: Solicitud de LLAMADA de ${userData.name}`,
+                html: companyEmailHtml,
+            }),
+            transporter.sendMail({
+                from: process.env.CORREO_USUARIO,
+                to: userData.email,
+                subject: `Hemos recibido tu solicitud de llamada - Lebauto`,
+                html: clientEmailHtml,
+            })
+        ]);
 
-    console.log(
-      `DEBUG: Enviando email de confirmación al cliente (${userData.email})...`
-    );
-    const clientMailResult = await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: userData.email,
-      subject: `Hemos recibido tu solicitud de llamada - Lebauto`,
-      html: clientEmailHtml,
-    });
-    console.log(
-      "DEBUG: Email al cliente enviado. Resultado:",
-      clientMailResult
-    );
+        return { success: true };
 
-    console.log(
-      "--- DEBUG: 'submitSupportCallbackLead' completado con éxito. ---"
-    );
-    return { success: true };
-  } catch (error) {
-    console.error(
-      "--- ERROR CATASTRÓFICO en 'submitSupportCallbackLead' ---:",
-      error
-    );
-    return { success: false, message: "No se pudo enviar la notificación." };
-  }
+    } catch (error) {
+        console.error("Error al enviar email de soporte (llamada):", error);
+        return { success: false, message: "No se pudo enviar la notificación." };
+    }
 }
 
-// --- NUEVA ACCIÓN PARA SOPORTE - CONSULTA POR EMAIL ---
+// --- ACCIÓN PARA SOPORTE - CONSULTA POR EMAIL (LISTA PARA PRODUCCIÓN) ---
 export async function submitSupportEmailLead(userData: UserData) {
-  console.log("--- DEBUG: Iniciando 'submitSupportEmailLead' ---");
-  console.log("DEBUG: Datos recibidos:", userData);
+    if (!userData.name || !userData.email || !userData.userQuestion) {
+        console.error("Error en Server Action: Faltan datos en el lead de soporte por email.", { userName: userData.name });
+        return { success: false, message: "Faltan datos para procesar la solicitud." };
+    }
 
-  if (!userData.name || !userData.email || !userData.userQuestion) {
-    console.error(
-      "ERROR: Faltan datos en el lead de soporte por email. Proceso detenido."
-    );
-    return { success: false, message: "Faltan datos del lead." };
-  }
+    try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.CORREO_HOST,
+            port: Number(process.env.CORREO_PORT),
+            secure: true,
+            auth: {
+                user: process.env.CORREO_USUARIO,
+                pass: process.env.CORREO_PASS,
+            },
+        });
 
-  try {
-    console.log("DEBUG: Creando transportador de Nodemailer...");
-    const transporter = nodemailer.createTransport({
-      host: process.env.CORREO_HOST,
-      port: Number(process.env.CORREO_PORT),
-      secure: true,
-      auth: {
-        user: process.env.CORREO_USUARIO,
-        pass: process.env.CORREO_PASS,
-      },
-    });
-    console.log("DEBUG: Transportador creado. Preparando emails.");
-    const companyEmailHtml = `
-      <h1>Nueva Consulta de Soporte por Email (Chatbot)</h1>
-      <p>Un cliente ha enviado una consulta a través del chat:</p>
-      <ul>
-        <li><strong>Nombre:</strong> ${userData.name}</li>
-        <li><strong>Email:</strong> ${userData.email}</li>
-        <li><strong>Teléfono:</strong> ${
-          userData.phone || "No proporcionado"
-        }</li>
-        <li><strong>Consulta:</strong><br/><p style="white-space: pre-wrap;">${
-          userData.userQuestion
-        }</p></li>
-      </ul>`;
+        const companyEmailHtml = `
+          <h1>Nueva Consulta de Soporte por Email (Chatbot)</h1>
+          <p>Un cliente ha enviado una consulta a través del chat:</p>
+          <ul>
+            <li><strong>Nombre:</strong> ${userData.name}</li>
+            <li><strong>Email:</strong> ${userData.email}</li>
+            <li><strong>Teléfono:</strong> ${userData.phone || 'No proporcionado'}</li>
+            <li><strong>Consulta:</strong><br/><p style="white-space: pre-wrap;">${userData.userQuestion}</p></li>
+          </ul>`;
 
-    const clientEmailHtml = `
-      <h1>Confirmación de tu consulta</h1>
-      <p>Hola ${userData.name},</p>
-      <p>Hemos recibido tu consulta y te responderemos al email <strong>${userData.email}</strong> lo antes posible.</p>
-      <p><strong>Tu pregunta fue:</strong> "${userData.userQuestion}"</p>
-      <p>Gracias por contactar con Lebauto.</p>`;
-    console.log(
-      `DEBUG: Enviando email a la empresa (${process.env.CORREO_USUARIO})...`
-    );
-    const companyMailResult = await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: process.env.CORREO_USUARIO,
-      subject: `Soporte: Nueva consulta de ${userData.name}`,
-      html: companyEmailHtml,
-    });
-    console.log(
-      "DEBUG: Email a la empresa enviado. Resultado:",
-      companyMailResult
-    );
+        const clientEmailHtml = `
+          <h1>Confirmación de tu consulta</h1>
+          <p>Hola ${userData.name},</p>
+          <p>Hemos recibido tu consulta y te responderemos al email <strong>${userData.email}</strong> lo antes posible.</p>
+          <p><strong>Tu pregunta fue:</strong> "${userData.userQuestion}"</p>
+          <p>Gracias por contactar con Lebauto.</p>`;
 
-    console.log(
-      `DEBUG: Enviando email de confirmación al cliente (${userData.email})...`
-    );
-    const clientMailResult = await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: userData.email,
-      subject: `Hemos recibido tu consulta - Lebauto`,
-      html: clientEmailHtml,
-    });
-    console.log(
-      "DEBUG: Email al cliente enviado. Resultado:",
-      clientMailResult
-    );
+        await Promise.all([
+            transporter.sendMail({
+                from: process.env.CORREO_USUARIO,
+                to: process.env.CORREO_USUARIO,
+                subject: `Soporte: Nueva consulta de ${userData.name}`,
+                html: companyEmailHtml,
+            }),
+            transporter.sendMail({
+                from: process.env.CORREO_USUARIO,
+                to: userData.email,
+                subject: `Hemos recibido tu consulta - Lebauto`,
+                html: clientEmailHtml,
+            })
+        ]);
 
-    console.log(
-      "--- DEBUG: 'submitSupportEmailLead' completado con éxito. ---"
-    );
-    return { success: true };
-  } catch (error) {
-    console.error(
-      "--- ERROR CATASTRÓFICO en 'submitSupportEmailLead' ---:",
-      error
-    );
-    return { success: false, message: "No se pudo enviar la notificación." };
-  }
+        return { success: true };
+        
+    } catch (error) {
+        console.error("Error al enviar email de soporte (email):", error);
+        return { success: false, message: "No se pudo enviar la notificación." };
+    }
 }
 
 export const signUpAction = async (formData: FormData) => {

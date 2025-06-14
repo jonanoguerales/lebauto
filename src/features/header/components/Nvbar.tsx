@@ -2,15 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu} from "lucide-react"; 
+import { Menu, MessageSquare, Phone } from "lucide-react";
 import Image from "next/image";
 import { Link as ViewTransitionsLink } from "next-view-transitions";
 import { AnimatePresence } from "framer-motion";
 import CurvedNavPanel from "../curved-mobile-menu/components/CurvedNavPanel";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); 
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -43,12 +50,13 @@ export default function Navbar() {
   const isHome = pathname === "/";
 
   const navbarClasses = `fixed top-0 w-screen z-30 transition-all duration-300 ${
-    menuOpen ? "hidden" : 
-    isHome
+    menuOpen
+      ? "hidden"
+      : isHome
       ? scrolled
-        ? "bg-white shadow-md transition-shadow text-black" 
+        ? "bg-white shadow-md transition-shadow text-black"
         : "bg-transparent text-white"
-      : scrolled 
+      : scrolled
       ? "bg-white shadow-md transition-shadow text-black"
       : "bg-white text-black"
   }`;
@@ -58,13 +66,17 @@ export default function Navbar() {
       <nav id="main-navbar" className={navbarClasses}>
         <div
           className={`container mx-auto flex items-center h-[50px] md:h-20 ${
-            menuOpen ? "justify-between" : scrolled ? "justify-between" : "justify-end"
+            menuOpen
+              ? "justify-between"
+              : scrolled
+              ? "justify-between"
+              : "justify-end"
           }`}
         >
           <ViewTransitionsLink
             href="/"
             className={`text-2xl font-bold ${
-              menuOpen ? "block" : scrolled ? "block" : "hidden" 
+              menuOpen ? "block" : scrolled ? "block" : "hidden"
             }`}
           >
             <Image
@@ -86,17 +98,25 @@ export default function Navbar() {
               href="/coches-segunda-mano"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname.startsWith("/coches-segunda-mano")
-                  ? `${isHome && !scrolled && !menuOpen ? "border-white" : "border-primary"} font-semibold`
+                  ? `${
+                      isHome && !scrolled && !menuOpen
+                        ? "border-white"
+                        : "border-primary"
+                    } font-semibold`
                   : "border-transparent"
               }`}
             >
               Coches de ocasión
             </ViewTransitionsLink>
             <ViewTransitionsLink
-              href="/cargadores" 
+              href="/cargadores"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname.startsWith("/cargadores")
-                  ? `${isHome && !scrolled && !menuOpen ? "border-white" : "border-primary"} font-semibold`
+                  ? `${
+                      isHome && !scrolled && !menuOpen
+                        ? "border-white"
+                        : "border-primary"
+                    } font-semibold`
                   : "border-transparent"
               }`}
             >
@@ -106,7 +126,11 @@ export default function Navbar() {
               href="/gestion-de-venta"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname === "/gestion-de-venta"
-                  ? `${isHome && !scrolled && !menuOpen ? "border-white" : "border-primary"} font-semibold`
+                  ? `${
+                      isHome && !scrolled && !menuOpen
+                        ? "border-white"
+                        : "border-primary"
+                    } font-semibold`
                   : "border-transparent"
               }`}
             >
@@ -116,19 +140,69 @@ export default function Navbar() {
               href="/contacto"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname === "/contacto"
-                  ? `${isHome && !scrolled && !menuOpen ? "border-white" : "border-primary"} font-semibold`
+                  ? `${
+                      isHome && !scrolled && !menuOpen
+                        ? "border-white"
+                        : "border-primary"
+                    } font-semibold`
                   : "border-transparent"
               }`}
             >
               Contacto
             </ViewTransitionsLink>
           </div>
-
+          <div className="flex items-center gap-x-2 ml-4">
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="Abrir chat de agente virtual"
+                  >
+                    <a href="tel:+34600000000" aria-label="Llamar ahora">
+                      <Phone className="h-5 w-5" />
+                    </a>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Llamar ahora</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="Abrir chat de agente virtual"
+                  >
+                    <a
+                      href="https://wa.me/34600000000"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Contactar por WhatsApp"
+                    >
+                      <MessageSquare className="h-5 w-5" />
+                    </a>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Contactar por WhatsApp</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           {/* Botón Menú Móvil */}
           <button
-            className={`md:hidden flex items-center justify-center p-2 z-50 rounded-md
-                        ${isHome && !scrolled && !menuOpen ? "hover:bg-white/10" : "hover:bg-gray-200"} 
-                        ${menuOpen ? "fixed right-4 top-2.5" : ""}transition-colors`}
+            className={`md:hidden flex items-center justify-center p-2 z-50 rounded-md ml-2
+                        ${
+                          isHome && !scrolled && !menuOpen
+                            ? "hover:bg-white/10"
+                            : "hover:bg-gray-200"
+                        } 
+                        ${
+                          menuOpen ? "fixed right-4 top-2.5" : ""
+                        }transition-colors`}
             onClick={toggleMenu}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
