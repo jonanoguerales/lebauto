@@ -139,7 +139,7 @@ export default function Navbar() {
             <ViewTransitionsLink
               href="/renting"
               className={`py-2 hover:opacity-70 border-b-2 ${
-                pathname === "/gestion-de-venta"
+                pathname === "/renting"
                   ? `${
                       isHome && !scrolled && !menuOpen
                         ? "border-white"

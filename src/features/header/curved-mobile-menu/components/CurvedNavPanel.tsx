@@ -26,6 +26,10 @@ const navItems = [
     href: "/gestion-de-venta",
   },
   {
+    title: "Renting",
+    href: "/renting",
+  },
+  {
     title: "Contacto",
     href: "/contacto",
   },
