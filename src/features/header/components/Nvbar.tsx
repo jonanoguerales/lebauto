@@ -137,6 +137,20 @@ export default function Navbar() {
               Gestión de venta
             </ViewTransitionsLink>
             <ViewTransitionsLink
+              href="/renting"
+              className={`py-2 hover:opacity-70 border-b-2 ${
+                pathname === "/gestion-de-venta"
+                  ? `${
+                      isHome && !scrolled && !menuOpen
+                        ? "border-white"
+                        : "border-primary"
+                    } font-semibold`
+                  : "border-transparent"
+              }`}
+            >
+              Renting
+            </ViewTransitionsLink>
+            <ViewTransitionsLink
               href="/contacto"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname === "/contacto"
