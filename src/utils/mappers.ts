@@ -1,7 +1,7 @@
-import { Car } from "@/lib/definitions";
+import type { Car, CarRow, CarRowWithRelations } from "@/lib/definitions";
 
 // Función para convertir de camelCase a snake_case (para enviar a la BD)
-export function mapCarToDB(car: Partial<Car>): any {
+export function mapCarToDB(car: Partial<Car>): Partial<CarRow> {
     return {
       id: car.id,
       brand: car.brand,
@@ -37,39 +37,39 @@ export function mapCarToDB(car: Partial<Car>): any {
   }
   
   // Función para convertir de snake_case (datos de BD) a camelCase (tu interfaz)
-  export function mapCarFromDB(car: any): Car {
+  export function mapCarFromDB(car: CarRowWithRelations): Car {
     return {
       id: car.id,
       brand: car.brand,
       model: car.model,
-      variant: car.variant,
+      variant: car.variant ?? undefined,
       condition: car.condition,
       price: car.price,
-      location: car.location,
+      location: car.location ?? undefined,
       year: car.year,
       mileage: car.mileage,
       bodyType: car.body_type,
       fuel: car.fuel,
       transmission: car.transmission,
       environmentalTag: car.environmental_tag,
-      drivetrain: car.drivetrain,
-      power: car.power,
-      engineDisplacement: car.engine_displacement,
+      drivetrain: car.drivetrain ?? undefined,
+      power: car.power ?? undefined,
+      engineDisplacement: car.engine_displacement ?? undefined,
       color: car.color,
       doors: car.doors,
       seats: car.seats,
-      electricRange: car.electric_range,
-      batteryCapacity: car.battery_capacity,
-      chargingTime: car.charging_time,
+      electricRange: car.electric_range ?? undefined,
+      batteryCapacity: car.battery_capacity ?? undefined,
+      chargingTime: car.charging_time ?? undefined,
       fastCharge: car.fast_charge,
-      chargingPort: car.charging_port,
+      chargingPort: car.charging_port ?? undefined,
       ivaDeductible: car.iva_deductible,
-      monthlyPrice: car.monthly_price,
-      financePrice: car.finance_price,
-      description: car.description,
+      monthlyPrice: car.monthly_price ?? undefined,
+      financePrice: car.finance_price ?? undefined,
+      description: car.description ?? undefined,
       images: car.images, // Se rellenará en los métodos que consulten la tabla de imágenes.
       features: car.features, // Se rellenará en los métodos que consulten la tabla de características.
-      slug: car.slug,
+      slug: car.slug ?? undefined,
     };
   }
   

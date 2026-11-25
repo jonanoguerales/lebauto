@@ -66,8 +66,9 @@ export async function updateCarDocument(car: Car): Promise<{ success: boolean; m
     console.log(`[updateCarDocument] Documento para ${car.id} actualizado/insertado exitosamente:`, data);
     return { success: true, message: 'Documento del vehículo actualizado para el chatbot.' };
 
-  } catch (err: any) { 
+  } catch (err) {
     console.error(`[updateCarDocument] Excepción al procesar car_id ${car.id}:`, err);
-    return { success: false, message: `Excepción al actualizar documento: ${err.message}` };
+    const reason = err instanceof Error ? err.message : String(err);
+    return { success: false, message: `Excepción al actualizar documento: ${reason}` };
   }
 }

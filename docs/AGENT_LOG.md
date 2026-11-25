@@ -19,3 +19,9 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Decisión del humano: los 42 errores de lint heredados pasan a T-01b; se mantienen los SVG de redes sociales
 - Pendiente: menú móvil pierde el foco al navegar (T-22); fijar dependencias secundarias con `^`; `console.time` en getHFEmbedding (al mover a core/ai)
 - Commit: 29b6bd8
+
+## T-01b.1 · Lint en verde (1/3): `any` y purity
+- Spec: brief del Orquestador (AC-1 … AC-6); comportamiento a conservar: specs/001-lebauto.md
+- Vuelta 1 · Develop: 19 `no-explicit-any` fuera (CarRow/CarRowWithRelations, PageProps en páginas, catch con instanceof Error, toast tipado), sidebar con useState; destapados 2 bugs de tipos (filtros URL como string, null→undefined en mapper); +3 tests de mappers; lint 42→22 · Testing: PASS
+- Pendiente: `/api/chat` devuelve error.message al cliente (T-11); fetchFilteredCars sin mapper (T-07); CarRow desde tipos `Database` (T-05/T-13)
+- Commit: (este)

@@ -12,6 +12,7 @@ import {
 } from "@/lib/validations";
 import { createServerClient } from "@supabase/ssr";
 import type { UserData } from "@/lib/chatFlowTypes";
+import type { SellCarFormState } from "@/lib/definitions";
 
 async function sendValuationEmail(
   data: {
@@ -142,7 +143,10 @@ async function sendValuationEmail(
   });
 }
 
-export async function submitSellCarForm(_: any, formData: FormData) {
+export async function submitSellCarForm(
+  _prevState: SellCarFormState,
+  formData: FormData
+): Promise<SellCarFormState> {
   const rawData = Object.fromEntries(formData.entries());
   const result = sellCarSchema.safeParse(rawData);
 

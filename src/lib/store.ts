@@ -184,10 +184,10 @@ export const useFilterStore = create<FilterStateStore>((set, get) => ({
           filtered = filtered.filter((car) => car.doors <= filters.doorTo!);
         }
         if (filters.seatFrom !== undefined) {
-          filtered = filtered.filter((car) => (car as any).seats >= filters.seatFrom!);
+          filtered = filtered.filter((car) => car.seats >= filters.seatFrom!);
         }
         if (filters.seatTo !== undefined) {
-          filtered = filtered.filter((car) => (car as any).seats <= filters.seatTo!);
+          filtered = filtered.filter((car) => car.seats <= filters.seatTo!);
         }
         if (filters.transmission && filters.transmission.length > 0) {
           const transSet = new Set(filters.transmission);

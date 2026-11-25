@@ -13,9 +13,7 @@ export const metadata: Metadata = {
 
 export default async function CatalogPage({
   searchParams,
-}: {
-  searchParams: any;
-}) {
+}: PageProps<"/coches-segunda-mano">) {
 
   return (
     <div>

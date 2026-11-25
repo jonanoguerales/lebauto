@@ -1,5 +1,6 @@
 import { FilterKey } from "@/lib/definitions";
 import { useDebouncedCallback } from "use-debounce";
+import type { useToast } from "@/hooks/useToast";
 
 interface YearDebounceProps {
         minYear: string;
@@ -7,7 +8,7 @@ interface YearDebounceProps {
         setMinYear: (val: string) => void;
         setMaxYear: (val: string) => void;
         setFilter: (key: FilterKey, value: string | number) => void;
-        toast: any;
+        toast: ReturnType<typeof useToast>["toast"];
         
 }
 

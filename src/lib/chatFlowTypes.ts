@@ -32,7 +32,7 @@ export interface ChatStep {
   inputType?: 'text' | 'email' | 'tel' | 'number'; 
   inputPlaceholder?: string;
   validation?: (input: string, userData: UserData) => string | null;
-  action?: (input: string | any, userData: UserData) => Promise<Partial<UserData>> | Partial<UserData>;
+  action?: (input: string, userData: UserData) => Promise<Partial<UserData>> | Partial<UserData>;
   options?: ChatButtonOption[] | ((userData: UserData) => ChatButtonOption[]);
   nextStepIdAfterInput?: string; 
   endFlow?: boolean;

@@ -1,31 +1,38 @@
 import type { Car } from "@/lib/definitions";
 import { supabaseClient } from "../../app/supabase/supabase";
 
-export async function fetchFilteredCars(searchParams: any): Promise<Car[]> {
+/** `searchParams` ya resueltos de la página del catálogo. */
+export type CatalogSearchParams = Awaited<
+  PageProps<"/coches-segunda-mano">["searchParams"]
+>;
+
+export async function fetchFilteredCars(
+  searchParams: CatalogSearchParams
+): Promise<Car[]> {
   let query = supabaseClient.from("cars").select("*");
 
   if (typeof searchParams.brand === "string") {
-    const brands = searchParams.brand.split(",").map((v: string) => v.trim());
+    const brands = searchParams.brand.split(",").map((v) => v.trim());
     query = query.in("brand", brands);
   }
   if (typeof searchParams.model === "string") {
-    const models = searchParams.model.split(",").map((v: string) => v.trim());
+    const models = searchParams.model.split(",").map((v) => v.trim());
     query = query.in("model", models);
   }
   if (typeof searchParams.fuel === "string") {
-    const fuels = searchParams.fuel.split(",").map((v: string) => v.trim());
+    const fuels = searchParams.fuel.split(",").map((v) => v.trim());
     query = query.in("fuel", fuels);
   }
   if (typeof searchParams.color === "string") {
-    const colors = searchParams.color.split(",").map((v: string) => v.trim());
+    const colors = searchParams.color.split(",").map((v) => v.trim());
     query = query.in("color", colors);
   }
   if (typeof searchParams.location === "string") {
-    const locations = searchParams.location.split(",").map((v: string) => v.trim());
+    const locations = searchParams.location.split(",").map((v) => v.trim());
     query = query.in("location", locations);
   }
   if (typeof searchParams.bodyType === "string") {
-    const bodyTypes = searchParams.bodyType.split(",").map((v: string) => v.trim());
+    const bodyTypes = searchParams.bodyType.split(",").map((v) => v.trim());
     query = query.in("body_type", bodyTypes);
   }
   if (typeof searchParams.minPrice === "string") {

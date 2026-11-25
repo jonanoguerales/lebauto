@@ -49,7 +49,69 @@ export interface Car {
   dealership_phone?: string;
 }
 
-export interface CatalogClientProps extends FiltersData {
+/**
+ * Fila de la tabla `public.cars` tal y como la devuelve Supabase (snake_case).
+ * Las columnas sin `not null` en `supabase/migrations/0001_schema.sql` llegan como `null`.
+ */
+export interface CarRow {
+  id: string;
+  brand: string;
+  model: string;
+  variant: string | null;
+  condition: string;
+  price: number;
+  location: string | null;
+  year: number;
+  mileage: number;
+  body_type: string;
+  fuel: string;
+  transmission: string;
+  environmental_tag: string;
+  drivetrain: string | null;
+  power: number | null;
+  engine_displacement: number | null;
+  color: string;
+  doors: number;
+  seats: number;
+  electric_range: number | null;
+  battery_capacity: number | null;
+  charging_time: number | null;
+  fast_charge: boolean;
+  charging_port: string | null;
+  iva_deductible: boolean;
+  monthly_price: number | null;
+  finance_price: number | null;
+  description: string | null;
+  slug: string | null;
+}
+
+/** Fila de `cars` con sus imágenes y características ya resueltas. */
+export type CarRowWithRelations = CarRow & {
+  images: string[];
+  features?: string[];
+};
+
+/**
+ * Filtros que el catálogo recibe tal cual de la URL: texto separado por comas
+ * (marcas, modelos…) o números aún sin convertir (precio, año, km).
+ */
+type CatalogUrlTextFilterKey =
+  | "brand"
+  | "model"
+  | "fuel"
+  | "color"
+  | "location"
+  | "bodyType"
+  | "minPrice"
+  | "maxPrice"
+  | "minYear"
+  | "maxYear"
+  | "minKm"
+  | "maxKm";
+
+export interface CatalogClientProps
+  extends Partial<Record<CatalogUrlTextFilterKey, string>>,
+    Pick<FiltersData, "doorFrom" | "doorTo" | "seatFrom" | "seatTo"> {
   allCars: Car[];
   initialCars: Car[];
 }

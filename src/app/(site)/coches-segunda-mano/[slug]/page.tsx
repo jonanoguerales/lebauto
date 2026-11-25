@@ -8,11 +8,8 @@ export const revalidate = 60;
 
 export async function generateMetadata({
   params,
-}: {
-  params: any;
-}): Promise<Metadata> {
-  const paramsResolved = await Promise.resolve(params);
-  const { slug } = paramsResolved;
+}: PageProps<"/coches-segunda-mano/[slug]">): Promise<Metadata> {
+  const { slug } = await params;
   const car = await fetchCarDetailsBySlug(slug);
 
   if (!car) {
@@ -35,11 +32,8 @@ export async function generateMetadata({
 
 export default async function CarPage({
   params,
-}: {
-  params: any;
-}) {
-  const paramsResolved = await Promise.resolve(params);
-  const { slug } = paramsResolved;
+}: PageProps<"/coches-segunda-mano/[slug]">) {
+  const { slug } = await params;
 
   return (
     <main className="min-h-screen bg-background">

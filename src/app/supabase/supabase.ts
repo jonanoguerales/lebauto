@@ -1,4 +1,4 @@
-import { Car, Feature, Charger } from "@/lib/definitions"; // Charger añadido
+import { Car, CarRow, Feature, Charger } from "@/lib/definitions"; // Charger añadido
 import { mapCarFromDB, mapCarToDB } from "@/utils/mappers";
 import { generateVehicleSlug, generateChargerSlug } from "@/utils/slug"; // generateChargerSlug añadido
 import { createClient } from "../../lib/supabase/client";
@@ -294,7 +294,8 @@ export async function updateCar(
     const { images, features, ...carData } = car;
     const carDataDB = mapCarToDB(carData);
 
-    let updatedCarData: any = { id }; // Inicializa con el id existente
+    // Ambas ramas asignan la fila actualizada o salen con null.
+    let updatedCarData: CarRow;
 
     if (Object.keys(carDataDB).length > 0) {
       const { data, error } = await supabaseClient

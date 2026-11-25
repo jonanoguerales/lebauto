@@ -2,8 +2,10 @@ import { fetchFilteredCars } from "@/lib/supabase/fetchFilteredCars";
 import { fetchCars } from "@/app/supabase/supabase";
 import CatalogClient from "@/features/catalog-cars/components/CatalogClient";
 
-export default async function LoadingContent({ searchParams }: { searchParams: any }) {
-  const params = await Promise.resolve(searchParams);
+export default async function LoadingContent({
+  searchParams,
+}: Pick<PageProps<"/coches-segunda-mano">, "searchParams">) {
+  const params = await searchParams;
   const filteredCars = await fetchFilteredCars(params);
   const allCars = await fetchCars();
 

@@ -21,8 +21,8 @@ export async function POST(request: Request) {
         'Content-Type': 'text/plain; charset=utf-8', 
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error en API route /api/chat al obtener stream:", error);
-    return NextResponse.json({ error: error.message || 'Error interno del servidor al procesar la solicitud de stream.' }, { status: 500 });
+    return NextResponse.json({ error: (error instanceof Error && error.message) || 'Error interno del servidor al procesar la solicitud de stream.' }, { status: 500 });
   }
 }

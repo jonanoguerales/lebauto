@@ -88,12 +88,12 @@ export default function ChargersPage() {
       }
       setIsFormDialogOpen(false);
       setEditingCharger(null);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error guardando cargador:", error);
       toast({
         title: "Error al guardar",
         description:
-          error.message ||
+          (error instanceof Error && error.message) ||
           "Ocurrió un error al guardar el cargador. Verifica los datos e inténtalo de nuevo.",
         variant: "destructive",
       });

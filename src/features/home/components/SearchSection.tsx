@@ -12,10 +12,11 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { fetchCars } from "@/app/supabase/supabase";
+import type { Car } from "@/lib/definitions";
 
 export default function SearchSection() {
   const router = useRouter();
-  const [cars, setCars] = useState<any[]>([]);
+  const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBrand, setSelectedBrand] = useState("all");
   const [selectedModel, setSelectedModel] = useState("all");
