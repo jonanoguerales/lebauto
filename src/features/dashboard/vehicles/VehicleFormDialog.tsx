@@ -41,40 +41,40 @@ const vehicleSchema = z.object({
   model: z.string().min(1, "El modelo es obligatorio"),
   variant: z.string().optional(),
   condition: z.string().min(1, "El estado es obligatorio"),
-  price: z.coerce.number().positive("El precio debe ser mayor a 0"),
+  price: z.coerce.number<number>().positive("El precio debe ser mayor a 0"),
   location: z.string().optional(),
   year: z.coerce
-    .number()
+    .number<number>()
     .int()
     .min(1900, "El año debe ser mayor a 1900")
     .max(new Date().getFullYear() + 1),
   mileage: z.coerce
-    .number()
+    .number<number>()
     .nonnegative("El kilometraje no puede ser negativo"),
   body_type: z.string().optional(),
   fuel: z.string().min(1, "El tipo de combustible es obligatorio"),
   transmission: z.string().optional(),
   environmental_tag: z.string().optional(),
   drivetrain: z.string().optional(),
-  power: z.coerce.number().optional(),
-  engine_displacement: z.coerce.number().optional(),
+  power: z.coerce.number<number>().optional(),
+  engine_displacement: z.coerce.number<number>().optional(),
   color: z.string().min(1, "El color es obligatorio"),
   doors: z.coerce
-    .number()
+    .number<number>()
     .int()
     .min(1, "El número de puertas debe ser al menos 2"),
   seats: z.coerce
-    .number()
+    .number<number>()
     .int()
     .min(1, "El número de asientos debe ser al menos 2"),
-  electric_range: z.coerce.number().optional(),
-  battery_capacity: z.coerce.number().optional(),
-  charging_time: z.coerce.number().optional(),
+  electric_range: z.coerce.number<number>().optional(),
+  battery_capacity: z.coerce.number<number>().optional(),
+  charging_time: z.coerce.number<number>().optional(),
   fast_charge: z.boolean().optional(),
   charging_port: z.string().optional(),
   iva_deductible: z.boolean().optional(),
-  monthly_price: z.coerce.number().optional(),
-  finance_price: z.coerce.number().optional(),
+  monthly_price: z.coerce.number<number>().optional(),
+  finance_price: z.coerce.number<number>().optional(),
   description: z.string().optional(),
   images: z.array(z.string()).default([]),
   features: z.array(z.string()).default([]),
@@ -95,7 +95,7 @@ export function VehicleFormDialog({
   vehicle,
   onSave,
 }: VehicleFormDialogProps) {
-  const form = useForm<VehicleFormValues>({
+  const form = useForm<z.input<typeof vehicleSchema>, unknown, VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: {
       brand: "",

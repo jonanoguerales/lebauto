@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { FacebookIcon, InstagramIcon, TwitterIcon } from "./SocialIcons";
 import { JSX } from "react";
 
 export default function Footer() {
@@ -74,9 +74,9 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 function SocialLinks() {
   return (
     <div className="flex gap-4">
-      <SocialButton href="#" icon={<Facebook />} label="Facebook" />
-      <SocialButton href="#" icon={<Instagram />} label="Instagram" />
-      <SocialButton href="#" icon={<Twitter />} label="Twitter" />
+      <SocialButton href="#" icon={<FacebookIcon />} label="Facebook" />
+      <SocialButton href="#" icon={<InstagramIcon />} label="Instagram" />
+      <SocialButton href="#" icon={<TwitterIcon />} label="Twitter" />
     </div>
   );
 }

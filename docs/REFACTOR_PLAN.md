@@ -164,7 +164,8 @@ Al terminar cada fase:
 ## Seguimiento de tareas (lo actualiza el Orquestador)
 - [x] T-00 Infraestructura del equipo de agentes (Fase 0)
 - [x] T-00b Recrear Supabase desde el código (no había backup de BD); antes: restaurar backup de BD (`pg_restore`) y subir el backup de Storage; volcar el esquema a `supabase/migrations/0001_baseline.sql` (adelanta la primera parte de T-13)
-- [ ] T-01 Dependencias, scripts y herramientas (lint, vitest, typecheck)
+- [x] T-01 Dependencias, scripts y herramientas (lint, vitest, typecheck)
+- [ ] T-01b Lint en verde: 42 errores heredados (set-state-in-effect, no-explicit-any, purity), en encargos de ≤300 líneas (decisión del humano, 2026-11-25)
 - [ ] T-02 Cambios incompatibles de Next 16 (proxy.ts, PageProps, next.config, viewport)
 - [ ] T-03 Tailwind 4
 - [ ] T-04 shadcn para React 19 + nuevos alias

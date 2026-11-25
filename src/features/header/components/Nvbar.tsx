@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, MessageSquare, Phone } from "lucide-react";
 import Image from "next/image";
-import { Link as ViewTransitionsLink } from "next-view-transitions";
+import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import CurvedNavPanel from "../curved-mobile-menu/components/CurvedNavPanel";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,7 @@ export default function Navbar() {
               : "justify-end"
           }`}
         >
-          <ViewTransitionsLink
+          <Link
             href="/"
             className={`text-2xl font-bold ${
               menuOpen ? "block" : scrolled ? "block" : "hidden"
@@ -87,14 +87,14 @@ export default function Navbar() {
               priority
               className="w-[50px] h-auto md:w-[70px]"
             />
-          </ViewTransitionsLink>
+          </Link>
 
           {/* Menú Desktop */}
           <div className="hidden md:flex items-center gap-x-4 lg:gap-x-6 text-sm">
-            <ViewTransitionsLink href="/" className="hover:opacity-70 py-2">
+            <Link href="/" className="hover:opacity-70 py-2">
               Inicio
-            </ViewTransitionsLink>
-            <ViewTransitionsLink
+            </Link>
+            <Link
               href="/coches-segunda-mano"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname.startsWith("/coches-segunda-mano")
@@ -107,8 +107,8 @@ export default function Navbar() {
               }`}
             >
               Coches de ocasión
-            </ViewTransitionsLink>
-            <ViewTransitionsLink
+            </Link>
+            <Link
               href="/cargadores"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname.startsWith("/cargadores")
@@ -121,8 +121,8 @@ export default function Navbar() {
               }`}
             >
               Cargadores
-            </ViewTransitionsLink>
-            <ViewTransitionsLink
+            </Link>
+            <Link
               href="/gestion-de-venta"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname === "/gestion-de-venta"
@@ -135,8 +135,8 @@ export default function Navbar() {
               }`}
             >
               Gestión de venta
-            </ViewTransitionsLink>
-            <ViewTransitionsLink
+            </Link>
+            <Link
               href="/renting"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname === "/renting"
@@ -149,8 +149,8 @@ export default function Navbar() {
               }`}
             >
               Renting
-            </ViewTransitionsLink>
-            <ViewTransitionsLink
+            </Link>
+            <Link
               href="/contacto"
               className={`py-2 hover:opacity-70 border-b-2 ${
                 pathname === "/contacto"
@@ -163,7 +163,7 @@ export default function Navbar() {
               }`}
             >
               Contacto
-            </ViewTransitionsLink>
+            </Link>
           </div>
           <div className="flex items-center gap-x-2 ml-4">
             <TooltipProvider delayDuration={0}>

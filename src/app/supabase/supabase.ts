@@ -661,7 +661,7 @@ export async function updateCharger(
   chargerData: Partial<Omit<Charger, "id" | "created_at">>
 ): Promise<Charger | null> {
   try {
-    let dataToUpdate = { ...chargerData };
+    const dataToUpdate = { ...chargerData };
 
     // Si se actualiza el nombre o la marca, regenerar el slug
     if (chargerData.name || chargerData.brand) {

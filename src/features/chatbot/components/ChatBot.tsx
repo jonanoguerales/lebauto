@@ -95,7 +95,7 @@ export default function ChatBotInternal() {
 
     startTransition(async () => {
         let nextStepIdToGo: string | undefined;
-        let userDataSnapshot = { ...useChatStore.getState().userData };
+        const userDataSnapshot = { ...useChatStore.getState().userData };
         let newDataFromCurrentStep: Partial<UserData> = {};
 
         if (isButtonClick) {

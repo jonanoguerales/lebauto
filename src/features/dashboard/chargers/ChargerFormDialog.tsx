@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Charger } from "@/lib/definitions"; 
-import { chargerSchema, type ChargerFormValues } from "@/lib/validations"; 
+import { chargerSchema, type ChargerFormInput, type ChargerFormValues } from "@/lib/validations";
 import {
   Dialog,
   DialogContent,
@@ -56,7 +56,7 @@ export default function ChargerFormDialog({
   const [currentImageUrlPreview, setCurrentImageUrlPreview] = useState<string | undefined>(undefined);
   const [imageFileToUpload, setImageFileToUpload] = useState<File | null>(null);
 
-  const form = useForm<ChargerFormValues>({
+  const form = useForm<ChargerFormInput, unknown, ChargerFormValues>({
     resolver: zodResolver(chargerSchema),
     defaultValues: { 
       name: "",

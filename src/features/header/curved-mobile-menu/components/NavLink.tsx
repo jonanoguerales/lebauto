@@ -1,4 +1,4 @@
-import { Link as ViewTransitionsLink } from "next-view-transitions";
+import Link from "next/link";
 import { motion, Variants } from 'framer-motion';
 import { scale, slide } from "../animations/anim";
 
@@ -33,9 +33,9 @@ export default function NavLink({ data, isActive, setSelectedIndicator, closeMen
         animate={isActive ? "open" : "closed"}
         className="w-2.5 h-2.5 bg-black rounded-full absolute -left-[20px] sm:-left-[30px]"
       />
-      <ViewTransitionsLink href={href} onClick={closeMenu} className="text-black hover:text-gray-500 transition-colors w-full">
+      <Link href={href} onClick={closeMenu} className="text-black hover:text-gray-500 transition-colors w-full">
         {title}
-      </ViewTransitionsLink>
+      </Link>
     </motion.div>
   );
 }

@@ -189,7 +189,7 @@ export default function SellCarPage() {
                   </h3>
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                     <p className="italic mb-2">
-                      "Proceso rápido y sin complicaciones. Vendí mi coche en menos de una semana y al mejor precio."
+                      &quot;Proceso rápido y sin complicaciones. Vendí mi coche en menos de una semana y al mejor precio.&quot;
                     </p>
                     <p className="font-medium">Carlos Martínez</p>
                     <p className="text-sm text-gray-600">Vendió un Audi A4 2018</p>

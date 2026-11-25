@@ -2,7 +2,7 @@ import "@/styles/global.css";
 import type { Metadata } from "next";
 import { inter } from "@/utils/fonts";
 import { Toaster } from "@/components/ui/toaster";
-import { ViewTransitions } from "next-view-transitions";
+import { ViewTransition } from "react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lebauto.vercel.app"),
@@ -34,23 +34,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ViewTransitions>
-      <html lang="es">
-        <head>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
-          />
-        </head>
-        <body
-          className={`${inter.className} antialiased flex flex-col min-h-screen overflow-x-hidden bg-background text-foreground`}
-        >
-          <main className="flex-1" role="main">
-            {children}
-          </main>
-          <Toaster />
-        </body>
-      </html>
-    </ViewTransitions>
+    <html lang="es">
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
+        />
+      </head>
+      <body
+        className={`${inter.className} antialiased flex flex-col min-h-screen overflow-x-hidden bg-background text-foreground`}
+      >
+        <main className="flex-1" role="main">
+          <ViewTransition>{children}</ViewTransition>
+        </main>
+        <Toaster />
+      </body>
+    </html>
   );
 }

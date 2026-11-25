@@ -1,4 +1,7 @@
 import type { Config } from "tailwindcss";
+import forms from "@tailwindcss/forms";
+import animate from "tailwindcss-animate";
+import scrollbar from "tailwind-scrollbar";
 
 const config: Config = {
   darkMode: ["class"],
@@ -128,9 +131,9 @@ const config: Config = {
     },
   },
   plugins: [
-    require("@tailwindcss/forms"),
-    require("tailwindcss-animate"),
-    require("tailwind-scrollbar")({ nocompatible: true }),
+    forms,
+    animate,
+    scrollbar({ nocompatible: true }),
   ],
 };
 export default config;

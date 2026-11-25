@@ -182,3 +182,12 @@ input[type="number"]::-webkit-outer-spin-button {
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
 }
+/* Transiciones de vista entre rutas (<ViewTransition> del layout raíz): sin animación si el usuario pide
+   movimiento reducido (Modern Web Guidance · same-document-transitions). */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
