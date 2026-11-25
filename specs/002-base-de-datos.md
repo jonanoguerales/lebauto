@@ -1,5 +1,5 @@
 # 002 — Recrear la base de datos de Supabase
-Estado: Implementada (AC-7 pendiente de ejecutar: falta `SUPABASE_SECRET_KEY`; AC-6 con cobertura parcial de valores de filtro, pendiente de decisión del humano)
+Estado: Implementada
 
 ## Contexto
 El proyecto Supabase original (pausado el 11-08-2025) no se puede restaurar y **no hay backup de la base de datos**:
@@ -58,3 +58,7 @@ y cargar **datos de demostración** para que la app vuelva a funcionar. Es la ta
 ## Fuera de alcance
 - Generar los embeddings de `documentos` (necesita la clave de Hugging Face): se hará en T-24 con un script de reindexado.
 - Refactorizar el código de la app (Fases 1-2).
+
+## Decisiones
+- 2026-11-25 · AC-6: el humano acepta la cobertura parcial de valores de filtro (solo hay fotos de 8 coches distintos). Los filtros sin coches mostrarán el estado vacío (AC-7 de la spec 001).
+- 2026-11-25 · AC-7: fotos subidas al bucket con `pnpm db:upload-storage` (11/11) y verificadas.

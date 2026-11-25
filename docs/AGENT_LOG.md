@@ -10,3 +10,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: migraciones 0001-0003 (esquema, pgvector, RLS catálogo público + admin, bucket), check-rls (57/57), seed idempotente (12 coches, 22 características, 6 cargadores), upload-storage, make-admin, 40 tests · Testing: PASS
 - Pendiente del humano: `SUPABASE_SECRET_KEY` + `pnpm db:upload-storage` (AC-7); decidir cobertura de filtros del seed (AC-6)
 - Nota: Context7 no estaba disponible para los subagentes en esta sesión (MCP de `.mcp.json` sin aprobar)
+- Cierre (2026-11-25): fotos subidas (AC-7 ✔), admin dado de alta, cobertura del seed aceptada por el humano (AC-6 ✔).
