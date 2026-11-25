@@ -46,3 +46,6 @@ codebase.md
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# configuración local de Claude Code
+.claude/settings.local.json
