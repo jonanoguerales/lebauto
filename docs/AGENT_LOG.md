@@ -40,3 +40,10 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Commit: f32410f
 
 ## T-01b · Lint en verde — cerrada: `pnpm lint` 0 errores (42 → 0) en 3 encargos
+
+## T-01c · Calculadora de ahorro en la portada
+- Spec: specs/001-lebauto.md (AC-1: la portada muestra la calculadora de ahorro); decisión del humano: tras la sección de vehículos eléctricos
+- Vuelta 1 · Develop: SavingsCalculator en `/` (sigue ○, HTML con cifras por defecto), sliders con aria-labelledby/aria-valuetext y área táctil de 44 px, SavingsNumberField con parseo seguro (sin NaN) y error con aria-invalid/aria-describedby, formatCurrency/formatPrice es-ES con tests; MWG: slider, forms · Testing: PASS
+- Decisión del Orquestador: diff de ~360 líneas sin tests aceptado (una sola unidad: reescritura de un componente)
+- Pendiente: el modo oscuro no existe aún (Tailwind 3 purga `.dark`), revisar contraste dark en T-03; thumb invisible sin JS e indicador de pestaña activa (T-04); región aria-live global para errores (T-04); zoom bloqueado en layout (T-02)
+- Commit: (este)

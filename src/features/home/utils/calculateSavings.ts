@@ -40,3 +40,14 @@ export function calculateSavings(input: SavingsInput): SavingsResult {
     totalSavings: fuelCost - electricityCost + maintenanceSavings,
   }
 }
+
+/**
+ * Convierte lo escrito en un campo numérico de la calculadora en un número válido para el cálculo.
+ * Devuelve `null` si está vacío, no es un número finito o es negativo; acepta coma decimal.
+ */
+export function parseNonNegativeNumber(raw: string): number | null {
+  const trimmed = raw.trim().replace(",", ".")
+  if (trimmed === "") return null
+  const value = Number(trimmed)
+  return Number.isFinite(value) && value >= 0 ? value : null
+}
