@@ -46,4 +46,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: SavingsCalculator en `/` (sigue ○, HTML con cifras por defecto), sliders con aria-labelledby/aria-valuetext y área táctil de 44 px, SavingsNumberField con parseo seguro (sin NaN) y error con aria-invalid/aria-describedby, formatCurrency/formatPrice es-ES con tests; MWG: slider, forms · Testing: PASS
 - Decisión del Orquestador: diff de ~360 líneas sin tests aceptado (una sola unidad: reescritura de un componente)
 - Pendiente: el modo oscuro no existe aún (Tailwind 3 purga `.dark`), revisar contraste dark en T-03; thumb invisible sin JS e indicador de pestaña activa (T-04); región aria-live global para errores (T-04); zoom bloqueado en layout (T-02)
-- Commit: (este)
+- Commit: cc7d307
