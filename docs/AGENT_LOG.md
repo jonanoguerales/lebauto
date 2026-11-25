@@ -37,6 +37,6 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: cuota en render (calculateMonthlyPayment + tests), CarGallery con estado en handlers y prevImages, selectAllModelsState derivado, loader diferido sin setter síncrono, key en ChargerFormDialog (chargerFormDefaults + tests) y Date.now en el submit, ImageManagerDialog con prevOpen/prevVehicle; `pnpm lint` 0 errores · Testing: PASS
 - Decisión del Orquestador: los tests nuevos no cuentan en el tope de ~300 líneas (296 sin tests)
 - Pendiente: D-35 en CarGallery/CarFilters/CatalogClient/ChargerFormDialog (pods T-07/T-08/T-12); diálogos del dashboard sin probar en navegador (e2e con admin, D-34); miniaturas invisibles sin JS (T-08)
-- Commit: (este)
+- Commit: f32410f
 
 ## T-01b · Lint en verde — cerrada: `pnpm lint` 0 errores (42 → 0) en 3 encargos
