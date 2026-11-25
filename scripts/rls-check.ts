@@ -1,4 +1,4 @@
-/** Pure helpers for scripts/check-rls.ts (tested in rls-check.test.ts). */
+/** Pure helpers for scripts/check-rls.ts (tested in rls-check.test.ts). Spec 002, AC-5. */
 
 export type DbRole = "authenticated" | "anon";
 
@@ -33,4 +33,29 @@ export function summarizeChecks(results: CheckResult[]): { ok: boolean; report: 
       : `\nRLS con fallos: ${failed} de ${results.length} comprobaciones fallan.`,
   );
   return { ok: failed === 0 && results.length > 0, report: lines.join("\n") };
+}
+
+/** Resultado de intentar una consulta como un rol: filas devueltas/afectadas o el error de Postgres. */
+export type QueryOutcome = { ok: true; rows: number } | { ok: false; error: string };
+
+/** Una operación está bloqueada si Postgres la rechaza (permiso o RLS) o si no afecta a ninguna fila. */
+export function isBlocked(outcome: QueryOutcome): boolean {
+  return !outcome.ok || outcome.rows === 0;
+}
+
+/** Una operación está permitida si no falla y devuelve o afecta al menos a `minRows` filas. */
+export function isAllowed(outcome: QueryOutcome, minRows = 1): boolean {
+  return outcome.ok && outcome.rows >= minRows;
+}
+
+/** Vector literal de pgvector (`[x,y,…]`) con `dimensions` componentes iguales a `value`. */
+export function buildVectorLiteral(dimensions: number, value = 0.1): string {
+  if (!Number.isInteger(dimensions) || dimensions <= 0) throw new Error("Dimensiones no válidas.");
+  return `[${Array.from({ length: dimensions }, () => value).join(",")}]`;
+}
+
+/** Texto del detalle de una comprobación fallida. */
+export function describeOutcome(outcome?: QueryOutcome): string {
+  if (!outcome) return "resultado inesperado";
+  return outcome.ok ? `${outcome.rows} fila(s)` : `error: ${outcome.error}`;
 }

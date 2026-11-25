@@ -1,11 +1,11 @@
 /**
  * Applies pending SQL migrations from supabase/migrations/ to DATABASE_URL.
- * Usage: npm run db:migrate
+ * Uso: pnpm db:migrate
  */
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { config as loadEnv } from "dotenv";
-import postgres from "postgres";
+import { connectDb } from "./db";
 import { selectPendingMigrations } from "./migrations";
 
 const MIGRATIONS_DIR = path.join(process.cwd(), "supabase", "migrations");
@@ -22,13 +22,7 @@ async function main(): Promise<void> {
 
   const files = await readdir(MIGRATIONS_DIR);
 
-  // The Supabase pooler hangs on pipelined queries: one connection, no prepared statements, no pipelining.
-  const sql = postgres(databaseUrl, {
-    prepare: false,
-    max: 1,
-    max_pipeline: 1,
-    onnotice: () => {},
-  });
+  const sql = connectDb(databaseUrl);
 
   try {
     await sql`
