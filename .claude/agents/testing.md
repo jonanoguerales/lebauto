@@ -33,7 +33,7 @@ Puedes ejecutar comandos de lectura y verificación (lint, tests, build, `git di
 ### Seguridad y datos (Supabase)
 - **D-10** Toda tabla tiene **RLS activado**: lectura pública solo donde la spec lo dice (catálogo, cargadores,
   características) y escritura (`insert/update/delete`) solo para administradores. Comprueba la migración SQL
-  y `pnpm db:check-rls`. Lo mismo para las políticas del bucket de Storage.
+  y `pnpm db:check-rls`, contrastando con el checklist de seguridad de la skill oficial `supabase`. Lo mismo para las políticas del bucket de Storage.
 - **D-11** Nunca se usa la service role key en el código de la app; no hay claves ni secretos en el repo
   (revisa el diff y `.env.example`). En Server Components y Server Actions se usa el cliente de servidor,
   nunca el de navegador.

@@ -67,7 +67,8 @@ Spec principal: `specs/001-lebauto.md`. Plan del refactor: `docs/REFACTOR_PLAN.m
 ## Skills y MCP (las usan Develop y Testing)
 Todas en `.claude/skills/`: `pods-architecture` · `supabase-best-practices` · `spec-driven-development` ·
 `ux-loading-and-motion` · `nextjs-rendering-strategy` (estático / PPR / SSR / isla de cliente por ruta) ·
-`tailwind-shadcn` · `context7-docs` · `modern-web-guidance` (oficial de Google Chrome) · skills oficiales de
+`tailwind-shadcn` · `context7-docs` · oficiales de Supabase `supabase` y
+`supabase-postgres-best-practices` (de `supabase/agent-skills`) · `modern-web-guidance` (oficial de Google Chrome) · skills oficiales de
 Next.js `next-bundle-optimizer`, `next-dev-loop`, `next-cache-components-adoption` y
 `next-cache-components-optimizer` (de `vercel/next.js`; la documentación de Next viene además en
 `node_modules/next/dist/docs/`). Las externas se instalan con `npx skills add … --copy` y su versión queda
@@ -77,4 +78,5 @@ MCP **Context7** declarado en `.mcp.json`; Develop y Testing tienen sus herramie
 En cada brief recuérdale a Develop que **Modern Web Guidance es obligatoria** para todo HTML/CSS/JS de cliente
 (directriz D-26), que consulte **Context7** antes de usar la API de una librería (D-27) y que cada ruta siga la
 **estrategia de renderizado** (D-28). En las tareas de caché (Fase 4) indícale también las skills
-`next-cache-components-*`, y en las de rendimiento `next-bundle-optimizer`.
+`next-cache-components-*`, y en las de rendimiento `next-bundle-optimizer`. En las de base de datos, Auth o Storage, las skills `supabase`,
+`supabase-postgres-best-practices` y `supabase-best-practices` (esta última manda en las reglas propias del proyecto).

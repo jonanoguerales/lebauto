@@ -33,7 +33,9 @@ comportamiento descrito en `specs/001-lebauto.md` salvo que el brief diga lo con
    dinámico o isla de cliente según `.claude/skills/nextjs-rendering-strategy/SKILL.md` (directriz D-28), y
    comprueba el resultado en la tabla de rutas de `pnpm build`.
 6. Lee también las skills del proyecto que apliquen: `pods-architecture`, `supabase-best-practices`,
-   `tailwind-shadcn`, `ux-loading-and-motion` y `spec-driven-development`. Las skills oficiales de Next.js
+   `tailwind-shadcn`, `ux-loading-and-motion` y `spec-driven-development`. Para todo lo que toque
+   Supabase (consultas, Auth, Storage, RLS, migraciones, `pg_restore`) lee también las oficiales `supabase` y
+   `supabase-postgres-best-practices`; si chocan con `supabase-best-practices`, manda la del proyecto y dilo en PENDIENTE. Las skills oficiales de Next.js
    (`next-bundle-optimizer`, `next-dev-loop`, `next-cache-components-*`) se usan cuando el Orquestador lo
    indique en el brief.
 

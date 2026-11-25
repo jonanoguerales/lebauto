@@ -5,7 +5,9 @@ description: Reglas para la base de datos y la autenticación con Supabase (Post
 
 # Supabase: base de datos y autenticación
 
-Consulta siempre la documentación actual (skill `context7-docs` y `node_modules/@supabase/ssr/`).
+Consulta siempre la documentación actual (skill `context7-docs` y `node_modules/@supabase/ssr/`) y las skills
+oficiales `supabase` (Auth, SSR, Storage, checklist de seguridad) y `supabase-postgres-best-practices` (esquema,
+índices, RLS, `pg_restore`). Esta skill añade las reglas **propias de Lebauto** y manda si hay conflicto.
 
 ## 1. Esquema y migraciones
 - Todo cambio de esquema en un fichero nuevo `supabase/migrations/NNNN_descripcion.sql`. Nunca edites una
@@ -53,8 +55,8 @@ Consulta siempre la documentación actual (skill `context7-docs` y `node_modules
 - Login con Server Actions + Zod; mensajes de error claros y en español, sin revelar si un email existe.
 
 ## 5. Variables de entorno
-- Públicas (navegador): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (hoy; migrar a
-  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` si se rota a las nuevas claves de Supabase).
+- Públicas (navegador): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  (clave `sb_publishable_…` del proyecto nuevo; el código antiguo leía `NEXT_PUBLIC_SUPABASE_ANON_KEY` y se cambia en T-05).
 - Solo servidor / scripts: `DATABASE_URL` (pooler en modo transaction, puerto 6543) para las migraciones.
   Con `postgres-js`: `prepare: false` y `max_pipeline: 1` (el pooler deja colgadas las consultas encadenadas).
 
