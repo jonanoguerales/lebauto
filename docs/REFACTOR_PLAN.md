@@ -163,6 +163,7 @@ Al terminar cada fase:
 
 ## Seguimiento de tareas (lo actualiza el Orquestador)
 - [x] T-00 Infraestructura del equipo de agentes (Fase 0)
+- [ ] T-00b Recuperar Supabase: proyecto nuevo, restaurar backup de BD (`pg_restore`) y subir el backup de Storage; volcar el esquema a `supabase/migrations/0001_baseline.sql` (adelanta la primera parte de T-13)
 - [ ] T-01 Dependencias, scripts y herramientas (lint, vitest, typecheck)
 - [ ] T-02 Cambios incompatibles de Next 16 (proxy.ts, PageProps, next.config, viewport)
 - [ ] T-03 Tailwind 4
@@ -189,3 +190,8 @@ Al terminar cada fase:
 - [ ] T-24 IA (core/ai, /api/chat seguro, reindexado)
 - [ ] T-25 Seguridad (escapado emails, honeypot, límites, console.log, env)
 - [ ] T-26 Playwright e2e + README
+
+
+> **Nota (2026-11-25):** el proyecto Supabase original (`Lebauto`, pausado el 11-08-2025) ya no se puede restaurar desde el dashboard. Hay que crear un proyecto nuevo y restaurar en él el backup de la base de datos y el de Storage (`~/Documents/mwqlcfaptwgoylhdngmb.storage.zip`, 14 ficheros). El host de imágenes de `next.config.ts` cambiará: se leerá de `NEXT_PUBLIC_SUPABASE_URL` (T-02).
+>
+> **Git:** el trabajo va en la rama `refactor/next16` de https://github.com/jonanoguerales/lebauto (repo **público**), que parte de `master`. Se integra en `master` con un PR al terminar cada fase.
