@@ -24,4 +24,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: brief del Orquestador (AC-1 … AC-6); comportamiento a conservar: specs/001-lebauto.md
 - Vuelta 1 · Develop: 19 `no-explicit-any` fuera (CarRow/CarRowWithRelations, PageProps en páginas, catch con instanceof Error, toast tipado), sidebar con useState; destapados 2 bugs de tipos (filtros URL como string, null→undefined en mapper); +3 tests de mappers; lint 42→22 · Testing: PASS
 - Pendiente: `/api/chat` devuelve error.message al cliente (T-11); fetchFilteredCars sin mapper (T-07); CarRow desde tipos `Database` (T-05/T-13)
-- Commit: (este)
+- Commit: 3482aa4
