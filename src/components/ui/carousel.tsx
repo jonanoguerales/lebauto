@@ -51,17 +51,25 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
       },
       plugins,
     )
-    const [canScrollPrev, setCanScrollPrev] = React.useState(false)
-    const [canScrollNext, setCanScrollNext] = React.useState(false)
+    // Embla es un store externo: se lee con useSyncExternalStore (en el servidor, sin API, no hay scroll).
+    const subscribe = React.useCallback(
+      (onChange: () => void) => {
+        if (!api) {
+          return () => {}
+        }
 
-    const onSelect = React.useCallback((api: CarouselApi) => {
-      if (!api) {
-        return
-      }
+        api.on("select", onChange)
+        api.on("reInit", onChange)
 
-      setCanScrollPrev(api.canScrollPrev())
-      setCanScrollNext(api.canScrollNext())
-    }, [])
+        return () => {
+          api.off("select", onChange)
+          api.off("reInit", onChange)
+        }
+      },
+      [api],
+    )
+    const canScrollPrev = React.useSyncExternalStore(subscribe, () => api?.canScrollPrev() ?? false, () => false)
+    const canScrollNext = React.useSyncExternalStore(subscribe, () => api?.canScrollNext() ?? false, () => false)
 
     const scrollPrev = React.useCallback(() => {
       api?.scrollPrev()
@@ -91,21 +99,6 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 
       setApi(api)
     }, [api, setApi])
-
-    React.useEffect(() => {
-      if (!api) {
-        return
-      }
-
-      onSelect(api)
-      api.on("select", onSelect)
-      api.on("reInit", onSelect)
-
-      return () => {
-        api.off("select", onSelect)
-        api.off("reInit", onSelect)
-      }
-    }, [api, onSelect])
 
     return (
       <CarouselContext.Provider

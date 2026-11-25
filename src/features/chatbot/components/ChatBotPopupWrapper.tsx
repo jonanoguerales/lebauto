@@ -6,6 +6,7 @@ import { Bot as BotIcon, X as XIcon, ChevronsDownUp } from "lucide-react";
 import ChatBotInternal from "./ChatBot";
 import { useChatStore } from "@/lib/chatStore";
 import { chatFlow } from "@/lib/chatFlow";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ChatBotPopupWrapperProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
   
   const [isCompactMode, setIsCompactMode] = useState(false); 
   const [hasNavigated, setHasNavigated] = useState(false);
+  const isSmallScreen = useMediaQuery("(max-width: 639px)");
 
   useEffect(() => {
     const body = document.body;
@@ -34,8 +36,6 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
       body.style.overflow = originalOverflow;
       body.style.position = originalPosition;
       body.style.width = originalWidth;
-      setIsCompactMode(false); 
-      setHasNavigated(false); 
     }
     return () => {
       body.style.overflow = originalOverflow;
@@ -45,18 +45,26 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
   }, [isOpen, isCompactMode]);
 
 
-  useEffect(() => {
-    if (isOpen && chatFlow && chatFlow[currentStepId]?.navigateTo && !hasNavigated) {
-        if (window.innerWidth < 640) { 
-             setIsCompactMode(true);
-        }
-        setHasNavigated(true); 
+  // Estado ajustado durante el render (sin efectos): al cerrar se reinicia el modo compacto y, cuando el
+  // flujo del chat navega a otra página, en móvil se compacta el popup para dejar ver la página.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (!isOpen) {
+      setIsCompactMode(false);
+      setHasNavigated(false);
     }
-    if (currentStepId === 'start' && hasNavigated) {
-        setIsCompactMode(false);
-        setHasNavigated(false);
+  }
+  if (isOpen && chatFlow[currentStepId]?.navigateTo && !hasNavigated) {
+    if (isSmallScreen) {
+      setIsCompactMode(true);
     }
-  }, [currentStepId, isOpen, hasNavigated]);
+    setHasNavigated(true);
+  }
+  if (currentStepId === "start" && hasNavigated) {
+    setIsCompactMode(false);
+    setHasNavigated(false);
+  }
 
 
   if (!isOpen) {
@@ -90,12 +98,12 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
             <BotIcon className="text-primary h-5 w-5" /> Agente Virtual Lebi
           </CardTitle>
           <div className="flex items-center gap-1">
-            {isCompactMode && window.innerWidth < 640 && (
+            {isCompactMode && isSmallScreen && (
                  <Button variant="ghost" size="icon" onClick={() => setIsCompactMode(false)} aria-label="Expandir chat" className="h-8 w-8 sm:h-9 sm:w-9">
                     <ChevronsDownUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300 rotate-180" />
                 </Button>
             )}
-             {!isCompactMode && hasNavigated && window.innerWidth < 640 && ( 
+             {!isCompactMode && hasNavigated && isSmallScreen && ( 
                 <Button variant="ghost" size="icon" onClick={() => setIsCompactMode(true)} aria-label="Minimizar chat" className="h-8 w-8 sm:h-9 sm:w-9">
                     <ChevronsDownUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 dark:text-gray-300" />
                 </Button>

@@ -25,7 +25,6 @@ const CHARGERS_SECTION_CAROUSEL_ID = "homeChargersSectionCarousel";
 export default function ElectricChargersSection() {
   const [chargers, setChargers] = useState<Charger[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasMounted, setHasMounted] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
@@ -36,10 +35,10 @@ export default function ElectricChargersSection() {
     return getCarouselStoreActiveSlide(CHARGERS_SECTION_CAROUSEL_ID) || 0;
   });
 
+  // Carga en el cliente heredada (pasará a un Server Component en la fase de pods): el estado solo se
+  // actualiza cuando llega la respuesta, nunca de forma síncrona en el cuerpo del efecto.
   useEffect(() => {
-    setHasMounted(true);
     const loadChargers = async () => {
-      setIsLoading(true);
       try {
         const fetchedChargers = await fetchChargers();
         const itemsToDisplay = fetchedChargers.slice(0, 8);
@@ -65,7 +64,7 @@ export default function ElectricChargersSection() {
       }
     };
     loadChargers();
-  }, []);
+  }, [getCarouselStoreActiveSlide, setCarouselStoreActiveSlide]);
 
   useEffect(() => {
     if (isDesktop || !carouselApi) {
@@ -90,11 +89,6 @@ export default function ElectricChargersSection() {
     };
   }, [isDesktop, carouselApi, setCarouselStoreActiveSlide, initialCarouselIndex]);
 
-
-
-  if (!hasMounted) {
-    return null;
-  }
 
   return (
     <section

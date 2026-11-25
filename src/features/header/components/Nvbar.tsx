@@ -20,6 +20,13 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // Al navegar se cierra el menú móvil: se ajusta el estado durante el render cuando cambia la ruta.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setMenuOpen(false);
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -39,11 +46,6 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  useEffect(() => {
-    if (menuOpen) {
-      setMenuOpen(false);
-    }
-  }, [pathname]);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 

@@ -26,7 +26,6 @@ export default function ElectricVehiclesSection() {
   const [electricVehicles, setElectricVehicles] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const [mounted, setMounted] = useState(false);
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
   const { setActiveSlide, getActiveSlide } = useCarouselStore();
@@ -35,10 +34,10 @@ export default function ElectricVehiclesSection() {
     return getActiveSlide(ELECTRIC_VEHICLES_CAROUSEL_ID) || 0;
   });
 
+  // Carga en el cliente heredada (pasará a un Server Component en la fase de pods): el estado solo se
+  // actualiza cuando llega la respuesta, nunca de forma síncrona en el cuerpo del efecto.
   useEffect(() => {
-    setMounted(true);
     const loadElectricVehicles = async () => {
-      setIsLoading(true);
       try {
         const vehicles = await fetchElectricVehicles(8);
         setElectricVehicles(vehicles);
@@ -64,7 +63,7 @@ export default function ElectricVehiclesSection() {
       }
     };
     loadElectricVehicles();
-  }, []);
+  }, [getActiveSlide, setActiveSlide]);
 
   useEffect(() => {
     if (isDesktop || !carouselApi) {
@@ -92,10 +91,6 @@ export default function ElectricVehiclesSection() {
     };
   }, [isDesktop, carouselApi, setActiveSlide, initialCarouselIndex]);
 
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <section className="py-20">

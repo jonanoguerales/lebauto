@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calculator, Fuel, Wrench, Euro } from "lucide-react"
+import { calculateSavings } from "@/features/home/utils/calculateSavings"
 
 export default function SavingsCalculator() {
   const [kmPerYear, setKmPerYear] = useState(15000)
@@ -19,28 +20,14 @@ export default function SavingsCalculator() {
   const [electricConsumption, setElectricConsumption] = useState(18)
   const [yearsOfUse, setYearsOfUse] = useState(5)
 
-  const [fuelCost, setFuelCost] = useState(0)
-  const [electricityCost, setElectricityCost] = useState(0)
-  const [maintenanceSavings, setMaintenanceSavings] = useState(0)
-  const [totalSavings, setTotalSavings] = useState(0)
-
-  useEffect(() => {
-    // Cálculo del coste de combustible (litros por km * precio por litro * km por año * años)
-    const fuelCostCalc = (fuelConsumption / 100) * fuelPrice * kmPerYear * yearsOfUse
-    setFuelCost(fuelCostCalc)
-
-    // Cálculo del coste de electricidad (kWh por km * precio por kWh * km por año * años)
-    const electricityCostCalc = (electricConsumption / 100) * electricityPrice * kmPerYear * yearsOfUse
-    setElectricityCost(electricityCostCalc)
-
-    // Estimación de ahorro en mantenimiento (aproximadamente 50% menos)
-    const maintenanceCost = kmPerYear * yearsOfUse * 0.03 // 3 céntimos por km para vehículo combustión
-    const electricMaintenanceCost = maintenanceCost * 0.5 // 50% menos para eléctrico
-    setMaintenanceSavings(maintenanceCost - electricMaintenanceCost)
-
-    // Cálculo del ahorro total
-    setTotalSavings(fuelCostCalc - electricityCostCalc + (maintenanceCost - electricMaintenanceCost))
-  }, [kmPerYear, fuelConsumption, fuelPrice, electricityPrice, electricConsumption, yearsOfUse])
+  const { fuelCost, electricityCost, maintenanceSavings, totalSavings } = calculateSavings({
+    kmPerYear,
+    fuelConsumption,
+    fuelPrice,
+    electricityPrice,
+    electricConsumption,
+    yearsOfUse,
+  })
 
   return (
     <section className="py-20">

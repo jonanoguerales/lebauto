@@ -1,8 +1,6 @@
-"use client"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Clock } from "lucide-react"
-import { useEffect, useState } from "react"
 
 type Location = {
   id: number
@@ -63,14 +61,6 @@ const locations: Location[] = [
 ]
 
 export default function LocationsSection() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
     <section className="pb-20">
       <div className="container mx-auto">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useActionState } from "react"
 import { submitSellCarForm } from "@/app/actions/actions"
 import { Button } from "@/components/ui/button"
@@ -27,9 +27,19 @@ const initialState: SellCarFormState = {
 export default function SellCarForm() {
   const { toast } = useToast()
   const [state, formAction] = useActionState(submitSellCarForm, initialState)
-  const [selectKey, setSelectKey] = useState(0)
-  const formRef = useRef<HTMLFormElement>(null)
+  const [formKey, setFormKey] = useState(0)
 
+  // Tras un envío correcto se vacía el formulario (también los Select) remontándolo con otra `key`;
+  // se ajusta durante el render al cambiar `state`, sin efecto.
+  const [prevState, setPrevState] = useState(state)
+  if (state !== prevState) {
+    setPrevState(state)
+    if (state?.success) {
+      setFormKey((prev) => prev + 1)
+    }
+  }
+
+  // El toast es un sistema externo: se notifica desde un efecto.
   useEffect(() => {
     if (state?.message) {
       toast({
@@ -38,16 +48,12 @@ export default function SellCarForm() {
         variant: state.success ? "default" : "destructive",
       })
     }
-    if (state?.success) {
-      formRef.current?.reset()
-      setSelectKey((prev) => prev + 1)
-    }
   }, [state, toast])
 
   return (
     <Card className="shadow-lg border-0">
       <CardContent className="p-6 md:p-8">
-        <form key={selectKey} ref={formRef} action={formAction} className="space-y-6" aria-labelledby="sell-car-form-title">
+        <form key={formKey} action={formAction} className="space-y-6" aria-labelledby="sell-car-form-title">
           <div className="space-y-4">
             <h3 id="sell-car-form-title" className="text-lg font-semibold">Datos personales</h3>
 
