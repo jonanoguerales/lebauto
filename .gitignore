@@ -37,3 +37,12 @@ next-env.d.ts
 
 # codebase
 codebase.md
+# env (plantilla sí se versiona)
+.env.*
+!.env.example
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
