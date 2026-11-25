@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Charger } from "@/lib/definitions"; 
@@ -37,6 +37,7 @@ import { useToast } from "@/hooks/useToast";
 import Image from "next/image";
 import { InputTags } from "./InputTags";
 import { Trash2 } from "lucide-react"; 
+import { getChargerFormDefaults } from "./chargerFormDefaults";
 
 interface ChargerFormDialogProps {
   open: boolean;
@@ -53,76 +54,15 @@ export default function ChargerFormDialog({
 }: ChargerFormDialogProps) {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false); 
-  const [currentImageUrlPreview, setCurrentImageUrlPreview] = useState<string | undefined>(undefined);
+  // El padre monta el diálogo con otra `key` cada vez que lo abre, así que el formulario y la vista previa
+  // se inicializan aquí con el cargador que se edita (o vacíos para uno nuevo), sin efecto de sincronización.
+  const [currentImageUrlPreview, setCurrentImageUrlPreview] = useState<string | undefined>(charger?.image_url);
   const [imageFileToUpload, setImageFileToUpload] = useState<File | null>(null);
 
   const form = useForm<ChargerFormInput, unknown, ChargerFormValues>({
     resolver: zodResolver(chargerSchema),
-    defaultValues: { 
-      name: "",
-      brand: undefined, 
-      power_kw: 7.4, 
-      connector_type: "Tipo 2",
-      price_eur: 0,
-      installation_cost_eur: undefined,
-      features: [],
-      description: undefined,
-      image_url: undefined,
-      category: "home",
-      efficiency: undefined,
-      dimensions: undefined,
-      weight_kg: undefined,
-      warranty_years: undefined,
-      compatibility_notes: undefined,
-    },
+    defaultValues: getChargerFormDefaults(charger),
   });
-
- useEffect(() => {
-    if (open) {
-      if (charger) {
-        form.reset({
-          id: charger.id,
-          name: charger.name || "",
-          brand: charger.brand || undefined,
-          power_kw: charger.power_kw || 0,
-          connector_type: charger.connector_type || "",
-          price_eur: charger.price_eur || 0,
-          installation_cost_eur: charger.installation_cost_eur ?? undefined,
-          features: charger.features || [],
-          description: charger.description || undefined,
-          image_url: charger.image_url || undefined,
-          category: charger.category || "home",
-          efficiency: charger.efficiency ?? undefined,
-          dimensions: charger.dimensions || undefined,
-          weight_kg: charger.weight_kg ?? undefined,
-          warranty_years: charger.warranty_years ?? undefined,
-          compatibility_notes: charger.compatibility_notes || undefined,
-        });
-        setCurrentImageUrlPreview(charger.image_url);
-      } else {
-        form.reset({ 
-          name: "",
-          brand: undefined,
-          power_kw: 7.4,
-          connector_type: "Tipo 2",
-          price_eur: 0,
-          installation_cost_eur: undefined,
-          features: [],
-          description: undefined,
-          image_url: undefined,
-          category: "home",
-          efficiency: undefined,
-          dimensions: undefined,
-          weight_kg: undefined,
-          warranty_years: undefined,
-          compatibility_notes: undefined,
-        });
-        setCurrentImageUrlPreview(undefined);
-      }
-      setImageFileToUpload(null);
-    }
-  }, [charger, open, form.reset]); 
-
 
   const handleImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -139,7 +79,7 @@ export default function ChargerFormDialog({
       try {
         await deleteImage(currentImageUrlPreview);
         toast({ title: "Imagen eliminada del almacenamiento." });
-      } catch (error) {
+      } catch {
         toast({ title: "Error", description: "No se pudo eliminar la imagen del almacenamiento.", variant: "destructive" });
       }
       setIsProcessing(false);
@@ -208,7 +148,7 @@ export default function ChargerFormDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4">
+          <form onSubmit={(event) => form.handleSubmit(onSubmit)(event)} className="space-y-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}

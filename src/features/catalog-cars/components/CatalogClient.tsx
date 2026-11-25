@@ -51,7 +51,6 @@ export default function CatalogClient({
   const [isOpen, setIsOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState("recent");
   const [showLoader, setShowLoader] = useState(false);
-  const [stickyHeaderTop, setStickyHeaderTop] = useState(0);
 
   useEffect(() => {
     clearFilters();
@@ -122,15 +121,15 @@ export default function CatalogClient({
     setFilteredCars(initialCars);
   }, []);
 
+  // El loader aparece si la carga dura más de 300 ms; al terminar se oculta ajustando el estado en render.
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (isLoading) {
-      timeout = setTimeout(() => setShowLoader(true), 300);
-    } else {
-      setShowLoader(false);
-    }
+    if (!isLoading) return;
+    const timeout = setTimeout(() => setShowLoader(true), 300);
     return () => clearTimeout(timeout);
   }, [isLoading]);
+  if (!isLoading && showLoader) {
+    setShowLoader(false);
+  }
 
   useResponsiveView();
 
@@ -149,6 +148,8 @@ export default function CatalogClient({
   }, [filteredCars, sortOrder]);
 
   const isMobile = useMediaQuery("(max-width: 767px)");
+  // Estado derivado: la barra de orden se pega justo debajo de la navbar (50 px en móvil, 80 px en escritorio).
+  const stickyHeaderTop = isMobile ? 50 : 80;
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => {
@@ -164,13 +165,6 @@ export default function CatalogClient({
     state.getActiveFiltersCount()
   );
 
-  useEffect(() => {
-    const navbar = document.querySelector("nav");
-    if (navbar) {
-      const navbarHeight = isMobile ? 50 : 80;
-      setStickyHeaderTop(navbarHeight);
-    }
-  }, [isMobile]);
 
   useEffect(() => {
     if (isOpen) {

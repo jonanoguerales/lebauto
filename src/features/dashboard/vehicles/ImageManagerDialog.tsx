@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -45,12 +45,18 @@ export function ImageManagerDialog({
   const [uploadProgress, setUploadProgress] = useState(0);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (open && vehicle) {
+  // Al abrir el diálogo (o cambiar de vehículo con él abierto) se cargan sus imágenes y se limpia la
+  // selección; se ajusta durante el render comparando con los valores anteriores, sin efecto.
+  const [prevOpen, setPrevOpen] = useState(false);
+  const [prevVehicle, setPrevVehicle] = useState(vehicle);
+  if (open !== prevOpen || vehicle !== prevVehicle) {
+    setPrevOpen(open);
+    setPrevVehicle(vehicle);
+    if (open) {
       setImages(vehicle.images || []);
       setSelectedImages(new Set());
     }
-  }, [open, vehicle]);
+  }
 
   const handleImageSelect = (imageUrl: string) => {
     const newSelected = new Set(selectedImages);

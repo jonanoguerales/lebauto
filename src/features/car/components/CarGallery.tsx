@@ -19,10 +19,14 @@ interface CarGalleryProps {
   altPrefix?: string;
 }
 
+function allLoading(images: string[] | undefined): Record<number, boolean> {
+  return Object.fromEntries((images ?? []).map((_, index) => [index, true]));
+}
+
 export default function CarGallery({ images, altPrefix = "Imagen del vehículo" }: CarGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isCurrentImageLoading, setIsCurrentImageLoading] = useState(true);
-  const [thumbnailLoadingStates, setThumbnailLoadingStates] = useState<Record<number, boolean>>({});
+  const [thumbnailLoadingStates, setThumbnailLoadingStates] = useState(() => allLoading(images));
   const [direction, setDirection] = useState(0);
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -32,19 +36,14 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
 
   const totalImages = images?.length || 0;
 
-  useEffect(() => {
-    if (totalImages > 0 && images[currentImageIndex]) {
-      setIsCurrentImageLoading(true);
-    }
-  }, [currentImageIndex, images, totalImages]);
-
-  useEffect(() => {
-    const initialStates: Record<number, boolean> = {};
-    if (images) {
-      images.forEach((_, index) => { initialStates[index] = true; });
-    }
-    setThumbnailLoadingStates(initialStates);
-  }, [images]);
+  // Si cambian las imágenes, todas vuelven a «cargando»; se ajusta durante el render, sin efecto.
+  const [prevImages, setPrevImages] = useState(images);
+  if (images !== prevImages) {
+    setPrevImages(images);
+    setIsCurrentImageLoading(true);
+    setIsLightboxImageLoading(true);
+    setThumbnailLoadingStates(allLoading(images));
+  }
 
   const handleImageLoad = () => setIsCurrentImageLoading(false);
   const handleImageError = () => {
@@ -68,6 +67,7 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
     if (newIndex !== currentImageIndex) {
         setDirection(newDirection);
         setCurrentImageIndex(newIndex);
+        setIsCurrentImageLoading(true);
     }
   };
 
@@ -75,6 +75,7 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
     if (index !== currentImageIndex) {
         setDirection(index > currentImageIndex ? 1 : -1);
         setCurrentImageIndex(index);
+        setIsCurrentImageLoading(true);
     }
   };
 
@@ -90,21 +91,13 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
     document.body.style.overflow = '';
   }, []);
 
-  const paginateLightbox = (newDirection: number) => {
+  // Estable (useCallback) porque es dependencia del efecto que escucha el teclado.
+  const paginateLightbox = useCallback((newDirection: number) => {
     if (totalImages === 0) return;
     setLightboxDirection(newDirection);
-    setLightboxImageIndex((prevIndex) => {
-        const newIndex = (prevIndex + newDirection + totalImages) % totalImages;
-        setIsLightboxImageLoading(true);
-        return newIndex;
-    });
-  };
-  
-  useEffect(() => {
-    if (isLightboxOpen && images[lightboxImageIndex]) {
-        setIsLightboxImageLoading(true);
-    }
-  }, [lightboxImageIndex, isLightboxOpen, images]);
+    setLightboxImageIndex((prevIndex) => (prevIndex + newDirection + totalImages) % totalImages);
+    setIsLightboxImageLoading(true);
+  }, [totalImages]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

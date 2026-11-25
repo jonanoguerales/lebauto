@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Car } from "@/lib/definitions";
 import { formatPrice } from "@/utils/utils";
 import Link from "next/link";
+import { calculateMonthlyPayment } from "../utils/calculateMonthlyPayment";
 
 interface CarFinancingSimulatorProps {
   car: Car;
@@ -20,28 +21,10 @@ const financingPeriods = [
 
 export default function CarFinancingSimulator({ car }: CarFinancingSimulatorProps) {
   const [selectedPeriod, setSelectedPeriod] = useState(financingPeriods.find(p => p.months === 108) || financingPeriods[financingPeriods.length -1]); 
-  const [monthlyPayment, setMonthlyPayment] = useState(0);
-
   const priceToFinance = car.financePrice || car.price; 
   const financingDiscount = car.price - (car.financePrice || car.price);
-
-
-  useEffect(() => {
-    if (selectedPeriod && priceToFinance > 0) {
-      const P = priceToFinance; 
-      const r = selectedPeriod.interestRate / 12; 
-      const n = selectedPeriod.months;
-
-      if (r > 0) {
-        const payment = P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-        setMonthlyPayment(payment);
-      } else { 
-        setMonthlyPayment(P / n);
-      }
-    } else {
-      setMonthlyPayment(0);
-    }
-  }, [selectedPeriod, priceToFinance]);
+  // Estado derivado: la cuota se calcula en render a partir del plazo elegido y del precio.
+  const monthlyPayment = calculateMonthlyPayment(priceToFinance, selectedPeriod.interestRate, selectedPeriod.months);
 
   return (
     <div className="space-y-6 pt-6 border-t">

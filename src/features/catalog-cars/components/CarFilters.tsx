@@ -64,9 +64,6 @@ export default function CarFilters({
   const [expandedBrands, setExpandedBrands] = useState<Record<string, boolean>>(
     {}
   );
-  const [selectAllModelsState, setSelectAllModelsState] = useState<
-    Record<string, boolean>
-  >({});
 
   // Estados para puertas y plazas
   const [doorFrom, setDoorFrom] = useState<number>(filters.doorFrom || 2);
@@ -234,25 +231,19 @@ export default function CarFilters({
     updateUrl();
   }, [filters]);
 
-  useEffect(() => {
-    const newState: Record<string, boolean> = {};
-    if (filters.brand) {
-      filters.brand.forEach((brand) => {
-        const modelsForBrand = modelsByBrand[brand] || [];
-        const modelsSelected =
-          filters.model?.filter((m) => modelsForBrand.includes(m)) || [];
-        newState[brand] = modelsSelected.length === 0;
-      });
-    }
-    setSelectAllModelsState(newState);
-  }, [filters.brand, filters.model, modelsByBrand]);
+  // Estado derivado de los filtros: «todos los modelos» está marcado para cada marca seleccionada que no
+  // tiene ningún modelo concreto elegido. Se calcula en render (antes se copiaba a un estado en un efecto).
+  const selectAllModelsState: Record<string, boolean> = {};
+  filters.brand?.forEach((brand) => {
+    const modelsForBrand = modelsByBrand[brand] || [];
+    selectAllModelsState[brand] = !filters.model?.some((m) => modelsForBrand.includes(m));
+  });
 
   const handleBrandClick = (brand: string) => {
     setExpandedBrands((prev) => ({ ...prev, [brand]: !prev[brand] }));
   };
 
   const handleSelectAllModels = (brand: string, checked: boolean) => {
-    setSelectAllModelsState((prev) => ({ ...prev, [brand]: checked }));
     if (checked) {
       modelsByBrand[brand].forEach((model) => {
         if (filters.model?.includes(model)) removeFilter("model", model);
@@ -265,7 +256,6 @@ export default function CarFilters({
       modelsByBrand[brand].forEach((model) => {
         if (filters.model?.includes(model)) removeFilter("model", model);
       });
-      setSelectAllModelsState((prev) => ({ ...prev, [brand]: false }));
     }
   };
 
@@ -279,14 +269,8 @@ export default function CarFilters({
         removeFilter("brand", brand);
       }
       setFilter("model", model);
-      setSelectAllModelsState((prev) => ({ ...prev, [brand]: false }));
     } else {
       removeFilter("model", model);
-      const modelsLeft =
-        filters.model?.filter((m) => modelsByBrand[brand].includes(m)) || [];
-      if (modelsLeft.length === 0) {
-        setSelectAllModelsState((prev) => ({ ...prev, [brand]: false }));
-      }
     }
   };
 
@@ -314,14 +298,12 @@ export default function CarFilters({
     setSeatTo(5);
     setSearchTerm("");
     setExpandedBrands({});
-    setSelectAllModelsState({});
     router.push("/coches-segunda-mano");
   };
 
   const handleRemoveFilter = (type: string, value: string) => {
     if (type === "brand") {
       removeFilter("brand", value);
-      setSelectAllModelsState((prev) => ({ ...prev, [value]: false }));
       const modelsToRemove = modelsByBrand[value] || [];
       modelsToRemove.forEach((model) => {
         if (filters.model?.includes(model)) removeFilter("model", model);
@@ -334,7 +316,6 @@ export default function CarFilters({
           filters.model?.filter((m) => modelsByBrand[brand].includes(m)) || [];
         if (remaining.length === 0 && filters.brand?.includes(brand)) {
           removeFilter("brand", brand);
-          setSelectAllModelsState((prev) => ({ ...prev, [brand]: false }));
         }
       }
     } else if (type === "color") {

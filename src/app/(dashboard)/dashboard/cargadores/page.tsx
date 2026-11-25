@@ -20,6 +20,8 @@ export default function ChargersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [editingCharger, setEditingCharger] = useState<Charger | null>(null);
+  // Cada apertura monta el diálogo de nuevo (otra `key`) para que el formulario empiece con los datos correctos.
+  const [formDialogKey, setFormDialogKey] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -45,11 +47,13 @@ export default function ChargersPage() {
 
   const handleAddNew = () => {
     setEditingCharger(null);
+    setFormDialogKey((key) => key + 1);
     setIsFormDialogOpen(true);
   };
 
   const handleEdit = (charger: Charger) => {
     setEditingCharger(charger);
+    setFormDialogKey((key) => key + 1);
     setIsFormDialogOpen(true);
   };
 
@@ -152,6 +156,7 @@ export default function ChargersPage() {
       )}
 
       <ChargerFormDialog
+        key={formDialogKey}
         open={isFormDialogOpen}
         onOpenChange={setIsFormDialogOpen}
         charger={editingCharger}

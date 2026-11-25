@@ -21,13 +21,16 @@ function CarList({ cars: carsProp }: CarListProps) {
 
   const [showSkeleton, setShowSkeleton] = useState(false);
 
+  // El skeleton aparece si la carga dura más de 300 ms (el temporizador es asíncrono, por eso va en un
+  // efecto); al terminar la carga se oculta ajustando el estado durante el render.
   useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => setShowSkeleton(true), 300);
-      return () => clearTimeout(timer);
-    }
-    setShowSkeleton(false);
+    if (!isLoading) return;
+    const timer = setTimeout(() => setShowSkeleton(true), 300);
+    return () => clearTimeout(timer);
   }, [isLoading]);
+  if (!isLoading && showSkeleton) {
+    setShowSkeleton(false);
+  }
 
   if (showSkeleton) {
     return <LoadingSkeleton />;
