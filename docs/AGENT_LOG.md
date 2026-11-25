@@ -18,4 +18,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 2 · Develop: regla reduced-motion para ::view-transition-* en global.css y guías MWG listadas · Testing: PASS
 - Decisión del humano: los 42 errores de lint heredados pasan a T-01b; se mantienen los SVG de redes sociales
 - Pendiente: menú móvil pierde el foco al navegar (T-22); fijar dependencias secundarias con `^`; `console.time` en getHFEmbedding (al mover a core/ai)
-- Commit: (este)
+- Commit: 29b6bd8
