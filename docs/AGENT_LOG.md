@@ -60,4 +60,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: docs/REFACTOR_PLAN.md (T-02, AC-1 … AC-8); comportamiento a conservar: specs/001-lebauto.md
 - Vuelta 1 · Develop: `cacheComponents: true`; `revalidate` → `'use cache'` + `cacheLife('minutes')` (listado y fichas de cargadores, ficha de coche); año del footer cacheado (`cacheLife('days')`); `instant = false` en fichas `[slug]` (usePathname del Navbar) y `/sign-in` (error visible sin JS); VehicleFormDialog en `<Suspense>` · Testing: PASS (comparado con d5ff1a7 con y sin JS; sin «Transition was skipped»)
 - Pendiente (Fase 4): quitar los `instant = false`; `cacheTag` e invalidación (D-36); cliente de Supabase de servidor anónimo en lugar de `createBrowserClient` (D-11); decidir `partialPrefetching`; `null` cacheado 1 min si Supabase falla; catálogo y fichas sin contenido sin JS (ya pasaba); conflicto `<Suspense>` en streaming + `<ViewTransition>`; e2e: filtrar elementos visibles (páginas anteriores ocultas en el DOM)
-- Commit: (este)
+- Commit: baee2b8
