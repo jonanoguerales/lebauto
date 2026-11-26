@@ -1,5 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
+import { cacheLife } from "next/cache";
 import { FacebookIcon, InstagramIcon, TwitterIcon } from "./SocialIcons";
 import { JSX } from "react";
 
@@ -92,10 +93,18 @@ function SocialButton({ href, icon, label }: { href: string; icon: JSX.Element; 
   );
 }
 
-function FooterBottom() {
+// El año del copyright es igual para todos: se cachea para que el pie siga en el shell estático.
+async function getCurrentYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
+}
+
+async function FooterBottom() {
+  const year = await getCurrentYear();
   return (
     <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-      <p>© {new Date().getFullYear()} Concesionario Lebauto. Todos los derechos reservados.</p>
+      <p>© {year} Concesionario Lebauto. Todos los derechos reservados.</p>
       <div className="mt-2 flex flex-wrap justify-center gap-4">
         {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
         <FooterLink href={"/privacidad" as Route} label="Política de privacidad" />

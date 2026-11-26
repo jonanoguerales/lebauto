@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import ChargersListLoader from "./ChargersListLoader";
-import { ChargerCardSkeleton } from "@/features/chargers/skeletons/ChargerSkeletons";
-
-export const revalidate = 60; 
 
 export const metadata: Metadata = {
   title: "Cargadores para Vehículos Eléctricos - Lebauto",
@@ -38,13 +34,7 @@ export default async function ChargersCatalogPage() {
       </header>
 
       <div className="container mx-auto px-4 py-12">
-        <Suspense fallback={
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 3 }).map((_, i) => <ChargerCardSkeleton key={i} />)}
-          </div>
-        }>
-          <ChargersListLoader />
-        </Suspense>
+        <ChargersListLoader />
       </div>
 
       <section className="py-16 bg-muted/30">

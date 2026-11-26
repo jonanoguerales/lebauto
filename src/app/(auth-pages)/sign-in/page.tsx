@@ -7,6 +7,10 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+// Exclusión deliberada de Cache Components: el mensaje de error (?error=…) tiene que llegar en el HTML para que se vea
+// sin JavaScript (D-21). Dentro de <Suspense> llegaría en un fragmento oculto que solo muestra el JS. Revisar en la Fase 4.
+export const instant = false;
+
 export default async function Login({ searchParams }: PageProps<"/sign-in">) {
   const message = toFormMessage(await searchParams);
   return (

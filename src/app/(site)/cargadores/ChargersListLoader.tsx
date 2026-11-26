@@ -1,7 +1,11 @@
+import { cacheLife } from "next/cache";
 import { fetchChargers } from "@/app/supabase/supabase";
 import ChargersClientDisplay from "@/features/chargers/components/ChargersClientDisplay";
 
+// Listado público (sin cookies) cacheado 1 minuto, como el antiguo `revalidate = 60`: la página sigue siendo estática.
 export default async function ChargersListLoader() {
+  "use cache";
+  cacheLife("minutes");
   const chargers = await fetchChargers();
 
   if (!chargers || chargers.length === 0) {

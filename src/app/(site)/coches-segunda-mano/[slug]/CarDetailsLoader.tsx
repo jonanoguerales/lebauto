@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { cacheLife } from "next/cache";
 import { fetchCarDetailsBySlug } from "@/app/supabase/supabase";
 import CarGallery from "@/features/car/components/CarGallery";
 import CarInfo from "@/features/car/components/CarInfo";
@@ -11,6 +12,13 @@ import CarLocationInfo from "@/features/car/components/CarLocationInfo";
 import CarLocationMap from "@/features/car/components/CarLocationMap";
 import SellCarBanner from "@/components/SellCarBanner";
 
+// Datos públicos (sin cookies) cacheados 1 minuto, como el antiguo `revalidate = 60`. La página y su metadata comparten esta función.
+export async function getCarBySlug(slug: string): Promise<Car | null> {
+  "use cache";
+  cacheLife("minutes");
+  return fetchCarDetailsBySlug(slug);
+}
+
 interface CarDetailsLoaderProps {
   slug: string;
 }
@@ -18,7 +26,7 @@ interface CarDetailsLoaderProps {
 export default async function CarDetailsLoader({
   slug,
 }: CarDetailsLoaderProps) {
-  const car: Car | null = await fetchCarDetailsBySlug(slug);
+  const car = await getCarBySlug(slug);
 
   if (!car) {
     notFound();

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { DashboardHeader } from "@/features/dashboard/DashboardHeader"
 import { VehiclesTable } from "@/features/dashboard/vehicles/VehiclesTable"
 import { Button } from "@/components/ui/button"
@@ -237,12 +237,16 @@ export default function VehiclesPage() {
         />
       )}
 
-      <VehicleFormDialog
-        open={isFormDialogOpen}
-        onOpenChange={setIsFormDialogOpen}
-        vehicle={editingVehicle}
-        onSave={handleSaveVehicle}
-      />
+      {/* El formulario usa el año actual (new Date()) al renderizar: con Cache Components se aísla en <Suspense>.
+          El diálogo empieza cerrado, así que el fallback vacío tiene la misma forma. */}
+      <Suspense fallback={null}>
+        <VehicleFormDialog
+          open={isFormDialogOpen}
+          onOpenChange={setIsFormDialogOpen}
+          vehicle={editingVehicle}
+          onSave={handleSaveVehicle}
+        />
+      </Suspense>
 
       {selectedVehicle && (
         <>

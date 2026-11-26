@@ -3,8 +3,6 @@ import { Suspense } from "react";
 import LoadingContent from "./LoadingContent";
 import CatalogPageSkeleton from "@/features/catalog-cars/skeleton/CatalogPageSkeleton";
 
-export const revalidate = 60;
-
 export const metadata: Metadata = {
   title: "Coches de segunda mano - Concesionario",
   description:

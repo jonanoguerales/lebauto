@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { fetchCarDetailsBySlug } from "@/app/supabase/supabase";
-import CarDetailsLoader from "./CarDetailsLoader";
+import CarDetailsLoader, { getCarBySlug } from "./CarDetailsLoader";
 import { CarDetailSkeleton } from "@/features/car/skeleton/CarSkeleton";
 
-export const revalidate = 60;
+// Exclusión deliberada de Cache Components (Fase 4: generateStaticParams + 'use cache' + cacheTag): sin
+// generateStaticParams la ruta no se conoce al prerenderizar y `usePathname()` del Navbar (layout compartido)
+// bloquearía. Envolver el Navbar en <Suspense> lo sacaría del HTML de todas las páginas públicas (sin JS no se ve).
+export const instant = false;
 
 export async function generateMetadata({
   params,
 }: PageProps<"/coches-segunda-mano/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const car = await fetchCarDetailsBySlug(slug);
+  const car = await getCarBySlug(slug);
 
   if (!car) {
     return {
