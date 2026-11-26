@@ -1,5 +1,6 @@
 "use client"
 
+import type { Route } from "next"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/utils/utils"
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import AuthButton from "./AuthButton"
 
-const navItems = [
+const navItems: { title: string; href: Route; icon: typeof LayoutDashboard }[] = [
   {
     title: "Dashboard",
     href: "/dashboard",

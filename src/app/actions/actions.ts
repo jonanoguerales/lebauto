@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/lib/supabase/server";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { toSafeInternalPath } from "@/utils/safeInternalPath";
 import nodemailer from "nodemailer";
 import {
   contactFormSchema,
@@ -629,8 +630,10 @@ export const forgotPasswordAction = async (formData: FormData) => {
     );
   }
 
-  if (callbackUrl) {
-    return redirect(callbackUrl);
+  // Solo rutas internas (D-15); la validación completa de redirects es T-17.
+  const safeCallback = toSafeInternalPath(callbackUrl);
+  if (safeCallback) {
+    return redirect(safeCallback);
   }
 
   return encodedRedirect(

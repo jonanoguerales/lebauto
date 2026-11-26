@@ -6,6 +6,8 @@ const supabaseHostname = process.env.NEXT_PUBLIC_SUPABASE_URL
   : undefined;
 
 const nextConfig: NextConfig = {
+  reactCompiler: true,
+  typedRoutes: true,
   images: {
     remotePatterns: supabaseHostname
       ? [

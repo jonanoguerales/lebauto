@@ -1,13 +1,14 @@
 import { signInAction } from "@/app/actions/actions";
-import { FormMessage, Message } from "@/components/FormMessage";
+import { FormMessage } from "@/components/FormMessage";
+import { toFormMessage } from "@/utils/formMessage";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
-  const searchParams = await props.searchParams;
+export default async function Login({ searchParams }: PageProps<"/sign-in">) {
+  const message = toFormMessage(await searchParams);
   return (
     <>
       <section className="group min-w-64 ">
@@ -54,7 +55,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
           >
             Iniciar sesión
           </SubmitButton>
-          <FormMessage message={searchParams} />
+          {message && <FormMessage message={message} />}
         </div>
       </form>
     </>

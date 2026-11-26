@@ -1,10 +1,11 @@
+import type { Route } from "next";
 import Link from "next/link";
 import { motion, Variants } from 'framer-motion';
 import { scale, slide } from "../animations/anim";
 
 interface NavItemData {
   title: string;
-  href: string;
+  href: Route;
   index: number;
 }
 

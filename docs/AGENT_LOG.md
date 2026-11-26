@@ -47,3 +47,11 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Decisión del Orquestador: diff de ~360 líneas sin tests aceptado (una sola unidad: reescritura de un componente)
 - Pendiente: el modo oscuro no existe aún (Tailwind 3 purga `.dark`), revisar contraste dark en T-03; thumb invisible sin JS e indicador de pestaña activa (T-04); región aria-live global para errores (T-04); zoom bloqueado en layout (T-02)
 - Commit: cc7d307
+
+## T-02a · Next 16: proxy, PageProps, viewport, reactCompiler y typedRoutes
+- Spec: docs/REFACTOR_PLAN.md (T-02, AC-1 … AC-8); comportamiento a conservar: specs/001-lebauto.md
+- Vuelta 1 · Develop: middleware → `src/proxy.ts` (matcher `/dashboard/:path*`, `/sign-in`), PageProps en cargadores/[slug] y sign-in (+formMessage con tests), sin `--turbopack`, `reactCompiler` y `typedRoutes` (as Route solo en enlaces a páginas inexistentes), `export const viewport` sin bloqueo de zoom, validación del redirect de forgotPassword · Testing: FAIL (D-15: `/\t/evil.com` salta el filtro)
+- Vuelta 2 · Develop: `toSafeInternalPath` con `new URL` y comprobación de origen + tests · Testing: FAIL (D-15: `/..//evil.com` normaliza a `//evil.com`)
+- Vuelta 3 · Develop: rechazo de segmentos `.`/`..` (también `%2e`) y revalidación del valor devuelto · Testing: PASS (fuzz de 2,47 M entradas sin salidas del host)
+- Pendiente: decisión del humano sobre enlaces a páginas inexistentes (footer, `/renting/oferta/{id}`, `/vehiculos/{id}`); cookies del proxy en redirecciones, `redirect_to` de /auth/callback y D-13 en el layout del dashboard (T-17); `<main>` anidados en la ficha (T-08)
+- Commit: (este)

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion } from "@/components/ui/accordion";
 import { useFilterStore } from "@/lib/store";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
 import { usePriceDebounce } from "@/hooks/usePriceDebounce";
@@ -222,7 +223,7 @@ export default function CarFilters({
         params.set("environmental_tag", filters.environmentalTag.join(","));
       if (filters.drivetrain && filters.drivetrain.length > 0)
         params.set("drivetrain", filters.drivetrain.join(","));
-      const newUrl = params.toString()
+      const newUrl: Route = params.toString()
         ? `/coches-segunda-mano?${params.toString()}`
         : "/coches-segunda-mano";
       router.replace(newUrl, { scroll: false });

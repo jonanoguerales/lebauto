@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion, Variants } from "framer-motion";
+import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import Curve from "./Curve";
 import Image from "next/image";
@@ -8,7 +9,7 @@ import { X } from "lucide-react";
 import NavLink from "./NavLink";
 import { menuSlide } from "../animations/anim";
 
-const navItems = [
+const navItems: { title: string; href: Route }[] = [
   {
     title: "Inicio",
     href: "/",

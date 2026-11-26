@@ -1,8 +1,9 @@
 import { ebGaramond, montserrat } from "@/utils/fonts";
 import { Battery, ShieldCheck, Zap } from "lucide-react";
+import type { Route } from "next";
 import Link from "next/link";
 
-const btnLink = [
+const btnLink: { href: Route; label: string; ariaLabel: string }[] = [
   {
     href: "/coches-segunda-mano",
     label: "Comprar",

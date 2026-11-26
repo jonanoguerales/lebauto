@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, TwitterIcon } from "./SocialIcons";
 import { JSX } from "react";
@@ -15,18 +16,20 @@ export default function Footer() {
           </FooterSection>
           <FooterSection title="Servicios">
             <ul className="space-y-2 flex flex-col">
-              <FooterLink href="/tasacion" label="Tasación" />
-              <FooterLink href="/financiacion" label="Financiación" />
-              <FooterLink href="/garantia" label="Garantía" />
-              <FooterLink href="/faq" label="FAQ" />
+              {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
+              <FooterLink href={"/tasacion" as Route} label="Tasación" />
+              <FooterLink href={"/financiacion" as Route} label="Financiación" />
+              <FooterLink href={"/garantia" as Route} label="Garantía" />
+              <FooterLink href={"/faq" as Route} label="FAQ" />
             </ul>
           </FooterSection>
           <FooterSection title="Legal">
             <ul className="space-y-2 flex flex-col">
-              <FooterLink href="/politica-privacidad" label="Política de privacidad" />
-              <FooterLink href="/aviso-legal" label="Aviso legal" />
-              <FooterLink href="/terminos-condiciones" label="Términos y condiciones" />
-              <FooterLink href="/cookies" label="Cookies" />
+              {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
+              <FooterLink href={"/politica-privacidad" as Route} label="Política de privacidad" />
+              <FooterLink href={"/aviso-legal" as Route} label="Aviso legal" />
+              <FooterLink href={"/terminos-condiciones" as Route} label="Términos y condiciones" />
+              <FooterLink href={"/cookies" as Route} label="Cookies" />
             </ul>
           </FooterSection>
           <FooterSection title="Contacto">
@@ -61,7 +64,7 @@ function FooterSection({ title, children }: { title: string; children: React.Rea
   );
 }
 
-function FooterLink({ href, label }: { href: string; label: string }) {
+function FooterLink({ href, label }: { href: Route; label: string }) {
   return (
     <li>
       <Link href={href} className="text-gray-400 hover:text-white">
@@ -94,9 +97,10 @@ function FooterBottom() {
     <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
       <p>© {new Date().getFullYear()} Concesionario Lebauto. Todos los derechos reservados.</p>
       <div className="mt-2 flex flex-wrap justify-center gap-4">
-        <FooterLink href="/privacidad" label="Política de privacidad" />
-        <FooterLink href="/cookies" label="Política de cookies" />
-        <FooterLink href="/legal" label="Aviso legal" />
+        {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
+        <FooterLink href={"/privacidad" as Route} label="Política de privacidad" />
+        <FooterLink href={"/cookies" as Route} label="Política de cookies" />
+        <FooterLink href={"/legal" as Route} label="Aviso legal" />
       </div>
     </div>
   );

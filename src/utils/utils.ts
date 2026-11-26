@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { Route } from "next";
 import { redirect } from "next/navigation";
 
 /**
@@ -23,7 +24,8 @@ export function encodedRedirect(
   path: string,
   message: string,
 ) {
-  return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
+  // URL no literal: la doc de typedRoutes pide `as Route`. Varias rutas de quien llama aún no existen (ver T-17).
+  return redirect(`${path}?${type}=${encodeURIComponent(message)}` as Route);
 }
 
 export function formatCurrency(amount: number): string {

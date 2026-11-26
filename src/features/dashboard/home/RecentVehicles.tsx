@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatCurrency } from "@/utils/utils"
+import type { Route } from "next"
 import Link from "next/link"
 
 const recentVehicles = [
@@ -63,7 +64,8 @@ export function RecentVehicles() {
           {recentVehicles.map((vehicle) => (
             <div key={vehicle.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
               <div>
-                <Link href={`/vehiculos/${vehicle.id}`} className="font-medium hover:underline">
+                {/* Página pendiente (aún no existe): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
+                <Link href={`/vehiculos/${vehicle.id}` as Route} className="font-medium hover:underline">
                   {vehicle.brand} {vehicle.model} ({vehicle.year})
                 </Link>
                 <div className="text-sm text-muted-foreground">
