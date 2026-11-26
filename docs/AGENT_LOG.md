@@ -66,4 +66,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: specs/001-lebauto.md (AC-33 nuevo, AC-30)
 - Vuelta 1 · Develop: Footer (Tasación → /gestion-de-venta, Financiación y Garantía → /contacto, fuera FAQ y legales, rejilla a 3 columnas), simulador de financiación → /contacto («Pregúntanos»), «Me interesa» del renting → /contacto, vehículos recientes → /dashboard/vehiculos; sin `as Route` en literales · Testing: PASS
 - Observaciones: cuando haya páginas de financiación/garantía, enlazarlas o cambiar el texto; redirecciones de actions.ts a /sign-up, /forgot-password y /protected/reset-password (inalcanzables) → T-17; enlaces sociales con `href="#"` y sin 44 px (D-23) → T-03 o tarea de contenido; RecentVehicles enlazará a cada coche cuando exista la edición por id.
-- Commit: (ver siguiente)
+- Commit: 71e7e83
