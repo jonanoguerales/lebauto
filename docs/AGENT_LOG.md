@@ -54,4 +54,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 2 · Develop: `toSafeInternalPath` con `new URL` y comprobación de origen + tests · Testing: FAIL (D-15: `/..//evil.com` normaliza a `//evil.com`)
 - Vuelta 3 · Develop: rechazo de segmentos `.`/`..` (también `%2e`) y revalidación del valor devuelto · Testing: PASS (fuzz de 2,47 M entradas sin salidas del host)
 - Pendiente: decisión del humano sobre enlaces a páginas inexistentes (footer, `/renting/oferta/{id}`, `/vehiculos/{id}`); cookies del proxy en redirecciones, `redirect_to` de /auth/callback y D-13 en el layout del dashboard (T-17); `<main>` anidados en la ficha (T-08)
-- Commit: (este)
+- Commit: 8405c3c
