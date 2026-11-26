@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Car } from "@/lib/definitions";
 import { formatPrice } from "@/utils/utils";
-import type { Route } from "next";
 import Link from "next/link";
 import { calculateMonthlyPayment } from "../utils/calculateMonthlyPayment";
 
@@ -79,9 +78,8 @@ export default function CarFinancingSimulator({ car }: CarFinancingSimulatorProp
             </p>
             <div className="mt-6 text-sm">
               <span>¿Qué es la garantía premium? </span>
-              {/* Página pendiente (aún no existe): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
-              <Link href={"/garantia" as Route} className="text-blue-600 hover:underline font-medium">
-                Saber Más
+              <Link href="/contacto" className="text-blue-600 hover:underline font-medium">
+                Pregúntanos
               </Link>
             </div>
             <Button size="lg" className="w-full mt-6 bg-yellow-400 text-black hover:bg-yellow-500 font-semibold">

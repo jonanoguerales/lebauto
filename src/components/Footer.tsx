@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white" role="contentinfo">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:justify-items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:justify-items-start">
           <FooterSection title="Concesionario">
             <p className="text-gray-400 mb-4">
               Tu concesionario de confianza para vehículos nuevos y de segunda mano.
@@ -17,20 +17,9 @@ export default function Footer() {
           </FooterSection>
           <FooterSection title="Servicios">
             <ul className="space-y-2 flex flex-col">
-              {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
-              <FooterLink href={"/tasacion" as Route} label="Tasación" />
-              <FooterLink href={"/financiacion" as Route} label="Financiación" />
-              <FooterLink href={"/garantia" as Route} label="Garantía" />
-              <FooterLink href={"/faq" as Route} label="FAQ" />
-            </ul>
-          </FooterSection>
-          <FooterSection title="Legal">
-            <ul className="space-y-2 flex flex-col">
-              {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
-              <FooterLink href={"/politica-privacidad" as Route} label="Política de privacidad" />
-              <FooterLink href={"/aviso-legal" as Route} label="Aviso legal" />
-              <FooterLink href={"/terminos-condiciones" as Route} label="Términos y condiciones" />
-              <FooterLink href={"/cookies" as Route} label="Cookies" />
+              <FooterLink href="/gestion-de-venta" label="Tasación" />
+              <FooterLink href="/contacto" label="Financiación" />
+              <FooterLink href="/contacto" label="Garantía" />
             </ul>
           </FooterSection>
           <FooterSection title="Contacto">
@@ -105,12 +94,6 @@ async function FooterBottom() {
   return (
     <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
       <p>© {year} Concesionario Lebauto. Todos los derechos reservados.</p>
-      <div className="mt-2 flex flex-wrap justify-center gap-4">
-        {/* Páginas pendientes (aún no existen): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
-        <FooterLink href={"/privacidad" as Route} label="Política de privacidad" />
-        <FooterLink href={"/cookies" as Route} label="Política de cookies" />
-        <FooterLink href={"/legal" as Route} label="Aviso legal" />
-      </div>
     </div>
   );
 }

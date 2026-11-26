@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import type { Route } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
@@ -44,9 +43,8 @@ export function FeaturedOffers() {
                   <p className="text-2xl font-bold text-primary">{offer.fee}€<span className="text-base font-normal text-muted-foreground">/mes</span></p>
                   <p className="text-xs text-muted-foreground">IVA Incluido</p>
                 </div>
-                {/* Página pendiente (aún no existe): sin ruta tipada, se usa `as Route` como indica la doc de typedRoutes. */}
                 <Button className="w-full mt-4" asChild>
-                  <Link href={`/renting/oferta/${offer.id}` as Route}>Me interesa</Link>
+                  <Link href="/contacto">Me interesa</Link>
                 </Button>
               </CardContent>
             </Card>

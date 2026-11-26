@@ -61,3 +61,9 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: `cacheComponents: true`; `revalidate` → `'use cache'` + `cacheLife('minutes')` (listado y fichas de cargadores, ficha de coche); año del footer cacheado (`cacheLife('days')`); `instant = false` en fichas `[slug]` (usePathname del Navbar) y `/sign-in` (error visible sin JS); VehicleFormDialog en `<Suspense>` · Testing: PASS (comparado con d5ff1a7 con y sin JS; sin «Transition was skipped»)
 - Pendiente (Fase 4): quitar los `instant = false`; `cacheTag` e invalidación (D-36); cliente de Supabase de servidor anónimo en lugar de `createBrowserClient` (D-11); decidir `partialPrefetching`; `null` cacheado 1 min si Supabase falla; catálogo y fichas sin contenido sin JS (ya pasaba); conflicto `<Suspense>` en streaming + `<ViewTransition>`; e2e: filtrar elementos visibles (páginas anteriores ocultas en el DOM)
 - Commit: baee2b8
+
+## T-02c · Enlaces internos sin 404
+- Spec: specs/001-lebauto.md (AC-33 nuevo, AC-30)
+- Vuelta 1 · Develop: Footer (Tasación → /gestion-de-venta, Financiación y Garantía → /contacto, fuera FAQ y legales, rejilla a 3 columnas), simulador de financiación → /contacto («Pregúntanos»), «Me interesa» del renting → /contacto, vehículos recientes → /dashboard/vehiculos; sin `as Route` en literales · Testing: PASS
+- Observaciones: cuando haya páginas de financiación/garantía, enlazarlas o cambiar el texto; redirecciones de actions.ts a /sign-up, /forgot-password y /protected/reset-password (inalcanzables) → T-17; enlaces sociales con `href="#"` y sin 44 px (D-23) → T-03 o tarea de contenido; RecentVehicles enlazará a cada coche cuando exista la edición por id.
+- Commit: (ver siguiente)

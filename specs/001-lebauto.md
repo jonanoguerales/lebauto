@@ -86,6 +86,10 @@ contra estos criterios en las zonas que toque.
 - AC-30 Navbar con menú móvil y footer en todas las páginas públicas.
 - AC-31 Sin scroll horizontal a 375 px y sin bloquear el zoom.
 - AC-32 Imágenes optimizadas (`next/image`) desde el bucket de Supabase Storage.
+- AC-33 **[mejora]** Ningún enlace interno lleva a una página inexistente (404): Tasación → `/gestion-de-venta`;
+  Financiación y Garantía (footer y simulador de la ficha) → `/contacto`; «Me interesa» de las ofertas de renting (ya en
+  `/renting`) → `/contacto`; vehículos recientes del dashboard → `/dashboard/vehiculos`. FAQ y enlaces legales se quitan hasta
+  tener sus textos.
 
 ## Contratos
 - **Tablas:** `cars`, `car_images`, `car_features`, `features`, `chargers`, `documentos` (pgvector) y la función
