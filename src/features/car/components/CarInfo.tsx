@@ -1,8 +1,8 @@
 "use client";
 
 import type { Car } from "@/lib/definitions";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/common/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/common/components/ui/tabs";
 import Image from "next/image";
 
 interface CarInfoProps {

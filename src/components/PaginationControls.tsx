@@ -7,7 +7,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 
 interface PaginationControlsProps {
   currentPage: number;

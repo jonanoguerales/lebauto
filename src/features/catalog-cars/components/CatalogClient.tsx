@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useViewStore, useFilterStore } from "@/lib/store";
 import type { CatalogClientProps } from "@/lib/definitions";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { Filter, Grid, List, X } from "lucide-react";
 import CarList from "./CarList";
 import CarFilters from "./CarFilters";
@@ -13,8 +13,8 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+} from "@/common/components/ui/select";
+import { Badge } from "@/common/components/ui/badge";
 import { useResponsiveView } from "@/hooks/useResponsiveView";
 import { LoadingVehicles } from "./LoadingCars";
 import { useMediaQuery } from "@/hooks/useMediaQuery";

@@ -4,11 +4,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/common/components/ui/accordion";
+import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
+import { Label } from "@/common/components/ui/label";
+import { Checkbox } from "@/common/components/ui/checkbox";
 import { CarIcon, ChevronDown, ChevronRight, ListTodo, Search, X } from "lucide-react";
 import { FiltersData } from "@/lib/definitions";
 

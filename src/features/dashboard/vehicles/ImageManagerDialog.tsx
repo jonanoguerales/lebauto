@@ -10,10 +10,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+} from "@/common/components/ui/dialog";
+import { Button } from "@/common/components/ui/button";
+import { Label } from "@/common/components/ui/label";
+import { Input } from "@/common/components/ui/input";
 import { Trash2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { uploadImage, deleteImage } from "@/app/supabase/supabase";

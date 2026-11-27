@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/common/components/ui/badge";
 import { formatPrice } from "@/utils/utils";
 import type { Car } from "@/lib/definitions";
 

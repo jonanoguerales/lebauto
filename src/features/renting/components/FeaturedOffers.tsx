@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/common/components/ui/button';
+import { Card, CardContent } from '@/common/components/ui/card';
+import { Badge } from '@/common/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';

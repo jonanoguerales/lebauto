@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { Bot } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/common/components/ui/tooltip";
 import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
 
 export default function GlobalChatButton() {

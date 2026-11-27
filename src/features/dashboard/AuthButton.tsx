@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { createBrowserClient } from "@supabase/ssr";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";

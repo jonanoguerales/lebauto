@@ -4,9 +4,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+} from "@/common/components/ui/accordion";
+import { Checkbox } from "@/common/components/ui/checkbox";
+import { Label } from "@/common/components/ui/label";
 import Image from "next/image";
 import {
   Select,
@@ -14,7 +14,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/common/components/ui/select";
 import { FiltersData } from "@/lib/definitions";
 import { CarFront } from "lucide-react";
 

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/common/components/ui/button";
+import { Badge } from "@/common/components/ui/badge";
 import { ArrowRight, Zap } from "lucide-react";
 import {
   Carousel,
@@ -13,7 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-} from "@/components/ui/carousel";
+} from "@/common/components/ui/carousel";
 import type { Charger } from "@/lib/definitions";
 import { fetchChargers } from "@/app/supabase/supabase";
 import ChargerCard from "@/features/chargers/components/ChargerCard";

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/common/components/ui/card"
+import { Badge } from "@/common/components/ui/badge"
 import { formatCurrency } from "@/utils/utils"
 import Link from "next/link"
 

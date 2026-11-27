@@ -3,9 +3,9 @@
 import type { Route } from "next"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/utils/utils"
+import { cn } from "@/common/helpers/cn"
 import { LayoutDashboard, Car, Menu, X, ListTodo, Zap } from "lucide-react" 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/common/components/ui/button"
 import { useState } from "react"
 import AuthButton from "./AuthButton"
 

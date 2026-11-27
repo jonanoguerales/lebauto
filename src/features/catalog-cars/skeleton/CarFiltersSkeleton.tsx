@@ -1,7 +1,7 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/common/components/ui/accordion";
+import { Skeleton } from "@/common/components/ui/skeleton";
 
 export default function CarFiltersSkeleton() {
   return (

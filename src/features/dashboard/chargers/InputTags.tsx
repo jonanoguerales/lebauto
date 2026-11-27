@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, KeyboardEvent } from 'react';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/common/components/ui/input';
+import { Badge } from '@/common/components/ui/badge';
 import { X } from 'lucide-react';
 
 interface InputTagsProps {

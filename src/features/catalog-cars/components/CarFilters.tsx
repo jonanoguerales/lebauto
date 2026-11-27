@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Accordion } from "@/components/ui/accordion";
+import { Button } from "@/common/components/ui/button";
+import { Badge } from "@/common/components/ui/badge";
+import { Accordion } from "@/common/components/ui/accordion";
 import { useFilterStore } from "@/lib/store";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";

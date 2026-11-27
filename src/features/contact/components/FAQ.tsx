@@ -1,7 +1,7 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Card } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/common/components/ui/accordion";
+import { Card } from "@/common/components/ui/card";
 
 const faqItems = [
   {

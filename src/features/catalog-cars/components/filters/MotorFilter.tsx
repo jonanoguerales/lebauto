@@ -4,16 +4,16 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+} from "@/common/components/ui/accordion";
+import { Checkbox } from "@/common/components/ui/checkbox";
+import { Label } from "@/common/components/ui/label";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/common/components/ui/select";
 import { useFilterStore } from "@/lib/store";
 import { Wrench } from "lucide-react";
 

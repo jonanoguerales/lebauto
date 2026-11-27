@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/common/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,17 +21,17 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
+} from "@/common/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/common/components/ui/select";
+import { Input } from "@/common/components/ui/input";
+import { Button } from "@/common/components/ui/button";
+import { Textarea } from "@/common/components/ui/textarea";
 import { uploadImage, deleteImage } from "@/app/supabase/supabase";
 import { useToast } from "@/hooks/useToast";
 import Image from "next/image";

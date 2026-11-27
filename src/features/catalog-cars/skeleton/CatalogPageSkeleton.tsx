@@ -1,7 +1,7 @@
 "use client";
 
 import { useViewStore } from "@/lib/store";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import { useResponsiveView } from "@/hooks/useResponsiveView";
 import CarFiltersSkeleton from "./CarFiltersSkeleton";
 import { CarCardSkeleton, CarCardSkeletonList } from "@/features/car/skeleton/CarSkeleton";

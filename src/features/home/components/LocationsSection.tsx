@@ -1,5 +1,5 @@
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { Card, CardContent } from "@/components/ui/card"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/common/components/ui/carousel"
+import { Card, CardContent } from "@/common/components/ui/card"
 import { MapPin, Phone, Clock } from "lucide-react"
 
 type Location = {

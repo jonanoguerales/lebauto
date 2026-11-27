@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useCallback, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
+import { CardContent, CardFooter } from "@/common/components/ui/card";
 import { Send, UserCircle2, ArrowLeft, BotMessageSquare, Loader2 } from "lucide-react";
 import { chatFlow } from "@/lib/chatFlow";
 import { useChatStore } from '@/lib/chatStore';

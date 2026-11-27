@@ -1,13 +1,13 @@
 "use client";
 
 import { Phone, MessageSquare, Bot } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/common/components/ui/tooltip";
 import { JSX, useState } from "react";
 import { ChatBotPopupWrapper } from "@/features/chatbot/components/ChatBotPopupWrapper";
 

@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/common/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,19 +20,19 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
+} from "@/common/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@/common/components/ui/select";
+import { Input } from "@/common/components/ui/input";
+import { Button } from "@/common/components/ui/button";
+import { Checkbox } from "@/common/components/ui/checkbox";
+import { Textarea } from "@/common/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/common/components/ui/tabs";
 import { Car } from "@/lib/definitions";
 
 const vehicleSchema = z.object({

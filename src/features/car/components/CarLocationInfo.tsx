@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { Phone } from "lucide-react";
 import type { Car } from "@/lib/definitions";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import type { Car } from "@/lib/definitions";
 import { formatPrice } from "@/utils/utils";
 import Link from "next/link";

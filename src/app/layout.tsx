@@ -1,7 +1,7 @@
 import "@/styles/global.css";
 import type { Metadata, Viewport } from "next";
 import { inter } from "@/utils/fonts";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/common/components/ui/toaster";
 import { ViewTransition } from "react";
 
 export const metadata: Metadata = {

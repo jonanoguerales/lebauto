@@ -2,8 +2,8 @@ import { signInAction } from "@/app/actions/actions";
 import { FormMessage } from "@/components/FormMessage";
 import { toFormMessage } from "@/utils/formMessage";
 import { SubmitButton } from "@/components/SubmitButton";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/common/components/ui/input";
+import { Label } from "@/common/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 

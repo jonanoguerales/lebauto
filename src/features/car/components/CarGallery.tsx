@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X as XIcon, Expand } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/common/components/ui/button";
+import { Skeleton } from "@/common/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/common/components/ui/dialog";
 
 interface CarGalleryProps {
   images: string[];

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 const benefits = [

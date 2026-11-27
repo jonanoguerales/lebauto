@@ -8,10 +8,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+} from "@/common/components/ui/table";
+import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
+import { Badge } from "@/common/components/ui/badge";
 import {
   Edit,
   Trash2,
@@ -27,7 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/common/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +37,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/common/components/ui/alert-dialog";
 import { Car } from "@/lib/definitions";
 
 interface VehiclesTableProps {

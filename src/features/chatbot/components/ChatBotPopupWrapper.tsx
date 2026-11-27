@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react"; 
-import { Button } from "@/components/ui/button";
-import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/common/components/ui/button";
+import { CardHeader, CardTitle } from "@/common/components/ui/card";
 import { Bot as BotIcon, X as XIcon, ChevronsDownUp } from "lucide-react";
 import ChatBotInternal from "./ChatBot";
 import { useChatStore } from "@/lib/chatStore";

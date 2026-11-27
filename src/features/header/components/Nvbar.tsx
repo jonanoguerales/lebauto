@@ -7,13 +7,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import CurvedNavPanel from "../curved-mobile-menu/components/CurvedNavPanel";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/common/components/ui/tooltip";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);

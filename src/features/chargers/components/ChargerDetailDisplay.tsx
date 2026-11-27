@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import type { Charger } from "@/lib/definitions";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/common/components/ui/badge";
+import { Button } from "@/common/components/ui/button";
+import { Card, CardContent } from "@/common/components/ui/card";
 import { Zap, Settings, ShieldCheck, Package, Home, Building2, Tag, CalendarDays, Palette } from "lucide-react";
 import { formatPrice } from "@/utils/utils";
 

@@ -8,9 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@/common/components/ui/table";
+import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
 import {
   Edit,
   Trash2,
@@ -29,7 +29,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/common/components/ui/alert-dialog";
 import { Feature } from "@/lib/definitions";
 
 interface FeaturesTableProps {

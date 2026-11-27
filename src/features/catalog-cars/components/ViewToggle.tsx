@@ -1,7 +1,7 @@
 "use client";
 
 import { Grid, List } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/common/components/ui/button"
 import { useViewStore } from "@/lib/store"
 
 export default function ViewToggle() {

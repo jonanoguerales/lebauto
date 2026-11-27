@@ -1,7 +1,7 @@
 import ContactForm from "@/features/contact/components/ContactForm";
 import Faq from "@/features/contact/components/FAQ";
 import Map from "@/features/contact/components/Map";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export const metadata = {

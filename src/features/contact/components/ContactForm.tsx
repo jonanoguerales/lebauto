@@ -7,11 +7,11 @@ import { contactFormSchema, type ContactFormData } from "@/lib/validations";
 import { submitContactForm } from "@/app/actions/actions";
 import { useToast } from "@/hooks/useToast";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
+import { Textarea } from "@/common/components/ui/textarea";
+import { Card, CardContent } from "@/common/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/common/components/ui/form";
 import { Loader2 } from "lucide-react";
 
 export default function ContactForm() {

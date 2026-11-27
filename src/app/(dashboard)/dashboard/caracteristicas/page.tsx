@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DashboardHeader } from "@/features/dashboard/DashboardHeader";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { fetchFeatures, createFeature, updateFeature, deleteFeature } from "@/app/supabase/supabase";
 import { useToast } from "@/hooks/useToast";

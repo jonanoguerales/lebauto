@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
 import { ShieldCheck, Wrench, Landmark, LifeBuoy, Replace, FileText } from 'lucide-react';
 
 const services = [

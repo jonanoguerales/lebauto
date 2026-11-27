@@ -3,14 +3,15 @@
 import Link from "next/link"
 
 import { useState, type ReactNode } from "react"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/common/components/ui/button"
+import { Slider } from "@/common/components/ui/slider"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/common/components/ui/tabs"
+import { Card, CardContent } from "@/common/components/ui/card"
 import { Calculator, Fuel, Wrench, Euro } from "lucide-react"
 import { calculateSavings } from "@/features/home/utils/calculateSavings"
 import { SavingsNumberField } from "@/features/home/components/SavingsNumberField"
-import { cn, formatCurrency, formatPrice } from "@/utils/utils"
+import { cn } from "@/common/helpers/cn"
+import { formatCurrency, formatPrice } from "@/utils/utils"
 
 const DEFAULTS = {
   kmPerYear: 15000,

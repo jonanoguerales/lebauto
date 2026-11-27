@@ -1,5 +1,5 @@
 import type React from "react"
-import { cn } from "@/utils/utils"
+import { cn } from "@/common/helpers/cn"
 
 interface DashboardHeaderProps {
   title: string

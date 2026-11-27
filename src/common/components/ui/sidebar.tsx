@@ -6,18 +6,18 @@ import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/useMobile"
-import { cn } from "@/utils/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/common/helpers/cn"
+import { Button } from "@/common/components/ui/button"
+import { Input } from "@/common/components/ui/input"
+import { Separator } from "@/common/components/ui/separator"
+import { Sheet, SheetContent } from "@/common/components/ui/sheet"
+import { Skeleton } from "@/common/components/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/common/components/ui/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

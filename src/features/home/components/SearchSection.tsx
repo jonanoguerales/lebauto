@@ -3,14 +3,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/common/components/ui/select";
 import { fetchCars } from "@/app/supabase/supabase";
 import type { Car } from "@/lib/definitions";
 

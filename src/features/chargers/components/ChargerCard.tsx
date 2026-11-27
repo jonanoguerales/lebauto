@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Charger } from "@/lib/definitions";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/common/components/ui/badge";
 import { Zap, Settings, Home, Building2 } from "lucide-react";
 import { formatPrice } from "@/utils/utils";
 

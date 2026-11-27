@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { DashboardHeader } from "@/features/dashboard/DashboardHeader"
 import { VehiclesTable } from "@/features/dashboard/vehicles/VehiclesTable"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/common/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { VehicleFormDialog } from "@/features/dashboard/vehicles/VehicleFormDialog"
 import { ImageManagerDialog } from "@/features/dashboard/vehicles/ImageManagerDialog"

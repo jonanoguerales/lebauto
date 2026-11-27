@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { fetchElectricVehicles } from "@/app/supabase/supabase";
 import type { Car } from "@/lib/definitions";
@@ -13,7 +13,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/common/components/ui/carousel";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
 import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";

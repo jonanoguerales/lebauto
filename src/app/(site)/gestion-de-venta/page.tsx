@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import SellCarForm from "@/components/SellCarForm"
 import { ArrowLeft, CheckCircle, Clock, Banknote, FileText, Star, Shield, TrendingUp } from "lucide-react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/common/components/ui/button"
 
 export const metadata: Metadata = {
   title: "Vender mi coche | Tasación gratuita | Concesionario",
