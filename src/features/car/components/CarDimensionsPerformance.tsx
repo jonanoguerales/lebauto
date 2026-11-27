@@ -19,7 +19,7 @@ const PerformanceMetric: React.FC<{icon: React.ReactNode; value: string; label: 
           {unit && <div className="text-xs sm:text-sm text-muted-foreground -mt-1">{unit}</div>}
         </div>
       </div>
-      <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-slate-50 p-1 rounded-full shadow-sm border border-slate-200">
+      <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-slate-50 p-1 rounded-full shadow-xs border border-slate-200">
          {icon}
       </div>
     </div>
@@ -51,7 +51,7 @@ const DimensionFigureWithCuesCSS: React.FC<{
         />
         
         <div className="absolute inset-x-0 bottom-[-4px] h-[8px]">
-          <div className={`${lineClasses} h-[1.5px] left-[1px] right-[1px] top-1/2 -translate-y-1/2`}></div>
+          <div className={`${lineClasses} h-[1.5px] left-px right-px top-1/2 -translate-y-1/2`}></div>
           <div className={`${lineClasses} ${capThickness} h-full left-0 top-0`}></div> 
           <div className={`${lineClasses} ${capThickness} h-full right-0 top-0`}></div> 
         </div>
@@ -155,7 +155,7 @@ export default function CarDimensionsPerformance({ car }: CarDimensionsPerforman
 const InfoItem: React.FC<{icon: React.ReactNode, value: string, label: string}> = ({icon, value, label}) => (
   <div className="text-center flex flex-col items-center">
     <div className="mb-1.5">{icon}</div>
-    <p className="font-semibold text-sm sm:text-base text-slate-700 leading-tight">{value}</p>
+    <p className="font-semibold text-sm sm:text-base text-slate-700 leading-tight sm:leading-6">{value}</p>
     <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{label}</p>
   </div>
 );

@@ -47,7 +47,7 @@ export default function CarFinancingSimulator({ car }: CarFinancingSimulatorProp
                 </Button>
               ))}
             </div>
-            <div className="bg-slate-100 rounded-full w-48 h-48 sm:w-56 sm:h-56 flex flex-col items-center justify-center text-center p-4 shadow">
+            <div className="bg-slate-100 rounded-full w-48 h-48 sm:w-56 sm:h-56 flex flex-col items-center justify-center text-center p-4 shadow-sm">
               <p className="text-sm text-muted-foreground mb-1">Tu cuota mensual</p>
               <p className="text-4xl sm:text-5xl font-bold text-blue-600">
                 {monthlyPayment > 0 ? formatPrice(Math.round(monthlyPayment)) : "---"} €

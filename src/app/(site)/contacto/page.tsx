@@ -25,7 +25,7 @@ export default function ContactPage() {
             Estamos aquí para ayudarte. Ponte en contacto con nosotros para
             cualquier consulta o visita nuestro concesionario.
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Button
               variant="outline"
               size="lg"
@@ -63,9 +63,9 @@ export default function ContactPage() {
       <section className="py-16">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="flex flex-col max-md:items-center">
+            <div className="flex flex-col">
               <h2 className="text-3xl font-bold mb-6">Ven a conocernos</h2>
-              <p className="max-md:text-center text-lg text-muted-foreground mb-8">
+              <p className="text-lg text-muted-foreground mb-8">
                 Visita nuestro concesionario y descubre nuestra amplia selección
                 de vehículos. Nuestro equipo estará encantado de atenderte y
                 ayudarte a encontrar el coche perfecto para ti.

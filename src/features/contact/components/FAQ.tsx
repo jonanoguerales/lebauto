@@ -36,7 +36,7 @@ const faqItems = [
 
 export default function Faq() {
   return (
-    <Card className="shadow-sm border" role="region" aria-labelledby="faq-title">
+    <Card className="shadow-xs border" role="region" aria-labelledby="faq-title">
       <h2 id="faq-title" className="sr-only">Preguntas Frecuentes</h2>
       <Accordion type="single" collapsible className="w-full">
         {faqItems.map((item, index) => (

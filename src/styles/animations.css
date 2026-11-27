@@ -1,0 +1,89 @@
+/* Animaciones propias (T-03). Se importa desde global.css.
+   Modern Web Guidance · motion: el estado por defecto es estático y el movimiento se activa solo con
+   `prefers-reduced-motion: no-preference` (en vez de declararlo y anularlo con `animation: none`).
+   Ninguna de estas animaciones parte de un estado oculto, así que sin movimiento el contenido se ve igual. */
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Mismos nombres, duraciones y curvas que `theme.animation` de la configuración v3. */
+@utility animate-accordion-down {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: accordion-down 0.3s ease-out;
+  }
+}
+
+@utility animate-accordion-up {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: accordion-up 0.3s ease-out;
+  }
+}
+
+@utility animate-fadeIn {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+}
+
+@utility animate-fadeInAfterLoad {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+}
+
+@utility animate-slideIn {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: slideIn 0.5s ease-in-out;
+  }
+}
+
+@utility animate-shimmer {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: shimmer 2s infinite;
+  }
+}
+
+@utility animate-bounce {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: bounce 1s infinite;
+  }
+}

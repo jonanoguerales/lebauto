@@ -22,7 +22,7 @@ export default function CarFeatures({ features }: CarFeaturesProps) {
 function FeatureItem({ feature }: { feature: string }) {
   return (
     <div className="flex items-center gap-2">
-      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+      <Check className="h-5 w-5 text-green-500 shrink-0" />
       <span>{feature}</span>
     </div>
   );

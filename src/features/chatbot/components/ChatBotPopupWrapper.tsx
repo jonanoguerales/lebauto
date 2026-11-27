@@ -73,12 +73,12 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
 
   const popupHeightClass = isCompactMode 
     ? "h-[60dvh] sm:h-[calc(100dvh-8rem)]" 
-    : "h-[100dvh] sm:h-[calc(100dvh-8rem)]";
+    : "h-dvh sm:h-[calc(100dvh-8rem)]";
 
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[999]" 
+        className="fixed inset-0 bg-black/30 backdrop-blur-xs z-999" 
         onClick={() => {
             onOpenChange(false);
         }}
@@ -91,9 +91,9 @@ export function ChatBotPopupWrapper({ isOpen, onOpenChange }: ChatBotPopupWrappe
                    bg-card shadow-2xl 
                    flex flex-col 
                    sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:max-h-[650px] sm:rounded-xl 
-                   z-[1000] overflow-hidden transition-all duration-300 ease-out`} 
+                   z-1000 overflow-hidden transition-all duration-300 ease-out`} 
       >
-        <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+        <CardHeader className="flex flex-row items-center justify-between p-3 sm:p-4 border-b bg-gray-100 dark:bg-gray-800 shrink-0">
           <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-100">
             <BotIcon className="text-primary h-5 w-5" /> Agente Virtual Lebi
           </CardTitle>

@@ -8,7 +8,7 @@ export default async function Layout({
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-background p-6 max-md:mt-20">
+      <main className="flex-1 overflow-y-auto bg-background p-6">
         {children}
       </main>
     </div>

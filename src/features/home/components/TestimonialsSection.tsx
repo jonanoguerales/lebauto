@@ -110,14 +110,14 @@ const TestimonialsSection = () => {
               >
                 <div className="bg-white p-8 rounded-xl overflow-hidden shadow-lg border border-gray-100">
                   <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                       <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
                         className="w-20 h-20 rounded-full object-cover border-4 border-lebauto-accent"
                       />
                     </div>
-                    <div className="flex-grow text-center md:text-left">
+                    <div className="grow text-center md:text-left">
                       <p className="text-lg italic mb-4 text-gray-400">{`"${testimonial.quote}"`}</p>
                       <div className="flex items-center justify-center md:justify-start mb-2">
                         {renderStars(testimonial.rating)}

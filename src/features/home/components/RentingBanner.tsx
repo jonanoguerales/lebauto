@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 export default function RentingBanner() {
   return (
     <section className="sm:pt-16 container mx-auto flex items-center justify-center">
-      <div className="bg-gradient-to-r from-[#708ba0] to-[#193f58] rounded-xl overflow-hidden shadow-lg w-[400px] md:w-[1440px]">
+      <div className="bg-linear-to-r from-[#708ba0] to-[#193f58] rounded-xl overflow-hidden shadow-lg w-[400px] md:w-[1440px]">
         <div className="relative flex flex-col md:flex-row items-center">
           <div className="p-8 lg:pr-16 md:px-12 md:w-1/2 lg:w-2/3">
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">

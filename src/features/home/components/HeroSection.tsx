@@ -61,7 +61,7 @@ export default function HeroSection() {
             loading="eager"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/10 to-black/50" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/10 via-black/10 to-black/50" />
       </div>
 
       <div className="relative flex flex-col justify-between z-10 container mx-auto px-0 pb-0 pt-16 md:px-8 md:pb-12 md:pt-24 flex-1">
@@ -73,7 +73,7 @@ export default function HeroSection() {
               LEBAUTO
             </h1>
             <p
-              className={`${ebGaramond.className} italic max-md:font-semibold text-2xl md:text-3xl lg:text-5xl text-gray-200`}
+              className={`${ebGaramond.className} italic text-2xl md:text-3xl lg:text-5xl text-gray-200`}
             >
               La referencia en coches eléctricos
             </p>
@@ -95,7 +95,7 @@ export default function HeroSection() {
           {cardsData.map((card, index) => (
             <div
               key={index}
-              className="md:bg-black/40 backdrop-blur-sm p-2 md:p-6 rounded-xl flex items-center gap-4 text-white"
+              className="md:bg-black/40 backdrop-blur-xs p-2 md:p-6 rounded-xl flex items-center gap-4 text-white"
             >
               <div className="bg-white/10 p-3 rounded-full">{card.icon}</div>
               <div>

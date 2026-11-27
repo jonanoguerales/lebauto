@@ -32,7 +32,7 @@ export default function ChargerDetailDisplay({ charger }: ChargerDetailDisplayPr
       <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         <div className="lg:sticky lg:top-24">
           <Card className="overflow-hidden shadow-lg">
-            <div className="relative aspect-[4/3] bg-muted">
+            <div className="relative aspect-4/3 bg-muted">
               <Image
                 src={imageUrl}
                 alt={`Imagen de ${charger.name}`}
@@ -102,7 +102,7 @@ export default function ChargerDetailDisplay({ charger }: ChargerDetailDisplayPr
                 <ul className="space-y-2">
                   {charger.features.map((feature, index) => (
                     <li key={index} className="flex items-center text-muted-foreground">
-                      <Tag className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+                      <Tag className="h-4 w-4 mr-2 text-primary shrink-0" />
                       {feature}
                     </li>
                   ))}

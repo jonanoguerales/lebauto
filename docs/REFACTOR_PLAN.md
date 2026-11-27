@@ -169,7 +169,7 @@ Al terminar cada fase:
 - [x] T-01b Lint en verde: 42 errores heredados (set-state-in-effect, no-explicit-any, purity), en encargos de ≤300 líneas (decisión del humano, 2026-11-25)
 - [x] T-02 Cambios incompatibles de Next 16 (proxy.ts, PageProps, next.config, viewport)
 - [x] T-02c Enlaces internos sin 404 (AC-33)
-- [ ] T-03 Tailwind 4
+- [x] T-03 Tailwind 4
 - [ ] T-04 shadcn para React 19 + nuevos alias
 - [ ] T-05 core/ (supabase, auth, mail, env) y common/ (helpers, hooks unificados)
 - [ ] T-06 layouts/ (site, dashboard, auth)

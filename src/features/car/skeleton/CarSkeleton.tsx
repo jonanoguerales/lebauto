@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function CarCardSkeleton() {
   return (
-    <div className="bg-card rounded-lg border shadow-sm animate-pulse">
+    <div className="bg-card rounded-lg border shadow-xs animate-pulse">
       <div className="relative">
         <Skeleton className="h-48 w-full rounded-t-lg" />
       </div>
@@ -39,7 +39,7 @@ export function CarCardSkeleton() {
 }
 export function CarCardSkeletonList() {
   return (
-    <div className="flex gap-4 p-4 border rounded-lg shadow-sm animate-pulse">
+    <div className="flex gap-4 p-4 border rounded-lg shadow-xs animate-pulse">
       <Skeleton className="h-32 w-48 rounded-lg" />
       <div className="flex-1 space-y-4">
         <Skeleton className="h-6 w-1/2 rounded" />

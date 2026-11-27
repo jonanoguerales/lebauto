@@ -17,11 +17,11 @@ import {
 } from "recharts";
 
 const data = [
-  { name: "SUV", value: 45, color: "hsl(var(--chart-1))" },
-  { name: "Berlina", value: 30, color: "hsl(var(--chart-2))" },
-  { name: "Cabrio", value: 15, color: "hsl(var(--chart-3))" },
-  { name: "Coupe", value: 5, color: "hsl(var(--chart-4))" },
-  { name: "Otros", value: 5, color: "hsl(var(--chart-5))" },
+  { name: "SUV", value: 45, color: "var(--chart-1)" },
+  { name: "Berlina", value: 30, color: "var(--chart-2)" },
+  { name: "Cabrio", value: 15, color: "var(--chart-3)" },
+  { name: "Coupe", value: 5, color: "var(--chart-4)" },
+  { name: "Otros", value: 5, color: "var(--chart-5)" },
 ];
 
 export function VehicleDistributionChart() {

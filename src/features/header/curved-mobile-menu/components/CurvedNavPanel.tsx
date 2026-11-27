@@ -50,7 +50,7 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
       initial="initial"
       animate="enter"
       exit="exit"
-      className="h-dvh max500:w-full bg-white fixed right-0 top-0 text-white z-[99]"
+      className="h-dvh max500:w-full bg-white fixed right-0 top-0 text-white z-99"
     >
       <div className="box-border h-full px-10 pt-[30px] pb-16 flex flex-col justify-between">
         <div
@@ -69,7 +69,7 @@ export default function CurvedNavPanel({ closeMenu }: CurvedNavPanelProps) {
               className="w-[50px] h-auto md:w-[70px]"
             />
             <button
-              className=" flex items-center justify-center p-2 z-[100] rounded-md" 
+              className=" flex items-center justify-center p-2 z-100 rounded-md" 
               onClick={closeMenu}
               aria-label="Cerrar menú"
             >

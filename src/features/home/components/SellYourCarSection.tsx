@@ -28,7 +28,7 @@ export default function SellYourCarSection() {
           <ul className="space-y-3 mb-8">
             {benefits.map((benefit, index) => (
               <li key={index} className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
                 <span>{benefit}</span>
               </li>
             ))}
@@ -52,7 +52,7 @@ export default function SellYourCarSection() {
               priority 
             />
           </div>
-          <div className="absolute -bottom-[5.5rem] md:-bottom-6 -right-2 md:left-auto md:right-6 bg-primary text-white p-4 rounded-lg shadow-lg text-center w-48 md:w-auto">
+          <div className="absolute -bottom-22 md:-bottom-6 -right-2 md:left-auto md:right-6 bg-primary text-white p-4 rounded-lg shadow-lg text-center w-48 md:w-auto">
             <p className="text-xl font-bold">¡Valoración gratuita!</p>
             <p>Sin compromiso</p>
           </div>

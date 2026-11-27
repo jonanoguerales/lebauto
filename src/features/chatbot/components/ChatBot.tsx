@@ -187,8 +187,8 @@ export default function ChatBotInternal() {
       <CardContent ref={chatContainerRef} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 scroll-smooth bg-white dark:bg-gray-900">
         {(messages as ChatMessageWithLoading[]).map((m) => (
           <div key={m.id} className={`flex gap-2.5 ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-            {m.sender === "bot" && (<BotMessageSquare className="h-6 w-6 text-primary flex-shrink-0 mt-1" />)}
-            <div className={`max-w-[85%] p-3 rounded-xl shadow-sm break-words ${m.sender === "user" ? "bg-slate-600 text-white rounded-br-none" : "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 rounded-bl-none"}`}>
+            {m.sender === "bot" && (<BotMessageSquare className="h-6 w-6 text-primary shrink-0 mt-1" />)}
+            <div className={`max-w-[85%] p-3 rounded-xl shadow-xs wrap-break-word ${m.sender === "user" ? "bg-slate-600 text-white rounded-br-none" : "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 rounded-bl-none"}`}>
               {m.isLoadingAction ? (
                 <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -201,24 +201,24 @@ export default function ChatBotInternal() {
               {m.sender === "bot" && m.buttons && m.buttons.length > 0 && !m.isLoadingAction && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {m.buttons.map((button, btnIdx) => ( 
-                    <Button key={`${button.value || button.label}-${btnIdx}`} variant="default" size="sm" className="h-auto py-2 px-3 text-sm text-center bg-[#708BA0] hover:bg-[#5c7081] text-white border-0 flex-grow basis-[calc(50%-0.25rem)]" onClick={() => handleOptionClick(button)} disabled={isPending}>
+                    <Button key={`${button.value || button.label}-${btnIdx}`} variant="default" size="sm" className="h-auto py-2 px-3 text-sm text-center bg-[#708BA0] hover:bg-[#5c7081] text-white border-0 grow basis-[calc(50%-0.25rem)]" onClick={() => handleOptionClick(button)} disabled={isPending}>
                       {button.label}
                     </Button>
                   ))}
                 </div>
               )}
             </div>
-            {m.sender === "user" && (<UserCircle2 className="h-6 w-6 text-gray-400 flex-shrink-0 mt-1" />)}
+            {m.sender === "user" && (<UserCircle2 className="h-6 w-6 text-gray-400 shrink-0 mt-1" />)}
           </div>
         ))}
       </CardContent>
-      <CardFooter className="border-t p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 flex-shrink-0 w-full flex flex-col items-start">
+      <CardFooter className="border-t p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 shrink-0 w-full flex flex-col items-start">
         {errorMessage && (<p className="text-red-500 text-xs mb-2 w-full text-left">{errorMessage}</p>)}
         {currentStepDef?.isUserInput ? (
           <form onSubmit={handleSubmitInput} className="flex w-full items-center space-x-2">
-            {canGoBack && (<Button type="button" variant="ghost" size="icon" onClick={handleGoBack} aria-label="Atrás" className="flex-shrink-0" disabled={isPending}><ArrowLeft className="h-4 w-4" /></Button>)}
+            {canGoBack && (<Button type="button" variant="ghost" size="icon" onClick={handleGoBack} aria-label="Atrás" className="shrink-0" disabled={isPending}><ArrowLeft className="h-4 w-4" /></Button>)}
             <Input ref={inputRef} type={currentStepDef.inputType || "text"} value={userInput} onChange={(e) => setUserInput(e.target.value)} placeholder={currentStepDef.inputPlaceholder || "Escribe tu mensaje..."} className="flex-1 h-10 text-[16px] sm:text-sm min-w-0" aria-label="Escribe tu respuesta" disabled={isPending}/>
-            <Button type="submit" size="icon" disabled={isSubmitDisabled} aria-label="Enviar respuesta" className="flex-shrink-0 bg-[#708BA0] hover:bg-[#5c7081]"><Send className="h-4 w-4" /></Button>
+            <Button type="submit" size="icon" disabled={isSubmitDisabled} aria-label="Enviar respuesta" className="shrink-0 bg-[#708BA0] hover:bg-[#5c7081]"><Send className="h-4 w-4" /></Button>
           </form>
         ) : (canGoBack && (<div className="w-full flex"><Button type="button" variant="outline" onClick={handleGoBack} aria-label="Atrás" className="gap-2" disabled={isPending}><ArrowLeft className="h-4 w-4" /> Atrás</Button></div>))}
       </CardFooter>

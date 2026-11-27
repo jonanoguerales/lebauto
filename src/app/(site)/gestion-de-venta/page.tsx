@@ -86,11 +86,11 @@ export default function SellCarPage() {
 
   return (
     <main className="min-h-screen bg-background scroll-smooth">
-      <section className="relative mt-[50px] md:mt-20 py-24 bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
+      <section className="relative mt-[50px] md:mt-20 py-24 bg-linear-to-br from-primary via-primary/90 to-primary/70 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-size-[20px_20px]"></div>
         <div className="container mx-auto relative z-10">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight md:leading-none">
               Vende tu coche <span className="text-yellow-300">sin complicaciones</span>
             </h1>
             <p className="text-xl mb-8 text-white/90">
@@ -123,7 +123,7 @@ export default function SellCarPage() {
             {benefits.map((benefit, index) => (
               <div
                 key={index}
-                className="p-8 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                className="p-8 rounded-xl bg-linear-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-xs hover:shadow-md transition-shadow"
               >
                 <div className="bg-primary/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-6">
                   <benefit.icon className="h-7 w-7 text-primary" />
@@ -149,7 +149,7 @@ export default function SellCarPage() {
             {steps.map((step, index) => (
               <div
                 key={index}
-                className="relative bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all"
+                className="relative bg-white p-8 rounded-xl shadow-xs border border-gray-100 hover:border-primary/20 hover:shadow-md transition-all"
               >
                 <div className="absolute -top-5 -left-5 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
                   {index + 1}
@@ -177,7 +177,7 @@ export default function SellCarPage() {
                     compromiso.
                   </p>
                   <div className="flex items-center gap-2 text-primary">
-                    <CheckCircle className="h-5 w-5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 shrink-0" />
                     <span className="font-medium">Sin compromiso</span>
                   </div>
                 </div>
@@ -238,7 +238,7 @@ export default function SellCarPage() {
                     "No es necesario para la valoración inicial. Podemos hacer una primera valoración online o telefónica. Para la inspección final y formalización de la venta, sí sería necesario.",
                 },
               ].map((faq, index) => (
-                <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div key={index} className="bg-white p-6 rounded-xl shadow-xs border border-gray-100">
                   <h3 className="text-lg font-bold mb-2">{faq.question}</h3>
                   <p className="text-gray-600">{faq.answer}</p>
                 </div>
@@ -271,7 +271,7 @@ export default function SellCarPage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-grid-white/[0.05] bg-size-[20px_20px]"></div>
       </section>
 
       <script

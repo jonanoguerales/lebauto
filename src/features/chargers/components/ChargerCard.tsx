@@ -27,7 +27,7 @@ export default function ChargerCard({ charger }: ChargerCardProps) {
   return (
     <Link
       href={`/cargadores/${charger.slug || charger.id}`} 
-      className=" bg-card rounded-lg border shadow-sm hover:shadow-md transition-all duration-300 group overflow-hidden h-full flex flex-col"
+      className=" bg-card rounded-lg border shadow-xs hover:shadow-md transition-all duration-300 group overflow-hidden h-full flex flex-col"
       aria-label={`Ver detalles del cargador ${charger.name}`}
     >
       <div className="relative w-full h-56">
@@ -47,7 +47,7 @@ export default function ChargerCard({ charger }: ChargerCardProps) {
         </Badge>
       </div>
 
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-5 flex flex-col grow">
         <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
           {charger.name}
         </h3>
@@ -61,7 +61,7 @@ export default function ChargerCard({ charger }: ChargerCardProps) {
           <span>{charger.connector_type}</span>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-3 flex-grow">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-3 grow">
           {charger.description || "Solución de carga eficiente y fiable para tu vehículo eléctrico."}
         </p>
 

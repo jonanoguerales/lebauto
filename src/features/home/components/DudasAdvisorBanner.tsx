@@ -9,7 +9,7 @@ export default function DudasAdvisorBanner() {
     <section className="container mx-auto display flex items-center justify-center">
       <div className="bg-[#e63946] rounded-xl overflow-hidden shadow-lg w-[400px] md:w-[990px]">
         <div className="relative flex flex-col md:flex-row items-center">
-          <div className="flex flex-col items-center justify-center w-full z-[1] px-4 py-8 md:pl-4 md:py-0 md:pr-0 lg:pl-12">
+          <div className="flex flex-col items-center justify-center w-full z-1 px-4 py-8 md:pl-4 md:py-0 md:pr-0 lg:pl-12">
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-4">
               ¿Dudas entre tantos coches?
             </h3>

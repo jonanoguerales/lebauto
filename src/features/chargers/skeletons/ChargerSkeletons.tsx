@@ -5,7 +5,7 @@ export function ChargerCardSkeleton() {
   return (
     <Card className="overflow-hidden h-full flex flex-col">
       <Skeleton className="relative w-full h-56 rounded-t-lg" />
-      <CardContent className="p-5 flex flex-col flex-grow">
+      <CardContent className="p-5 flex flex-col grow">
         <Skeleton className="h-6 w-3/4 mb-2" /> 
         <Skeleton className="h-4 w-1/2 mb-3" />
         
@@ -46,7 +46,7 @@ export function ChargerDetailSkeleton() {
     <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start animate-pulse">
       <div className="lg:sticky lg:top-24">
         <Card className="overflow-hidden shadow-lg">
-          <Skeleton className="aspect-[4/3] w-full" />
+          <Skeleton className="aspect-4/3 w-full" />
         </Card>
       </div>
 

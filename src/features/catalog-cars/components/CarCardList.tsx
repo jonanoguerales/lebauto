@@ -14,7 +14,7 @@ export default function CarCardList({ car }: CarCardListProps) {
   return (
     <Link
       href={`/coches-segunda-mano/${car.slug}`}
-      className="block bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow animate-fade-in"
+      className="block bg-card rounded-lg border shadow-xs hover:shadow-md transition-shadow animate-fade-in"
       aria-label={`Ver detalles del ${car.brand} ${car.model}`}
     >
       <div className="flex flex-col md:flex-row">
@@ -34,7 +34,7 @@ export default function CarCardList({ car }: CarCardListProps) {
           </div>
         </div>
 
-        <div className="p-6 flex-grow">
+        <div className="p-6 grow">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-xl font-semibold mb-2">{car.brand} {car.model}</h3>

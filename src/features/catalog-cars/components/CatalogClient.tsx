@@ -193,7 +193,7 @@ export default function CatalogClient({
       </aside>
 
       {isOpen && (
-        <div className="fixed inset-0 z-[60] bg-white flex flex-col h-[100dvh] lg:hidden">
+        <div className="fixed inset-0 z-60 bg-white flex flex-col h-dvh lg:hidden">
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-xl font-semibold">Filtros</h2>
             <Button variant="ghost" size="icon" onClick={toggleMenu}>

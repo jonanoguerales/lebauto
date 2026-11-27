@@ -238,7 +238,7 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
                 key={`thumb-${index}`}
                 onClick={() => selectThumbnail(index)}
                 className={`relative aspect-square rounded-md overflow-hidden bg-muted
-                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
+                            focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
                             ${currentImageIndex === index ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-75 transition-opacity"}`}
                 aria-label={`Ver imagen ${index + 1}`}
                 tabIndex={0}
@@ -279,7 +279,7 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
                 variant="ghost"
                 size="icon"
                 onClick={closeLightbox}
-                className="absolute top-3 right-3 md:top-4 md:right-4 z-[60] text-white bg-black/40 hover:bg-black/60 active:bg-black/70 rounded-full w-10 h-10"
+                className="absolute top-3 right-3 md:top-4 md:right-4 z-60 text-white bg-black/40 hover:bg-black/60 active:bg-black/70 rounded-full w-10 h-10"
                 aria-label="Cerrar galería"
             >
                 <XIcon className="w-5 h-5" />
@@ -293,7 +293,7 @@ export default function CarGallery({ images, altPrefix = "Imagen del vehículo" 
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="relative w-full h-full max-w-[100vw] max-h-[100vh] sm:max-w-[90vw] sm:max-h-[90vh] flex items-center justify-center" 
+                    className="relative w-full h-full max-w-[100vw] max-h-screen sm:max-w-[90vw] sm:max-h-[90vh] flex items-center justify-center" 
                 >
                     {isLightboxImageLoading && (
                         <Skeleton className="absolute inset-0 w-full h-full bg-gray-700/50" />

@@ -4,11 +4,11 @@ import Link from 'next/link';
 
 export function RentingHero() {
   return (
-    <section className="relative mt-[50px] md:mt-20 py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900 text-white overflow-hidden">
-      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
+    <section className="relative mt-[50px] md:mt-20 py-24 bg-linear-to-br from-slate-900 via-slate-800 to-gray-900 text-white overflow-hidden">
+      <div className="absolute inset-0 bg-grid-white/[0.05] bg-size-[20px_20px]"></div>
       <div className="container mx-auto relative z-10 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight md:leading-none">
             Estrena Coche con Renting Flexible
           </h1>
           <p className="text-xl mb-8 text-white/80">

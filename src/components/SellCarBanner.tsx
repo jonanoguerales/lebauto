@@ -25,7 +25,7 @@ export default function SellCarBanner() {
               <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-1">
                 ¿Necesitas vender tu coche o entregarlo como parte de pago?
               </h3>
-              <p className="text-2xl sm:text-[1.7rem] font-bold text-sky-600">
+              <p className="text-2xl sm:text-[1.7rem] sm:leading-8 font-bold text-sky-600">
                 ¡Nosotros te lo compramos!
               </p>
             </div>

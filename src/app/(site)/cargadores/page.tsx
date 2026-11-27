@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default async function ChargersCatalogPage() {
   return (
     <main className="min-h-screen bg-background">
-      <header className="bg-gradient-to-r from-slate-900 to-slate-700 text-primary-foreground py-16 mt-[50px] md:mt-20">
+      <header className="bg-linear-to-r from-slate-900 to-slate-700 text-primary-foreground py-16 mt-[50px] md:mt-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4">Nuestros Cargadores Eléctricos</h1>
           <p className="text-xl max-w-2xl mx-auto">
