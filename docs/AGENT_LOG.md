@@ -78,4 +78,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: specs/001-lebauto.md (sin cambio de comportamiento)
 - Vuelta 1 · Develop: `git mv` de los 26 componentes a `src/common/components/ui/`, `cn` a `src/common/helpers/cn.ts`, 80 ficheros con imports actualizados, alias nuevos en `components.json` (dry-run de shadcn correcto) · Testing: PASS
 - Observaciones: en T-04b unificar `src/hooks/useMobile.tsx`/`useToast.ts` con `@/common/hooks` antes de `shadcn add sidebar`; comentario de ruta erróneo en `PaginationControls.tsx` (T-05+); test pequeño de `cn` opcional.
-- Commit: (ver siguiente)
+- Commit: c81893b
