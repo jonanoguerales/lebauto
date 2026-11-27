@@ -17,7 +17,7 @@ import { Input } from "@/common/components/ui/input";
 import { Trash2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { uploadImage, deleteImage } from "@/app/supabase/supabase";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 interface Car {
   id: string;
@@ -43,7 +43,6 @@ export function ImageManagerDialog({
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const { toast } = useToast();
 
   // Al abrir el diálogo (o cambiar de vehículo con él abierto) se cargan sus imágenes y se limpia la
   // selección; se ajusta durante el render comparando con los valores anteriores, sin efecto.
@@ -82,12 +81,7 @@ export function ImageManagerDialog({
         await deleteImage(imageUrl);
       } catch (error) {
         console.error("Error deleting image:", error);
-        toast({
-          title: "Error al eliminar imagen",
-          description:
-            "No se pudo eliminar la imagen correctamente. Verifica los permisos de almacenamiento.",
-          variant: "destructive",
-        });
+        toast.error("Error al eliminar imagen", { description: "No se pudo eliminar la imagen correctamente. Verifica los permisos de almacenamiento." });
       }
     }
   };
@@ -143,20 +137,9 @@ export function ImageManagerDialog({
 
 
     if (successCount > 0) {
-      toast({
-        title: `${successCount} imágenes subidas`,
-        description:
-          errorCount > 0
-            ? `No se pudieron subir ${errorCount} imágenes.`
-            : "Todas las imágenes se subieron correctamente.",
-      });
+      toast.success(`${successCount} imágenes subidas`, { description: errorCount > 0 ? `No se pudieron subir ${errorCount} imágenes.` : "Todas las imágenes se subieron correctamente." });
     } else if (errorCount > 0) {
-      toast({
-        title: "Error al subir imágenes",
-        description:
-          "No se ha podido subir ninguna imagen. Verifica los permisos en Supabase o contacta al administrador.",
-        variant: "destructive",
-      });
+      toast.error("Error al subir imágenes", { description: "No se ha podido subir ninguna imagen. Verifica los permisos en Supabase o contacta al administrador." });
     }
   };
 

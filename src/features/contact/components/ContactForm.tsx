@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactFormSchema, type ContactFormData } from "@/lib/validations";
 import { submitContactForm } from "@/app/actions/actions";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
@@ -15,7 +15,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Loader2 } from "lucide-react";
 
 export default function ContactForm() {
-  const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<ContactFormData>({
@@ -34,17 +33,10 @@ export default function ContactForm() {
       const result = await submitContactForm(data);
 
       if (result.success) {
-        toast({
-          title: "✔️ Formulario enviado",
-          description: result.message,
-        });
+        toast.success("✔️ Formulario enviado", { description: result.message });
         form.reset();
       } else {
-        toast({
-          title: "❌ Error al enviar",
-          description: result.message || "Por favor, revisa los campos.",
-          variant: "destructive",
-        });
+        toast.error("❌ Error al enviar", { description: result.message || "Por favor, revisa los campos." });
         if (result.errors) {
             Object.entries(result.errors).forEach(([key, value]) => {
                 if (value && value[0]) {

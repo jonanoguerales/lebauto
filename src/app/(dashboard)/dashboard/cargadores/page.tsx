@@ -10,7 +10,7 @@ import {
   updateCharger,
   deleteCharger,
 } from "@/app/supabase/supabase";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 import type { Charger } from "@/lib/definitions";
 import ChargersTable from "@/features/dashboard/chargers/ChargersTable";
 import ChargerFormDialog from "@/features/dashboard/chargers/ChargerFormDialog";
@@ -22,7 +22,6 @@ export default function ChargersPage() {
   const [editingCharger, setEditingCharger] = useState<Charger | null>(null);
   // Cada apertura monta el diálogo de nuevo (otra `key`) para que el formulario empiece con los datos correctos.
   const [formDialogKey, setFormDialogKey] = useState(0);
-  const { toast } = useToast();
 
   useEffect(() => {
     const loadChargers = async () => {
@@ -32,18 +31,13 @@ export default function ChargersPage() {
         setChargers(fetchedChargers);
       } catch (error) {
         console.error("Error al cargar cargadores:", error);
-        toast({
-          title: "Error",
-          description:
-            "No se pudieron cargar los cargadores. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudieron cargar los cargadores. Inténtalo de nuevo." });
       } finally {
         setIsLoading(false);
       }
     };
     loadChargers();
-  }, [toast]);
+  }, []);
 
   const handleAddNew = () => {
     setEditingCharger(null);
@@ -68,10 +62,7 @@ export default function ChargersPage() {
           setChargers((prev) =>
             prev.map((c) => (c.id === id ? updatedCharger : c))
           );
-          toast({
-            title: "Cargador actualizado",
-            description: "El cargador ha sido actualizado correctamente.",
-          });
+          toast.success("Cargador actualizado", { description: "El cargador ha sido actualizado correctamente." });
         } else {
           throw new Error("No se pudo actualizar el cargador.");
         }
@@ -82,10 +73,7 @@ export default function ChargersPage() {
         });
         if (newCharger) {
           setChargers((prev) => [...prev, newCharger]);
-          toast({
-            title: "Cargador añadido",
-            description: "El cargador ha sido añadido correctamente.",
-          });
+          toast.success("Cargador añadido", { description: "El cargador ha sido añadido correctamente." });
         } else {
           throw new Error("No se pudo crear el cargador.");
         }
@@ -94,13 +82,7 @@ export default function ChargersPage() {
       setEditingCharger(null);
     } catch (error) {
       console.error("Error guardando cargador:", error);
-      toast({
-        title: "Error al guardar",
-        description:
-          (error instanceof Error && error.message) ||
-          "Ocurrió un error al guardar el cargador. Verifica los datos e inténtalo de nuevo.",
-        variant: "destructive",
-      });
+      toast.error("Error al guardar", { description: (error instanceof Error && error.message) || "Ocurrió un error al guardar el cargador. Verifica los datos e inténtalo de nuevo." });
     }
   };
 
@@ -109,24 +91,13 @@ export default function ChargersPage() {
       const success = await deleteCharger(id);
       if (success) {
         setChargers((prev) => prev.filter((c) => c.id !== id));
-        toast({
-          title: "Cargador eliminado",
-          description: "El cargador ha sido eliminado correctamente.",
-        });
+        toast.success("Cargador eliminado", { description: "El cargador ha sido eliminado correctamente." });
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo eliminar el cargador. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudo eliminar el cargador. Inténtalo de nuevo." });
       }
     } catch (error) {
       console.error("Error eliminando cargador:", error);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al eliminar el cargador.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Ocurrió un error al eliminar el cargador." });
     }
   };
 

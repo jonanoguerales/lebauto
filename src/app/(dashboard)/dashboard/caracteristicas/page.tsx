@@ -5,7 +5,7 @@ import { DashboardHeader } from "@/features/dashboard/DashboardHeader";
 import { Button } from "@/common/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { fetchFeatures, createFeature, updateFeature, deleteFeature } from "@/app/supabase/supabase";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 import { Feature } from "@/lib/definitions";
 import { FeaturesTable } from "@/features/dashboard/features/FeatureTable";
 import { FeatureFormDialog } from "@/features/dashboard/features/FeatureFormDialog";
@@ -14,7 +14,6 @@ export default function FeaturesPage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     const loadFeatures = async () => {
@@ -24,17 +23,13 @@ export default function FeaturesPage() {
         setFeatures(fetched);
       } catch (error) {
         console.error("Error al cargar características:", error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar las características. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudieron cargar las características. Inténtalo de nuevo." });
       } finally {
         setIsLoading(false);
       }
     };
     loadFeatures();
-  }, [toast]);
+  }, []);
 
   const handleAddNew = () => {
     setIsFormDialogOpen(true);
@@ -45,24 +40,13 @@ export default function FeaturesPage() {
       const created = await createFeature(newFeatureData);
       if (created) {
         setFeatures((prev) => [...prev, created]);
-        toast({
-          title: "Característica añadida",
-          description: "La característica ha sido añadida correctamente.",
-        });
+        toast.success("Característica añadida", { description: "La característica ha sido añadida correctamente." });
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo añadir la característica. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudo añadir la característica. Inténtalo de nuevo." });
       }
     } catch (error) {
       console.error("Error añadiendo característica:", error);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al añadir la característica.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Ocurrió un error al añadir la característica." });
     }
   };
 
@@ -73,24 +57,13 @@ export default function FeaturesPage() {
         setFeatures((prev) =>
           prev.map((f) => (f.id === id ? { ...f, name: newName } : f))
         );
-        toast({
-          title: "Característica actualizada",
-          description: "La característica ha sido actualizada correctamente.",
-        });
+        toast.success("Característica actualizada", { description: "La característica ha sido actualizada correctamente." });
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo actualizar la característica. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudo actualizar la característica. Inténtalo de nuevo." });
       }
     } catch (error) {
       console.error("Error actualizando característica:", error);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al actualizar la característica.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Ocurrió un error al actualizar la característica." });
     }
   };
 
@@ -99,24 +72,13 @@ export default function FeaturesPage() {
       const success = await deleteFeature(id);
       if (success) {
         setFeatures((prev) => prev.filter((f) => f.id !== id));
-        toast({
-          title: "Característica eliminada",
-          description: "La característica ha sido eliminada correctamente.",
-        });
+        toast.success("Característica eliminada", { description: "La característica ha sido eliminada correctamente." });
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo eliminar la característica. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudo eliminar la característica. Inténtalo de nuevo." });
       }
     } catch (error) {
       console.error("Error eliminando característica:", error);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al eliminar la característica.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Ocurrió un error al eliminar la característica." });
     }
   };
 

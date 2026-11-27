@@ -8,7 +8,6 @@ import { Accordion } from "@/common/components/ui/accordion";
 import { useFilterStore } from "@/lib/store";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/useToast";
 import { usePriceDebounce } from "@/hooks/usePriceDebounce";
 import { useYearDebounce } from "@/hooks/useYearDebounce";
 import { useKmDebounce } from "@/hooks/useKmDebounce";
@@ -30,7 +29,6 @@ export default function CarFilters({
   toggleMenu?: () => void;
 }) {
   const router = useRouter();
-  const { toast } = useToast();
   const currentYear = new Date().getFullYear();
 
   const {
@@ -488,7 +486,6 @@ export default function CarFilters({
       setMinPrice,
       setMaxPrice,
       setFilter,
-      toast,
     });
   const { debouncedValidateMinYear, debouncedValidateMaxYear } =
     useYearDebounce({
@@ -497,7 +494,6 @@ export default function CarFilters({
       setMinYear,
       setMaxYear,
       setFilter,
-      toast,
     });
   const { debouncedValidateMinKm, debouncedValidateMaxKm } = useKmDebounce({
     minKm,
@@ -505,7 +501,6 @@ export default function CarFilters({
     setMinKm,
     setMaxKm,
     setFilter,
-    toast,
   });
 
   const brandModelConfig = {

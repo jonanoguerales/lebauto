@@ -33,7 +33,7 @@ import { Input } from "@/common/components/ui/input";
 import { Button } from "@/common/components/ui/button";
 import { Textarea } from "@/common/components/ui/textarea";
 import { uploadImage, deleteImage } from "@/app/supabase/supabase";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 import Image from "next/image";
 import { InputTags } from "./InputTags";
 import { Trash2 } from "lucide-react"; 
@@ -52,7 +52,6 @@ export default function ChargerFormDialog({
   charger,
   onSave,
 }: ChargerFormDialogProps) {
-  const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false); 
   // El padre monta el diálogo con otra `key` cada vez que lo abre, así que el formulario y la vista previa
   // se inicializan aquí con el cargador que se edita (o vacíos para uno nuevo), sin efecto de sincronización.
@@ -78,9 +77,9 @@ export default function ChargerFormDialog({
       setIsProcessing(true);
       try {
         await deleteImage(currentImageUrlPreview);
-        toast({ title: "Imagen eliminada del almacenamiento." });
+        toast.success("Imagen eliminada del almacenamiento.");
       } catch {
-        toast({ title: "Error", description: "No se pudo eliminar la imagen del almacenamiento.", variant: "destructive" });
+        toast.error("Error", { description: "No se pudo eliminar la imagen del almacenamiento." });
       }
       setIsProcessing(false);
     }
@@ -106,7 +105,7 @@ export default function ChargerFormDialog({
       if (uploadedUrl) {
         finalImageUrl = uploadedUrl;
       } else {
-        toast({ title: "Error", description: "No se pudo subir la nueva imagen.", variant: "destructive" });
+        toast.error("Error", { description: "No se pudo subir la nueva imagen." });
         setIsProcessing(false);
         return;
       }

@@ -8,7 +8,7 @@ import { Input } from "@/common/components/ui/input"
 import { Label } from "@/common/components/ui/label"
 import { Textarea } from "@/common/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/common/components/ui/select"
-import { useToast } from "@/hooks/useToast"
+import { toast } from "sonner"
 import { Card, CardContent } from "@/common/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { SellCarFormState } from "@/lib/definitions"
@@ -25,7 +25,6 @@ const initialState: SellCarFormState = {
 }
 
 export default function SellCarForm() {
-  const { toast } = useToast()
   const [state, formAction] = useActionState(submitSellCarForm, initialState)
   const [formKey, setFormKey] = useState(0)
 
@@ -42,13 +41,13 @@ export default function SellCarForm() {
   // El toast es un sistema externo: se notifica desde un efecto.
   useEffect(() => {
     if (state?.message) {
-      toast({
-        title: state.success ? "✔️ Enviado correctamente" : "❌ Error al enviar",
-        description: state.message,
-        variant: state.success ? "default" : "destructive",
-      })
+      if (state.success) {
+        toast.success("✔️ Enviado correctamente", { description: state.message })
+      } else {
+        toast.error("❌ Error al enviar", { description: state.message })
+      }
     }
-  }, [state, toast])
+  }, [state])
 
   return (
     <Card className="shadow-lg border-0">

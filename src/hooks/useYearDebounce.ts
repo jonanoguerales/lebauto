@@ -1,6 +1,6 @@
 import { FilterKey } from "@/lib/definitions";
 import { useDebouncedCallback } from "use-debounce";
-import type { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 interface YearDebounceProps {
         minYear: string;
@@ -8,20 +8,15 @@ interface YearDebounceProps {
         setMinYear: (val: string) => void;
         setMaxYear: (val: string) => void;
         setFilter: (key: FilterKey, value: string | number) => void;
-        toast: ReturnType<typeof useToast>["toast"];
         
 }
 
-export function useYearDebounce({ minYear, maxYear, setMinYear, setMaxYear, setFilter, toast }: YearDebounceProps) {
+export function useYearDebounce({ minYear, maxYear, setMinYear, setMaxYear, setFilter }: YearDebounceProps) {
 
     const debouncedValidateMaxYear = useDebouncedCallback((value: string) => {
         const numValue = Number(value);
         if (Number(minYear) && numValue < Number(minYear)) {
-          toast({
-            title: "Error",
-            description: "El año máximo no puede ser menor que el año mínimo.",
-            variant: "destructive",
-          });
+          toast.error("Error", { description: "El año máximo no puede ser menor que el año mínimo." });
           setFilter("maxYear", Number(minYear));
           setMaxYear(minYear);
         } else {
@@ -32,11 +27,7 @@ export function useYearDebounce({ minYear, maxYear, setMinYear, setMaxYear, setF
       const debouncedValidateMinYear = useDebouncedCallback((value: string) => {
         const numValue = Number(value);
         if (Number(maxYear) && numValue > Number(maxYear)) {
-          toast({
-            title: "Error",
-            description: "El año mínimo no puede ser mayor que el año máximo.",
-            variant: "destructive",
-          });
+          toast.error("Error", { description: "El año mínimo no puede ser mayor que el año máximo." });
           setFilter("minYear", Number(maxYear));
           setMinYear(maxYear);
         } else {

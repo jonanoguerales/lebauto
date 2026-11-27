@@ -9,7 +9,7 @@ import { VehicleFormDialog } from "@/features/dashboard/vehicles/VehicleFormDial
 import { ImageManagerDialog } from "@/features/dashboard/vehicles/ImageManagerDialog"
 import { FeaturesManagerDialog } from "@/features/dashboard/vehicles/FeaturesManagerDialog"
 import { fetchCars, createCar, updateCar, deleteCar } from "@/app/supabase/supabase"
-import { useToast } from "@/hooks/useToast"
+import { toast } from "sonner"
 import { Car } from "@/lib/definitions"
 
 export default function VehiclesPage() {
@@ -20,7 +20,6 @@ export default function VehiclesPage() {
   const [isFeaturesDialogOpen, setIsFeaturesDialogOpen] = useState(false)
   const [editingVehicle, setEditingVehicle] = useState<Car | null>(null)
   const [selectedVehicle, setSelectedVehicle] = useState<Car | null>(null)
-  const { toast } = useToast()
 
   useEffect(() => {
     const loadVehicles = async () => {
@@ -30,18 +29,14 @@ export default function VehiclesPage() {
         setVehicles(cars)
       } catch (error) {
         console.error("Error loading vehicles:", error)
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los vehículos. Inténtalo de nuevo.",
-          variant: "destructive",
-        })
+        toast.error("Error", { description: "No se pudieron cargar los vehículos. Inténtalo de nuevo." })
       } finally {
         setIsLoading(false)
       }
     }
 
     loadVehicles()
-  }, [toast])
+  }, [])
 
   const handleAddNew = () => {
     setEditingVehicle(null)
@@ -69,41 +64,23 @@ export default function VehiclesPage() {
         const updatedVehicle = await updateCar(vehicle.id, vehicle)
         if (updatedVehicle) {
           setVehicles((prev) => prev.map((v) => (v.id === vehicle.id ? updatedVehicle : v)))
-          toast({
-            title: "Vehículo actualizado",
-            description: "El vehículo ha sido actualizado correctamente.",
-          })
+          toast.success("Vehículo actualizado", { description: "El vehículo ha sido actualizado correctamente." })
         } else {
-          toast({
-            title: "Error",
-            description: "No se pudo actualizar el vehículo. Inténtalo de nuevo.",
-            variant: "destructive",
-          })
+          toast.error("Error", { description: "No se pudo actualizar el vehículo. Inténtalo de nuevo." })
         }
       } else {
         const newVehicle = await createCar(vehicle)
         if (newVehicle) {
           setVehicles((prev) => [...prev, newVehicle])
-          toast({
-            title: "Vehículo añadido",
-            description: "El vehículo ha sido añadido correctamente.",
-          })
+          toast.success("Vehículo añadido", { description: "El vehículo ha sido añadido correctamente." })
         } else {
-          toast({
-            title: "Error",
-            description: "No se pudo añadir el vehículo. Inténtalo de nuevo.",
-            variant: "destructive",
-          })
+          toast.error("Error", { description: "No se pudo añadir el vehículo. Inténtalo de nuevo." })
         }
       }
       setIsFormDialogOpen(false)
     } catch (error) {
       console.error("Error saving vehicle:", error)
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al guardar el vehículo. Verifica los datos e inténtalo de nuevo.",
-        variant: "destructive",
-      })
+      toast.error("Error", { description: "Ocurrió un error al guardar el vehículo. Verifica los datos e inténtalo de nuevo." })
     }
   }
 
@@ -129,24 +106,13 @@ export default function VehiclesPage() {
           ),
         )
 
-        toast({
-          title: "Imágenes actualizadas",
-          description: "Las imágenes del vehículo han sido actualizadas correctamente.",
-        })
+        toast.success("Imágenes actualizadas", { description: "Las imágenes del vehículo han sido actualizadas correctamente." })
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudieron actualizar las imágenes. Inténtalo de nuevo.",
-          variant: "destructive",
-        })
+        toast.error("Error", { description: "No se pudieron actualizar las imágenes. Inténtalo de nuevo." })
       }
     } catch (error) {
       console.error("Error saving images:", error)
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al guardar las imágenes.",
-        variant: "destructive",
-      })
+      toast.error("Error", { description: "Ocurrió un error al guardar las imágenes." })
     }
   }
 
@@ -163,24 +129,13 @@ export default function VehiclesPage() {
           prev.map((v) => (v.id === selectedVehicle.id ? { ...v, features: updatedVehicle.features || [] } : v)),
         )
 
-        toast({
-          title: "Características actualizadas",
-          description: "Las características del vehículo han sido actualizadas correctamente.",
-        })
+        toast.success("Características actualizadas", { description: "Las características del vehículo han sido actualizadas correctamente." })
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudieron actualizar las características. Inténtalo de nuevo.",
-          variant: "destructive",
-        })
+        toast.error("Error", { description: "No se pudieron actualizar las características. Inténtalo de nuevo." })
       }
     } catch (error) {
       console.error("Error saving features:", error)
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al guardar las características.",
-        variant: "destructive",
-      })
+      toast.error("Error", { description: "Ocurrió un error al guardar las características." })
     }
   }
 
@@ -189,24 +144,13 @@ export default function VehiclesPage() {
       const success = await deleteCar(id)
       if (success) {
         setVehicles((prev) => prev.filter((v) => v.id !== id))
-        toast({
-          title: "Vehículo eliminado",
-          description: "El vehículo ha sido eliminado correctamente.",
-        })
+        toast.success("Vehículo eliminado", { description: "El vehículo ha sido eliminado correctamente." })
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudo eliminar el vehículo. Inténtalo de nuevo.",
-          variant: "destructive",
-        })
+        toast.error("Error", { description: "No se pudo eliminar el vehículo. Inténtalo de nuevo." })
       }
     } catch (error) {
       console.error("Error deleting vehicle:", error)
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al eliminar el vehículo.",
-        variant: "destructive",
-      })
+      toast.error("Error", { description: "Ocurrió un error al eliminar el vehículo." })
     }
   }
 

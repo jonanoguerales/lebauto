@@ -120,8 +120,10 @@ Siguiendo las skills `nextjs-rendering-strategy` y `next-cache-components-*`:
 
 ## Fase 5 — React 19 y UX (T-21 … T-23)
 - **Formularios:** `useActionState` + `useFormStatus` + `<form action>`, que funcionan sin JS. Los errores por campo son accesibles. `useOptimistic` en las tablas del dashboard. React Compiler evita los `useMemo`/`useCallback` manuales.
+  **Pendiente de T-04b (D-26, `persistent-toast-notifications`):** el resultado de contacto y venta no puede vivir solo en el aviso de sonner, que se cierra solo; hay que mostrarlo también como mensaje en la página.
 - **Navegación:** `<ViewTransition>` de React en lugar de `next-view-transitions`. framer-motion → `motion` solo donde aporte (el menú curvo); el resto con CSS y `prefers-reduced-motion`.
 - **Modern Web Guidance:** `<dialog>`/popover nativos donde se pueda, `next/image` con `sizes` en todas las imágenes (quedan `<img>` sueltos en `HeroSection`, `TestimonialsSection` y `MotorFilter`), LCP del hero con `preload`, accesibilidad, 375 px y skeletons con la forma del contenido.
+  **Pendiente de T-03/T-04b:** los avisos de sonner deben usar `popover="manual"` y no cerrarse solos los importantes (MANDATORY de `persistent-toast-notifications`), y la X del aviso debe medir 44 px. Hay que reactivar `animate-spin`/`animate-pulse` con `motion-safe`, poner las animaciones de tw-animate-css con `prefers-reduced-motion` y subir el contraste del scrollbar a 3:1.
 - **SEO:** JSON-LD real (hoy tiene teléfono y dirección falsos). Se crea `/cargadores/cargador-opengraph.png`, que no existe, o se genera con `opengraph-image.tsx`. `sitemap.ts` y `robots.ts`.
 
 ## Fase 6 — IA y seguridad (T-24 … T-25)
@@ -170,7 +172,7 @@ Al terminar cada fase:
 - [x] T-02 Cambios incompatibles de Next 16 (proxy.ts, PageProps, next.config, viewport)
 - [x] T-02c Enlaces internos sin 404 (AC-33)
 - [x] T-03 Tailwind 4
-- [ ] T-04 shadcn para React 19 + nuevos alias
+- [x] T-04 shadcn para React 19 + nuevos alias
 - [ ] T-05 core/ (supabase, auth, mail, env) y common/ (helpers, hooks unificados)
 - [ ] T-06 layouts/ (site, dashboard, auth)
 - [ ] T-07 pod car-catalog (filtros por componente, estado en URL)

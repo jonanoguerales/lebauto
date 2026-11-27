@@ -16,7 +16,7 @@ import { Checkbox } from "@/common/components/ui/checkbox";
 import { PlusCircle, Search } from "lucide-react";
 import { fetchFeatures, createFeature } from "@/app/supabase/supabase";
 import { Car, Feature } from "@/lib/definitions";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 interface FeaturesManagerDialogProps {
   open: boolean;
@@ -37,7 +37,6 @@ export function FeaturesManagerDialog({
   const [newFeatureName, setNewFeatureName] = useState("");
   const [isAddingFeature, setIsAddingFeature] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
@@ -49,12 +48,7 @@ export function FeaturesManagerDialog({
           setSelectedFeatures(vehicle.features || []);
         } catch (error) {
           console.error("Error loading features:", error);
-          toast({
-            title: "Error",
-            description:
-              "No se pudieron cargar las características. Inténtalo de nuevo.",
-            variant: "destructive",
-          });
+          toast.error("Error", { description: "No se pudieron cargar las características. Inténtalo de nuevo." });
         } finally {
           setIsLoading(false);
         }
@@ -62,7 +56,7 @@ export function FeaturesManagerDialog({
 
       loadFeatures();
     }
-  }, [open, vehicle, toast]);
+  }, [open, vehicle]);
 
   const filteredFeatures = allFeatures.filter((feature) =>
     feature.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -91,26 +85,13 @@ export function FeaturesManagerDialog({
         setSelectedFeatures((prev) => [...prev, newFeature.id]);
         setNewFeatureName("");
         setIsAddingFeature(false);
-        toast({
-          title: "Característica añadida",
-          description: "La característica ha sido añadida correctamente.",
-        });
+        toast.success("Característica añadida", { description: "La característica ha sido añadida correctamente." });
       } else {
-        toast({
-          title: "Error",
-          description:
-            "No se pudo añadir la característica. Inténtalo de nuevo.",
-          variant: "destructive",
-        });
+        toast.error("Error", { description: "No se pudo añadir la característica. Inténtalo de nuevo." });
       }
     } catch (error) {
       console.error("Error adding feature:", error);
-      toast({
-        title: "Error",
-        description:
-          "Ocurrió un error al añadir la característica. Verifica los permisos en Supabase.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Ocurrió un error al añadir la característica. Verifica los permisos en Supabase." });
     }
   };
 

@@ -1,6 +1,6 @@
 import { FilterKey } from "@/lib/definitions";
 import { useDebouncedCallback } from "use-debounce";
-import type { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 interface useKmDebounceParams {
     minKm: string;
@@ -8,20 +8,14 @@ interface useKmDebounceParams {
     setMinKm: (val: string) => void;
     setMaxKm: (val: string) => void;
     setFilter: (key: FilterKey, value: string | number) => void;
-    toast: ReturnType<typeof useToast>["toast"];
 }
 
-export function useKmDebounce({ minKm, maxKm, setMinKm, setMaxKm, setFilter, toast }: useKmDebounceParams) {
+export function useKmDebounce({ minKm, maxKm, setMinKm, setMaxKm, setFilter }: useKmDebounceParams) {
 
   const debouncedValidateMaxKm = useDebouncedCallback((value: string) => {
     const numValue = Number(value);
     if (Number(minKm) && numValue < Number(minKm)) {
-      toast({
-        title: "Error",
-        description:
-          "Los kilómetros máximos no pueden ser menores que los kilómetros mínimos.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Los kilómetros máximos no pueden ser menores que los kilómetros mínimos." });
       setFilter("maxKm", Number(minKm));
       setMaxKm(minKm);
     } else {
@@ -32,12 +26,7 @@ export function useKmDebounce({ minKm, maxKm, setMinKm, setMaxKm, setFilter, toa
   const debouncedValidateMinKm = useDebouncedCallback((value: string) => {
     const numValue = Number(value);
     if (Number(maxKm) && numValue > Number(maxKm)) {
-      toast({
-        title: "Error",
-        description:
-          "Los kilómetros mínimos no pueden ser mayores que los kilómetros máximos.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Los kilómetros mínimos no pueden ser mayores que los kilómetros máximos." });
       setFilter("minKm", Number(maxKm));
       setMinKm(maxKm);
     } else {

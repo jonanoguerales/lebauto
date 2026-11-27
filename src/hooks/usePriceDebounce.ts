@@ -1,6 +1,6 @@
 import { FilterKey } from "@/lib/definitions";
 import { useDebouncedCallback } from "use-debounce";
-import type { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 interface UsePriceDebounceParams {
   minPrice: string;
@@ -8,7 +8,6 @@ interface UsePriceDebounceParams {
   setMinPrice: (val: string) => void;
   setMaxPrice: (val: string) => void;
   setFilter: (key: FilterKey, value: string | number) => void;
-  toast: ReturnType<typeof useToast>["toast"];
 }
 
 export function usePriceDebounce({
@@ -17,17 +16,12 @@ export function usePriceDebounce({
   setMinPrice,
   setMaxPrice,
   setFilter,
-  toast,
 }: UsePriceDebounceParams) {
 
   const debouncedValidateMinPrice = useDebouncedCallback((value: string) => {
     const numValue = Number(value);
     if (Number(maxPrice) && numValue > Number(maxPrice)) {
-      toast({
-        title: "Error",
-        description: "El precio mínimo no puede ser mayor que el precio máximo.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "El precio mínimo no puede ser mayor que el precio máximo." });
       setFilter("minPrice", Number(maxPrice));
       setMinPrice(maxPrice);
     } else {
@@ -38,11 +32,7 @@ export function usePriceDebounce({
   const debouncedValidateMaxPrice = useDebouncedCallback((value: string) => {
     const numValue = Number(value);
     if (Number(minPrice) && numValue < Number(minPrice)) {
-      toast({
-        title: "Error",
-        description: "El precio máximo no puede ser menor que el precio mínimo.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "El precio máximo no puede ser menor que el precio mínimo." });
       setFilter("maxPrice", Number(minPrice));
       setMaxPrice(minPrice);
     } else {
