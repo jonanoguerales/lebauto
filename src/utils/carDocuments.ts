@@ -2,7 +2,8 @@
 
 import type { Car } from '@/lib/definitions';
 import { getHFEmbedding } from './getHFEmbedding';
-import { createClient } from '@/lib/supabase/server'; 
+import { createClient } from '@/core/supabase/server';
+import { getUser } from '@/core/auth/get-user';
 
 function formatCarDocument(car: Car): string {
   const parts = [
@@ -26,14 +27,12 @@ function formatCarDocument(car: Car): string {
 
 
 export async function updateCarDocument(car: Car): Promise<{ success: boolean; message: string }> {
-  const supabase = await createClient(); 
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) {
     console.error("[updateCarDocument] No hay usuario autenticado para realizar la operación en 'documentos'.");
     return { success: false, message: "Usuario no autenticado para actualizar documentos." };
   }
-  console.log(`[updateCarDocument] Operando en 'documentos' como usuario: ${user.email}`);
 
   if (!car.id) {
     console.error("[updateCarDocument] Falta el ID del vehículo.");
@@ -52,7 +51,8 @@ export async function updateCarDocument(car: Car): Promise<{ success: boolean; m
       metadata: { lastUpdated: new Date().toISOString() } 
     };
     
-    const { error, data } = await supabase 
+    const supabase = await createClient();
+    const { error, data } = await supabase
       .from('documentos')
       .upsert(documentToUpsert, { onConflict: 'car_id' })
       .select()

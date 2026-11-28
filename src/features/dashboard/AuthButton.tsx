@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from "@/common/components/ui/button";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/core/supabase/browser";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,10 +9,7 @@ import { useEffect, useState } from "react";
 export default function AuthButton() {
   const router = useRouter();
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-  );
+  const supabase = createClient();
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {

@@ -1,16 +1,12 @@
 import { InferenceClient } from "@huggingface/inference";
+import { requireServerEnv } from "@/core/env";
 
 // El cliente se crea en el primer uso (no al importar el módulo) para que `next build` no exija el token.
 let hf: InferenceClient | null = null;
 
 function getClient(): InferenceClient {
   if (hf) return hf;
-  const token = process.env.HUGGINGFACE_API_KEY;
-  if (!token) {
-    console.error("HUGGINGFACE_API_KEY no está definida.");
-    throw new Error("HUGGINGFACE_API_KEY no está definida.");
-  }
-  hf = new InferenceClient(token);
+  hf = new InferenceClient(requireServerEnv("HUGGINGFACE_API_KEY"));
   return hf;
 }
 

@@ -1,13 +1,16 @@
+import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getPublicEnv } from "@/core/env.public";
 
 // Refresca la sesión de Supabase en el proxy (solo /dashboard y /sign-in, ver src/proxy.ts).
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const env = getPublicEnv();
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll: () => request.cookies.getAll(),

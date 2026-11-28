@@ -1,7 +1,9 @@
 "use server";
 
 import { encodedRedirect } from "@/utils/utils";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/core/supabase/server";
+import { getServerEnv } from "@/core/env";
+import { getPublicEnv } from "@/core/env.public";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { toSafeInternalPath } from "@/utils/safeInternalPath";
@@ -30,12 +32,12 @@ async function sendValuationEmail(
   source: "Formulario Web" | "Chatbot" = "Formulario Web"
 ) {
   const transporter = nodemailer.createTransport({
-    host: process.env.CORREO_HOST,
-    port: Number(process.env.CORREO_PORT),
+    host: getServerEnv().CORREO_HOST,
+    port: getServerEnv().CORREO_PORT,
     secure: true,
     auth: {
-      user: process.env.CORREO_USUARIO,
-      pass: process.env.CORREO_PASS,
+      user: getServerEnv().CORREO_USUARIO,
+      pass: getServerEnv().CORREO_PASS,
     },
   });
 
@@ -130,14 +132,14 @@ async function sendValuationEmail(
       `;
 
   await transporter.sendMail({
-    from: process.env.CORREO_USUARIO,
-    to: process.env.CORREO_USUARIO,
+    from: getServerEnv().CORREO_USUARIO,
+    to: getServerEnv().CORREO_USUARIO,
     subject: `Solicitud de tasación (${source}) - ${data.name}`,
     html: companyEmailHtml,
   });
 
   await transporter.sendMail({
-    from: process.env.CORREO_USUARIO,
+    from: getServerEnv().CORREO_USUARIO,
     to: data.email,
     subject: "Copia de tu solicitud de tasación",
     html: clientEmailHtml,
@@ -226,12 +228,12 @@ export async function submitPhoneValuationLead(userData: UserData) {
   }
 
   const transporter = nodemailer.createTransport({
-    host: process.env.CORREO_HOST,
-    port: Number(process.env.CORREO_PORT),
+    host: getServerEnv().CORREO_HOST,
+    port: getServerEnv().CORREO_PORT,
     secure: true,
     auth: {
-      user: process.env.CORREO_USUARIO,
-      pass: process.env.CORREO_PASS,
+      user: getServerEnv().CORREO_USUARIO,
+      pass: getServerEnv().CORREO_PASS,
     },
   });
 
@@ -274,8 +276,8 @@ export async function submitPhoneValuationLead(userData: UserData) {
 
   try {
     await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: process.env.CORREO_USUARIO,
+      from: getServerEnv().CORREO_USUARIO,
+      to: getServerEnv().CORREO_USUARIO,
       subject: `Solicitud de LLAMADA para tasación - ${userData.name}`,
       html: companyEmailHtml,
     });
@@ -307,12 +309,12 @@ export async function submitContactForm(data: ContactFormData) {
   const validatedData = result.data;
 
   const transporter = nodemailer.createTransport({
-    host: process.env.CORREO_HOST,
-    port: Number(process.env.CORREO_PORT),
+    host: getServerEnv().CORREO_HOST,
+    port: getServerEnv().CORREO_PORT,
     secure: true,
     auth: {
-      user: process.env.CORREO_USUARIO,
-      pass: process.env.CORREO_PASS,
+      user: getServerEnv().CORREO_USUARIO,
+      pass: getServerEnv().CORREO_PASS,
     },
   });
   // ------------------------------
@@ -395,13 +397,13 @@ export async function submitContactForm(data: ContactFormData) {
 
   try {
     await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
-      to: process.env.CORREO_USUARIO,
+      from: getServerEnv().CORREO_USUARIO,
+      to: getServerEnv().CORREO_USUARIO,
       subject: `Nueva Solicitud de Contacto - ${validatedData.name}`,
       html: companyEmailHtml,
     });
     await transporter.sendMail({
-      from: process.env.CORREO_USUARIO,
+      from: getServerEnv().CORREO_USUARIO,
       to: data.email,
       subject: "Confirmación de Contacto",
       html: clientEmailHtml,
@@ -429,12 +431,12 @@ export async function submitSupportCallbackLead(userData: UserData) {
 
     try {
         const transporter = nodemailer.createTransport({
-            host: process.env.CORREO_HOST,
-            port: Number(process.env.CORREO_PORT),
+            host: getServerEnv().CORREO_HOST,
+            port: getServerEnv().CORREO_PORT,
             secure: true,
             auth: {
-                user: process.env.CORREO_USUARIO,
-                pass: process.env.CORREO_PASS,
+                user: getServerEnv().CORREO_USUARIO,
+                pass: getServerEnv().CORREO_PASS,
             },
         });
 
@@ -457,13 +459,13 @@ export async function submitSupportCallbackLead(userData: UserData) {
 
         await Promise.all([
             transporter.sendMail({
-                from: process.env.CORREO_USUARIO,
-                to: process.env.CORREO_USUARIO,
+                from: getServerEnv().CORREO_USUARIO,
+                to: getServerEnv().CORREO_USUARIO,
                 subject: `Soporte: Solicitud de LLAMADA de ${userData.name}`,
                 html: companyEmailHtml,
             }),
             transporter.sendMail({
-                from: process.env.CORREO_USUARIO,
+                from: getServerEnv().CORREO_USUARIO,
                 to: userData.email,
                 subject: `Hemos recibido tu solicitud de llamada - Lebauto`,
                 html: clientEmailHtml,
@@ -487,12 +489,12 @@ export async function submitSupportEmailLead(userData: UserData) {
 
     try {
         const transporter = nodemailer.createTransport({
-            host: process.env.CORREO_HOST,
-            port: Number(process.env.CORREO_PORT),
+            host: getServerEnv().CORREO_HOST,
+            port: getServerEnv().CORREO_PORT,
             secure: true,
             auth: {
-                user: process.env.CORREO_USUARIO,
-                pass: process.env.CORREO_PASS,
+                user: getServerEnv().CORREO_USUARIO,
+                pass: getServerEnv().CORREO_PASS,
             },
         });
 
@@ -515,13 +517,13 @@ export async function submitSupportEmailLead(userData: UserData) {
 
         await Promise.all([
             transporter.sendMail({
-                from: process.env.CORREO_USUARIO,
-                to: process.env.CORREO_USUARIO,
+                from: getServerEnv().CORREO_USUARIO,
+                to: getServerEnv().CORREO_USUARIO,
                 subject: `Soporte: Nueva consulta de ${userData.name}`,
                 html: companyEmailHtml,
             }),
             transporter.sendMail({
-                from: process.env.CORREO_USUARIO,
+                from: getServerEnv().CORREO_USUARIO,
                 to: userData.email,
                 subject: `Hemos recibido tu consulta - Lebauto`,
                 html: clientEmailHtml,
@@ -576,9 +578,12 @@ export const signInAction = async (formData: FormData) => {
 
   const cookieStore = await cookies();
 
+  const env = getPublicEnv();
+  // Cliente propio del login: guarda las cookies con sus opciones completas (el de core/supabase/server
+  // las convierte en cookies de sesión). Pasa al pod sign-in en su tarea.
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll: () => cookieStore.getAll(),

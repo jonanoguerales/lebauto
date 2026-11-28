@@ -1,7 +1,7 @@
 import { supabaseClient } from "@/app/supabase/supabase";
 import { getHFEmbedding } from "./getHFEmbedding";
+import { getServerEnv, requireServerEnv } from "@/core/env";
 
-const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
 const LLM_MODEL = "deepseek/deepseek-chat-v3-0324:free";
 
 interface DocumentRow {
@@ -92,10 +92,7 @@ export async function getAssistantStream(
   question: string
 ): Promise<ReadableStream<Uint8Array>> {
   // console.time("[PERF] getAssistantStream TOTAL");
-  if (!OPENROUTER_KEY) {
-    // console.timeEnd("[PERF] getAssistantStream TOTAL");
-    throw new Error("OPENROUTER_API_KEY no definida.");
-  }
+  const openRouterKey = requireServerEnv("OPENROUTER_API_KEY");
 
   // console.log(`[getAssistantStream] Procesando pregunta: "${question}"`);
 
@@ -215,9 +212,8 @@ Pregunta del Usuario: ${question}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENROUTER_KEY}`,
-        "HTTP-Referer":
-          process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+        Authorization: `Bearer ${openRouterKey}`,
+        "HTTP-Referer": getServerEnv().NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
         "X-Title": "Lebauto Chatbot",
       },
       body: JSON.stringify({
