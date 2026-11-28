@@ -20,7 +20,7 @@ import {
   ChevronUp,
   UploadCloud,
 } from "lucide-react";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/common/helpers/format-price";
 import {
   AlertDialog,
   AlertDialogAction,

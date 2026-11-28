@@ -6,7 +6,7 @@ import { Badge } from "@/common/components/ui/badge";
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { Zap, Settings, ShieldCheck, Package, Home, Building2, Tag, CalendarDays, Palette } from "lucide-react";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/common/helpers/format-price";
 
 interface ChargerDetailDisplayProps {
   charger: Charger;

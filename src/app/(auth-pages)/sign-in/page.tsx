@@ -1,7 +1,7 @@
 import { signInAction } from "@/app/actions/actions";
-import { FormMessage } from "@/components/FormMessage";
+import { FormMessage } from "@/common/components/FormMessage";
 import { toFormMessage } from "@/utils/formMessage";
-import { SubmitButton } from "@/components/SubmitButton";
+import { SubmitButton } from "@/common/components/SubmitButton";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { ArrowLeft } from "lucide-react";

@@ -1,5 +1,5 @@
 /** Lógica pura del seed de demostración (spec 002, AC-6/AC-7). Probada en seed-lib.test.ts. */
-import { generateChargerSlug, generateVehicleSlug } from "../../src/utils/slug";
+import { generateChargerSlug, generateVehicleSlug } from "../../src/common/helpers/slug";
 import {
   DEALERSHIPS,
   type BodyType,

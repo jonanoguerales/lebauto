@@ -11,7 +11,7 @@ import { Calculator, Fuel, Wrench, Euro } from "lucide-react"
 import { calculateSavings } from "@/features/home/utils/calculateSavings"
 import { SavingsNumberField } from "@/features/home/components/SavingsNumberField"
 import { cn } from "@/common/helpers/cn"
-import { formatCurrency, formatPrice } from "@/utils/utils"
+import { formatCurrency, formatPrice } from "@/common/helpers/format-price"
 
 const DEFAULTS = {
   kmPerYear: 15000,

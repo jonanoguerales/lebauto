@@ -68,7 +68,7 @@ src/
   app/            → scenes (rutas finas: params → <XContainer/>), route groups (site)(dashboard)(auth)
   layouts/        → site (Navbar + Footer + chat), dashboard (Sidebar + Header), auth (centered)
   core/           → supabase/{server,browser,proxy}.ts · auth/get-user.ts (cache) · mail/ · ai/{embeddings,rag}.ts · env.ts (Zod) — todo 'server-only'
-  common/         → components/ui (shadcn) · components/{SubmitButton,FormMessage,Pagination,ContactButtons} · hooks/{useDebouncedValue,useMediaQuery} · helpers/{cn,slug,format-price}
+  common/         → components/ui (shadcn) · components/{SubmitButton,FormMessage,Pagination} · hooks/{useDebouncedValue,useMediaQuery} · helpers/{cn,slug,format-price}
   pods/
     home/ car-catalog/ car-detail/ charger-list/ charger-detail/ renting/ sell-car/ contact/ chatbot/
     sign-in/ dashboard-overview/ dashboard-vehicles/ dashboard-chargers/ dashboard-features/

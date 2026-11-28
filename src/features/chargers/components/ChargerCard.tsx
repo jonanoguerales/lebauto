@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Charger } from "@/lib/definitions";
 import { Badge } from "@/common/components/ui/badge";
 import { Zap, Settings, Home, Building2 } from "lucide-react";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/common/helpers/format-price";
 
 interface ChargerCardProps {
   charger: Charger;

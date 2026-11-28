@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/common/components/ui/card"
 import { Badge } from "@/common/components/ui/badge"
-import { formatCurrency } from "@/utils/utils"
+import { formatCurrency } from "@/common/helpers/format-price"
 import Link from "next/link"
 
 const recentVehicles = [

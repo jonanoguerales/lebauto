@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/common/components/ui/button";
 import type { Car } from "@/lib/definitions";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/common/helpers/format-price";
 import Link from "next/link";
 import { calculateMonthlyPayment } from "../utils/calculateMonthlyPayment";
 

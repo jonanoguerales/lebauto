@@ -1,6 +1,6 @@
 import { forgotPasswordAction } from "@/app/actions/actions";
-import { FormMessage, Message } from "@/components/FormMessage";
-import { SubmitButton } from "@/components/SubmitButton";
+import { FormMessage, Message } from "@/common/components/FormMessage";
+import { SubmitButton } from "@/common/components/SubmitButton";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import Link from "next/link";

@@ -1,4 +1,4 @@
-import type { Message } from "@/components/FormMessage";
+import type { Message } from "@/common/components/FormMessage";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 

@@ -1,6 +1,6 @@
 import { Car, CarRow, Feature, Charger } from "@/lib/definitions"; // Charger añadido
 import { mapCarFromDB, mapCarToDB } from "@/utils/mappers";
-import { generateVehicleSlug, generateChargerSlug } from "@/utils/slug"; // generateChargerSlug añadido
+import { generateVehicleSlug, generateChargerSlug } from "@/common/helpers/slug"; // generateChargerSlug añadido
 import { createClient } from "@/core/supabase/browser";
 import { updateCarDocument } from "@/utils/carDocuments";
 import { ChargerFormValues } from "@/lib/validations";

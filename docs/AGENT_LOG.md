@@ -97,3 +97,10 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: `core/mail` (`server-only`) con un transporter perezoso que se crea una sola vez (`requireServerEnv`), `sendMail` y `sendCompanyMail`; las 9 plantillas en `core/mail/templates/` como funciones puras con el HTML idéntico; `actions.ts` pasa de 692 a 380 líneas; con las variables de correo vacías, las 5 acciones fallan dentro del `try` con su mensaje genérico de siempre · Testing: PASS (HTML comparado byte a byte, destinatarios, asuntos y orden iguales)
 - Observaciones: snapshots de las plantillas antes de T-25; datos de usuario sin escapar y `userData.email` de los leads del chatbot sin validar → T-25; «© 2025» fijo en la confirmación de contacto (decisión de contenido); plantillas a sus pods en T-11 si se prefiere.
 - Commit: 0f349d4
+
+## T-05c · common/helpers y common/components
+- Spec: specs/001-lebauto.md (sin cambio de comportamiento)
+- Vuelta 1 · Develop: `slug` y `format-price` a `common/helpers`; `SubmitButton`, `FormMessage`, `Pagination` (antes `PaginationControls`) y `ContactButtons` a `common/components`; 18 ficheros con imports cambiados; `encodedRedirect`, `safeInternalPath` y `formMessage` se quedan para el pod sign-in · Testing: FAIL (D-03/D-32: `ContactButtons` importa del chatbot y no tiene usos; no es compartido)
+- Vuelta 2 · Develop: `ContactButtons` vuelve a `src/components/` sin cambios (su destino se decide en T-11); el Orquestador lo quita de `common/` en el plan · Testing: PASS
+- Observaciones: `Pagination` sin usos → usarlo en T-14 o borrarlo; `safeInternalPath` puede subir a `core/auth` en T-17; JSX comentado de `ContactButtons` en `(site)/page.tsx:60` → T-11.
+- Commit: (ver siguiente)

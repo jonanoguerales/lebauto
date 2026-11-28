@@ -21,7 +21,7 @@ import {
   Image,
   ListChecks,
 } from "lucide-react";
-import { formatCurrency } from "@/utils/utils";
+import { formatCurrency } from "@/common/helpers/format-price";
 import {
   DropdownMenu,
   DropdownMenuContent,

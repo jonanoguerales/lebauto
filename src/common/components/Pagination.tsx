@@ -1,4 +1,3 @@
-// src/components/ui/PaginationControls.tsx (Nuevo archivo)
 "use client";
 
 import {
@@ -9,7 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 
-interface PaginationControlsProps {
+interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -17,13 +16,13 @@ interface PaginationControlsProps {
   totalItems: number;
 }
 
-export function PaginationControls({
+export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
   itemsPerPage,
   totalItems,
-}: PaginationControlsProps) {
+}: PaginationProps) {
   if (totalPages <= 1) {
     return null; // No mostrar paginación si solo hay una página o ninguna
   }

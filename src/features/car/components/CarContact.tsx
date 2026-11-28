@@ -1,6 +1,6 @@
 "use client";
 
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/common/helpers/format-price";
 import type { Car } from "@/lib/definitions";
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";

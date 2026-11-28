@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/common/components/ui/badge";
-import { formatPrice } from "@/utils/utils";
+import { formatPrice } from "@/common/helpers/format-price";
 import type { Car } from "@/lib/definitions";
 
 interface CarCardListProps {

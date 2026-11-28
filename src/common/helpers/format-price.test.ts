@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatCurrency, formatPrice } from "./utils"
+import { formatCurrency, formatPrice } from "./format-price"
 
 // Intl usa espacio duro (U+00A0) entre la cifra y el símbolo del euro.
 const NBSP = " "
