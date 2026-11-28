@@ -109,4 +109,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: specs/001-lebauto.md (AC-4 y vista del catálogo)
 - Vuelta 1 · Develop: `useMediaQuery` a `common/hooks` (sin `"use client"`, igual que `use-mobile`); los 3 hooks de debounce pasan a `useDebouncedRange` (genérico, con la lógica pura separada y 500 ms), y lo de dominio va a `carFilterRanges.ts` junto a `CarFilters`; `useResponsiveView` se apoya en `useMediaQuery` y se queda en `src/hooks/` (depende de `useViewStore`) · Testing: PASS (los 6 casos de rango idénticos en texto, corrección, URL y orden; sin salto en escritorio)
 - Observaciones: el retardo del hook sin test con timers (falta jsdom/`@testing-library/react`) → con los e2e del catálogo; salto de lista a cuadrícula al hidratar en móvil (de antes) y `CarFilters` de 634 líneas → T-07.
-- Commit: (ver siguiente)
+- Commit: 36e5b49
