@@ -103,4 +103,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: `slug` y `format-price` a `common/helpers`; `SubmitButton`, `FormMessage`, `Pagination` (antes `PaginationControls`) y `ContactButtons` a `common/components`; 18 ficheros con imports cambiados; `encodedRedirect`, `safeInternalPath` y `formMessage` se quedan para el pod sign-in · Testing: FAIL (D-03/D-32: `ContactButtons` importa del chatbot y no tiene usos; no es compartido)
 - Vuelta 2 · Develop: `ContactButtons` vuelve a `src/components/` sin cambios (su destino se decide en T-11); el Orquestador lo quita de `common/` en el plan · Testing: PASS
 - Observaciones: `Pagination` sin usos → usarlo en T-14 o borrarlo; `safeInternalPath` puede subir a `core/auth` en T-17; JSX comentado de `ContactButtons` en `(site)/page.tsx:60` → T-11.
-- Commit: (ver siguiente)
+- Commit: 2d567fd
