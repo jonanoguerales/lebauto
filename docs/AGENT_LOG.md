@@ -91,3 +91,9 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 1 · Develop: `src/lib/supabase/*` → `src/core/supabase/{server,browser,proxy}.ts` (`server-only`), `core/auth/get-user.ts` (`cache` + `auth.getUser()`, según supabase-best-practices §4), `core/env.public.ts` y `core/env.ts` (Zod 4, validación perezosa, `requireServerEnv` solo donde se usa la clave), sin `process.env` fuera de `core/env*`; se quita un `console.log` con el email del usuario · Testing: PASS (ninguna clave de servidor en `.next/static`; build y páginas en verde con las claves opcionales vacías)
 - Observaciones: `signInAction` mantiene su propio cliente con cookies persistentes → decidir en el pod sign-in/T-17; `actions.ts` (692 líneas) → T-05b y T-11; `/api/chat` devuelve `error.message` (D-16) → T-24; `AuthButton` lee el usuario en un efecto → T-17; el token de Hugging Face de `.env.local` ha caducado (lo renueva el humano).
 - Commit: e27a035
+
+## T-05b · core/mail con un único transporter
+- Spec: specs/001-lebauto.md (AC-15, AC-16, AC-19, AC-20)
+- Vuelta 1 · Develop: `core/mail` (`server-only`) con un transporter perezoso que se crea una sola vez (`requireServerEnv`), `sendMail` y `sendCompanyMail`; las 9 plantillas en `core/mail/templates/` como funciones puras con el HTML idéntico; `actions.ts` pasa de 692 a 380 líneas; con las variables de correo vacías, las 5 acciones fallan dentro del `try` con su mensaje genérico de siempre · Testing: PASS (HTML comparado byte a byte, destinatarios, asuntos y orden iguales)
+- Observaciones: snapshots de las plantillas antes de T-25; datos de usuario sin escapar y `userData.email` de los leads del chatbot sin validar → T-25; «© 2025» fijo en la confirmación de contacto (decisión de contenido); plantillas a sus pods en T-11 si se prefiere.
+- Commit: (ver siguiente)

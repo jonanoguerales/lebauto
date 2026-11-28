@@ -2,148 +2,42 @@
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/core/supabase/server";
-import { getServerEnv } from "@/core/env";
 import { getPublicEnv } from "@/core/env.public";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { toSafeInternalPath } from "@/utils/safeInternalPath";
-import nodemailer from "nodemailer";
 import {
   contactFormSchema,
   type ContactFormData,
   sellCarSchema,
 } from "@/lib/validations";
 import { createServerClient } from "@supabase/ssr";
+import {
+  sendMail,
+  sendCompanyMail,
+  valuationCompanyEmail,
+  valuationClientEmail,
+  phoneValuationCompanyEmail,
+  contactCompanyEmail,
+  contactClientEmail,
+  supportCallbackCompanyEmail,
+  supportCallbackClientEmail,
+  supportEmailCompanyEmail,
+  supportEmailClientEmail,
+  type ValuationData,
+  type ValuationSource,
+} from "@/core/mail";
 import type { UserData } from "@/lib/chatFlowTypes";
 import type { SellCarFormState } from "@/lib/definitions";
 
+// Los emails se construyen y envían dentro del `try` de cada acción: si falta la configuración de correo
+// (CORREO_*), `core/mail` lanza y el usuario ve el mismo mensaje genérico que cuando falla el envío.
 async function sendValuationEmail(
-  data: {
-    name: string;
-    email: string;
-    phone: string;
-    brand: string;
-    model: string;
-    year: string;
-    kilometers: string;
-    fuel: string;
-    comments?: string;
-  },
-  source: "Formulario Web" | "Chatbot" = "Formulario Web"
+  data: ValuationData,
+  source: ValuationSource = "Formulario Web"
 ) {
-  const transporter = nodemailer.createTransport({
-    host: getServerEnv().CORREO_HOST,
-    port: getServerEnv().CORREO_PORT,
-    secure: true,
-    auth: {
-      user: getServerEnv().CORREO_USUARIO,
-      pass: getServerEnv().CORREO_PASS,
-    },
-  });
-
-  const clientEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>Copia de tu Solicitud de Tasación</title>
-          <style>
-            body { font-family: Arial, sans-serif; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-            .header { background-color: #111827; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-            .content { padding: 20px; }
-            .footer { margin-top: 20px; font-size: 12px; text-align: center; color: #777; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-            th { width: 120px; color: #555; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Confirmación de Solicitud de Tasación</h1>
-            </div>
-            <div class="content">
-              <p>Hola ${data.name},</p>
-              <p>Gracias por contactarnos. Hemos recibido tu solicitud de tasación de vehículo. Aquí tienes una copia de los datos que enviaste:</p>
-              <table>
-                <tr><th>Nombre</th><td>${data.name}</td></tr>
-                <tr><th>Email</th><td>${data.email}</td></tr>
-                <tr><th>Teléfono</th><td>${data.phone}</td></tr>
-                <tr><th>Marca</th><td>${data.brand}</td></tr>
-                <tr><th>Modelo</th><td>${data.model}</td></tr>
-                <tr><th>Año</th><td>${data.year}</td></tr>
-                <tr><th>Kilómetros</th><td>${data.kilometers}</td></tr>
-                <tr><th>Combustible</th><td>${data.fuel}</td></tr>
-                <tr><th>Comentarios</th><td>${data.comments || "-"}</td></tr>
-              </table>
-              <p>En breves momentos nos pondremos en contacto contigo para ofrecerte una valoración personalizada.</p>
-            </div>
-            <div class="footer">
-              <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-              <div><strong>Lebauto</strong> © ${new Date().getFullYear()}</div>
-            </div>
-          </div>
-        </body>
-      </html>
-      `;
-
-  const companyEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>Nueva Solicitud de Tasación (${source})</title>
-          <style>
-            body { font-family: Arial, sans-serif; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-            .header { background-color: #1d4ed8; color: #fff; padding: 10px; text-align: center; border-radius: 8px 8px 0 0; }
-            h1 { margin: 0; }
-            .content { padding: 20px; }
-            .footer { margin-top: 20px; font-size: 12px; text-align: center; color: #777; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-            th { width: 120px; background-color: #f9f9f9; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Nueva Solicitud de Tasación (desde ${source})</h1>
-            </div>
-            <div class="content">
-              <p>Se ha recibido la siguiente solicitud:</p>
-              <table>
-                <tr><th>Nombre</th><td>${data.name}</td></tr>
-                <tr><th>Email</th><td>${data.email}</td></tr>
-                <tr><th>Teléfono</th><td>${data.phone}</td></tr>
-                <tr><th>Marca</th><td>${data.brand}</td></tr>
-                <tr><th>Modelo</th><td>${data.model}</td></tr>
-                <tr><th>Año</th><td>${data.year}</td></tr>
-                <tr><th>Kilómetros</th><td>${data.kilometers}</td></tr>
-                <tr><th>Combustible</th><td>${data.fuel}</td></tr>
-                <tr><th>Comentarios</th><td>${data.comments || "-"}</td></tr>
-              </table>
-            </div>
-            <div class="footer"><p>Este correo es confidencial y para uso interno.</p></div>
-          </div>
-        </body>
-      </html>
-      `;
-
-  await transporter.sendMail({
-    from: getServerEnv().CORREO_USUARIO,
-    to: getServerEnv().CORREO_USUARIO,
-    subject: `Solicitud de tasación (${source}) - ${data.name}`,
-    html: companyEmailHtml,
-  });
-
-  await transporter.sendMail({
-    from: getServerEnv().CORREO_USUARIO,
-    to: data.email,
-    subject: "Copia de tu solicitud de tasación",
-    html: clientEmailHtml,
-  });
+  await sendCompanyMail(valuationCompanyEmail(data, source));
+  await sendMail({ to: data.email, ...valuationClientEmail(data) });
 }
 
 export async function submitSellCarForm(
@@ -227,60 +121,15 @@ export async function submitPhoneValuationLead(userData: UserData) {
     return { success: false, message: "Faltan datos del lead." };
   }
 
-  const transporter = nodemailer.createTransport({
-    host: getServerEnv().CORREO_HOST,
-    port: getServerEnv().CORREO_PORT,
-    secure: true,
-    auth: {
-      user: getServerEnv().CORREO_USUARIO,
-      pass: getServerEnv().CORREO_PASS,
-    },
-  });
-
-  const companyEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>Solicitud de Tasación Telefónica (Chatbot)</title>
-          <style>
-            body { font-family: Arial, sans-serif; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-            .header { background-color: #f97316; color: #fff; padding: 10px; text-align: center; border-radius: 8px 8px 0 0; }
-            h1 { margin: 0; }
-            .content { padding: 20px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-            th { width: 120px; background-color: #f9f9f9; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Solicitud de Tasación Telefónica (Chatbot)</h1>
-            </div>
-            <div class="content">
-              <p>Un usuario ha solicitado una llamada para tasar su vehículo:</p>
-              <table>
-                <tr><th>Nombre</th><td>${userData.name}</td></tr>
-                <tr><th>Teléfono</th><td><strong>${userData.phone}</strong></td></tr>
-                <tr><th>Marca</th><td>${userData.brand}</td></tr>
-                <tr><th>Modelo</th><td>${userData.model}</td></tr>
-              </table>
-              <p><strong>Por favor, contactar con el cliente para completar la tasación.</strong></p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
   try {
-    await transporter.sendMail({
-      from: getServerEnv().CORREO_USUARIO,
-      to: getServerEnv().CORREO_USUARIO,
-      subject: `Solicitud de LLAMADA para tasación - ${userData.name}`,
-      html: companyEmailHtml,
-    });
+    await sendCompanyMail(
+      phoneValuationCompanyEmail({
+        name: userData.name,
+        phone: userData.phone,
+        brand: userData.brand,
+        model: userData.model,
+      })
+    );
     return {
       success: true,
       message: "Notificación de llamada para tasación enviada.",
@@ -308,106 +157,9 @@ export async function submitContactForm(data: ContactFormData) {
 
   const validatedData = result.data;
 
-  const transporter = nodemailer.createTransport({
-    host: getServerEnv().CORREO_HOST,
-    port: getServerEnv().CORREO_PORT,
-    secure: true,
-    auth: {
-      user: getServerEnv().CORREO_USUARIO,
-      pass: getServerEnv().CORREO_PASS,
-    },
-  });
-  // ------------------------------
-  // PLANTILLA HTML PARA EL CLIENTE
-  // ------------------------------
-  const clientEmailHtml = `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Confirmación de Contacto</title>
-      <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #008060; color: #fff; padding: 10px; text-align: center; }
-        .content { padding: 20px; }
-        .footer {
-          margin-top: 20px;
-          font-size: 12px;
-          text-align: center;
-          color: #777;
-          border-top: 1px solid #ddd;          
-        }
-      </style>    
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Confirmación de Contacto</h1>
-        </div>
-        <div class="content">
-          <p>Gracias por contactarnos. Nos pondremos en contacto contigo lo antes posible.</p>
-        </div>
-        <div class="footer">
-          <p>Por favor, no respondas a este mensaje. Si deseas contactar con nosotros, hazlo a través de <a href="mailto:info@lebauto.es">info@lebauto.es</a>.</p>
-          <div><strong>Lebauto</strong></div>
-          <div>© 2025 Lebauto, S.L.</div>
-        </div>
-      </div>
-    </body>
-  </html>
-  `;
-
-  // ------------------------------
-  // PLANTILLA HTML PARA LA EMPRESA
-  // ------------------------------
-  const companyEmailHtml = `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Nueva Solicitud de Contacto</title>
-      <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-        .header { background-color: #1d4ed8; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-        .content { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-        th { width: 120px; font-weight: bold; background-color: #f9f9f9; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header"><h1>Nueva Solicitud de Contacto</h1></div>
-        <div class="content">
-          <p>Se ha recibido la siguiente solicitud:</p>
-          <table>
-            <tr><th>Nombre</th><td>${data.name}</td></tr>
-            <tr><th>Apellidos</th><td>${data.surnames}</td></tr>
-            <tr><th>Email</th><td>${data.email}</td></tr>
-            <tr><th>Teléfono</th><td>${data.phone}</td></tr>
-            <tr><th>Mensaje</th><td><p style="white-space: pre-wrap;">${data.message}</p></td></tr>
-          </table>
-        </div>
-      </div>
-    </body>
-  </html>
-  `;
-
   try {
-    await transporter.sendMail({
-      from: getServerEnv().CORREO_USUARIO,
-      to: getServerEnv().CORREO_USUARIO,
-      subject: `Nueva Solicitud de Contacto - ${validatedData.name}`,
-      html: companyEmailHtml,
-    });
-    await transporter.sendMail({
-      from: getServerEnv().CORREO_USUARIO,
-      to: data.email,
-      subject: "Confirmación de Contacto",
-      html: clientEmailHtml,
-    });
+    await sendCompanyMail(contactCompanyEmail(validatedData));
+    await sendMail({ to: validatedData.email, ...contactClientEmail() });
     return {
       success: true,
       message:
@@ -430,48 +182,16 @@ export async function submitSupportCallbackLead(userData: UserData) {
     }
 
     try {
-        const transporter = nodemailer.createTransport({
-            host: getServerEnv().CORREO_HOST,
-            port: getServerEnv().CORREO_PORT,
-            secure: true,
-            auth: {
-                user: getServerEnv().CORREO_USUARIO,
-                pass: getServerEnv().CORREO_PASS,
-            },
-        });
-
-        const companyEmailHtml = `
-          <h1>Solicitud de Llamada de Soporte (Chatbot)</h1>
-          <p>Un cliente ha solicitado una llamada para recibir soporte:</p>
-          <ul>
-            <li><strong>Nombre:</strong> ${userData.name}</li>
-            <li><strong>Teléfono:</strong> ${userData.phone}</li>
-            <li><strong>Email:</strong> ${userData.email}</li>
-            <li><strong>Consulta inicial:</strong> ${userData.userQuestion}</li>
-          </ul>`;
-
-        const clientEmailHtml = `
-          <h1>Confirmación de tu solicitud de llamada</h1>
-          <p>Hola ${userData.name},</p>
-          <p>Hemos recibido tu solicitud para que te llamemos sobre: "${userData.userQuestion}".</p>
-          <p>Un miembro de nuestro equipo te contactará en el teléfono <strong>${userData.phone}</strong> lo antes posible.</p>
-          <p>Gracias por contactar con Lebauto.</p>`;
-
+        const data = {
+            name: userData.name,
+            phone: userData.phone,
+            email: userData.email,
+            userQuestion: userData.userQuestion,
+        };
         await Promise.all([
-            transporter.sendMail({
-                from: getServerEnv().CORREO_USUARIO,
-                to: getServerEnv().CORREO_USUARIO,
-                subject: `Soporte: Solicitud de LLAMADA de ${userData.name}`,
-                html: companyEmailHtml,
-            }),
-            transporter.sendMail({
-                from: getServerEnv().CORREO_USUARIO,
-                to: userData.email,
-                subject: `Hemos recibido tu solicitud de llamada - Lebauto`,
-                html: clientEmailHtml,
-            })
+            sendCompanyMail(supportCallbackCompanyEmail(data)),
+            sendMail({ to: data.email, ...supportCallbackClientEmail(data) }),
         ]);
-
         return { success: true };
 
     } catch (error) {
@@ -488,48 +208,16 @@ export async function submitSupportEmailLead(userData: UserData) {
     }
 
     try {
-        const transporter = nodemailer.createTransport({
-            host: getServerEnv().CORREO_HOST,
-            port: getServerEnv().CORREO_PORT,
-            secure: true,
-            auth: {
-                user: getServerEnv().CORREO_USUARIO,
-                pass: getServerEnv().CORREO_PASS,
-            },
-        });
-
-        const companyEmailHtml = `
-          <h1>Nueva Consulta de Soporte por Email (Chatbot)</h1>
-          <p>Un cliente ha enviado una consulta a través del chat:</p>
-          <ul>
-            <li><strong>Nombre:</strong> ${userData.name}</li>
-            <li><strong>Email:</strong> ${userData.email}</li>
-            <li><strong>Teléfono:</strong> ${userData.phone || 'No proporcionado'}</li>
-            <li><strong>Consulta:</strong><br/><p style="white-space: pre-wrap;">${userData.userQuestion}</p></li>
-          </ul>`;
-
-        const clientEmailHtml = `
-          <h1>Confirmación de tu consulta</h1>
-          <p>Hola ${userData.name},</p>
-          <p>Hemos recibido tu consulta y te responderemos al email <strong>${userData.email}</strong> lo antes posible.</p>
-          <p><strong>Tu pregunta fue:</strong> "${userData.userQuestion}"</p>
-          <p>Gracias por contactar con Lebauto.</p>`;
-
+        const data = {
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            userQuestion: userData.userQuestion,
+        };
         await Promise.all([
-            transporter.sendMail({
-                from: getServerEnv().CORREO_USUARIO,
-                to: getServerEnv().CORREO_USUARIO,
-                subject: `Soporte: Nueva consulta de ${userData.name}`,
-                html: companyEmailHtml,
-            }),
-            transporter.sendMail({
-                from: getServerEnv().CORREO_USUARIO,
-                to: userData.email,
-                subject: `Hemos recibido tu consulta - Lebauto`,
-                html: clientEmailHtml,
-            })
+            sendCompanyMail(supportEmailCompanyEmail(data)),
+            sendMail({ to: data.email, ...supportEmailClientEmail(data) }),
         ]);
-
         return { success: true };
         
     } catch (error) {
