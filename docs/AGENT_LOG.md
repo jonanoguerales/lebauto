@@ -90,4 +90,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: specs/001-lebauto.md (AC-23, AC-29; sin cambio de comportamiento)
 - Vuelta 1 · Develop: `src/lib/supabase/*` → `src/core/supabase/{server,browser,proxy}.ts` (`server-only`), `core/auth/get-user.ts` (`cache` + `auth.getUser()`, según supabase-best-practices §4), `core/env.public.ts` y `core/env.ts` (Zod 4, validación perezosa, `requireServerEnv` solo donde se usa la clave), sin `process.env` fuera de `core/env*`; se quita un `console.log` con el email del usuario · Testing: PASS (ninguna clave de servidor en `.next/static`; build y páginas en verde con las claves opcionales vacías)
 - Observaciones: `signInAction` mantiene su propio cliente con cookies persistentes → decidir en el pod sign-in/T-17; `actions.ts` (692 líneas) → T-05b y T-11; `/api/chat` devuelve `error.message` (D-16) → T-24; `AuthButton` lee el usuario en un efecto → T-17; el token de Hugging Face de `.env.local` ha caducado (lo renueva el humano).
-- Commit: (ver siguiente)
+- Commit: e27a035
