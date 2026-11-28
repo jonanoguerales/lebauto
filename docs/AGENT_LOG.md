@@ -96,4 +96,4 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Spec: specs/001-lebauto.md (AC-15, AC-16, AC-19, AC-20)
 - Vuelta 1 · Develop: `core/mail` (`server-only`) con un transporter perezoso que se crea una sola vez (`requireServerEnv`), `sendMail` y `sendCompanyMail`; las 9 plantillas en `core/mail/templates/` como funciones puras con el HTML idéntico; `actions.ts` pasa de 692 a 380 líneas; con las variables de correo vacías, las 5 acciones fallan dentro del `try` con su mensaje genérico de siempre · Testing: PASS (HTML comparado byte a byte, destinatarios, asuntos y orden iguales)
 - Observaciones: snapshots de las plantillas antes de T-25; datos de usuario sin escapar y `userData.email` de los leads del chatbot sin validar → T-25; «© 2025» fijo en la confirmación de contacto (decisión de contenido); plantillas a sus pods en T-11 si se prefiere.
-- Commit: (ver siguiente)
+- Commit: 0f349d4
