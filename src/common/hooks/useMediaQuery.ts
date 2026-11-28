@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, useSyncExternalStore } from "react"
 
 // En el servidor (y durante la hidratación) no hay viewport: se asume que la consulta no coincide.

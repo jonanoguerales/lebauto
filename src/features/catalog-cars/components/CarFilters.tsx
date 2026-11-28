@@ -8,9 +8,8 @@ import { Accordion } from "@/common/components/ui/accordion";
 import { useFilterStore } from "@/lib/store";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { usePriceDebounce } from "@/hooks/usePriceDebounce";
-import { useYearDebounce } from "@/hooks/useYearDebounce";
-import { useKmDebounce } from "@/hooks/useKmDebounce";
+import { useDebouncedRange } from "@/common/hooks/useDebouncedRange";
+import { getRangeFilters, rangeFilterHandlers } from "./carFilterRanges";
 import { BrandModelFilter } from "./filters/BrandModelFilter";
 import { PriceFilter } from "./filters/PriceFilter";
 import { YearFilter } from "./filters/YearFilter";
@@ -479,28 +478,27 @@ export default function CarFilters({
     [filters, modelsByBrand, uniqueBrands]
   );
 
-  const { debouncedValidateMinPrice, debouncedValidateMaxPrice } =
-    usePriceDebounce({
-      minPrice,
-      maxPrice,
-      setMinPrice,
-      setMaxPrice,
-      setFilter,
-    });
-  const { debouncedValidateMinYear, debouncedValidateMaxYear } =
-    useYearDebounce({
-      minYear,
-      maxYear,
-      setMinYear,
-      setMaxYear,
-      setFilter,
-    });
-  const { debouncedValidateMinKm, debouncedValidateMaxKm } = useKmDebounce({
-    minKm,
-    maxKm,
-    setMinKm,
-    setMaxKm,
-    setFilter,
+  const rangeFilters = getRangeFilters(currentYear);
+  const priceRange = useDebouncedRange({
+    min: minPrice,
+    max: maxPrice,
+    setMin: setMinPrice,
+    setMax: setMaxPrice,
+    ...rangeFilterHandlers(rangeFilters.price, setFilter),
+  });
+  const yearRange = useDebouncedRange({
+    min: minYear,
+    max: maxYear,
+    setMin: setMinYear,
+    setMax: setMaxYear,
+    ...rangeFilterHandlers(rangeFilters.year, setFilter),
+  });
+  const kmRange = useDebouncedRange({
+    min: minKm,
+    max: maxKm,
+    setMin: setMinKm,
+    setMax: setMaxKm,
+    ...rangeFilterHandlers(rangeFilters.km, setFilter),
   });
 
   const brandModelConfig = {
@@ -525,8 +523,8 @@ export default function CarFilters({
     setMinPrice,
     maxPrice,
     setMaxPrice,
-    debouncedValidateMinPrice,
-    debouncedValidateMaxPrice,
+    debouncedValidateMinPrice: priceRange.validateMin,
+    debouncedValidateMaxPrice: priceRange.validateMax,
   };
 
   const YearFilterConfig = {
@@ -534,8 +532,8 @@ export default function CarFilters({
     setMinYear,
     maxYear,
     setMaxYear,
-    debouncedValidateMinYear,
-    debouncedValidateMaxYear,
+    debouncedValidateMinYear: yearRange.validateMin,
+    debouncedValidateMaxYear: yearRange.validateMax,
     currentYear,
   };
 
@@ -544,8 +542,8 @@ export default function CarFilters({
     setMinKm,
     maxKm,
     setMaxKm,
-    debouncedValidateMinKm,
-    debouncedValidateMaxKm,
+    debouncedValidateMinKm: kmRange.validateMin,
+    debouncedValidateMaxKm: kmRange.validateMax,
   };
 
   return (

@@ -6,7 +6,7 @@ import { Bot as BotIcon, X as XIcon, ChevronsDownUp } from "lucide-react";
 import ChatBotInternal from "./ChatBot";
 import { useChatStore } from "@/lib/chatStore";
 import { chatFlow } from "@/lib/chatFlow";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 
 interface ChatBotPopupWrapperProps {
   isOpen: boolean;

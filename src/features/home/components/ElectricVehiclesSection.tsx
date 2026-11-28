@@ -14,7 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/common/components/ui/carousel";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import CarCardGrid from "@/features/catalog-cars/components/CarCardGrid";
 import { CarCardSkeleton } from "@/features/car/skeleton/CarSkeleton";
 import { useCarouselStore } from "@/lib/carouselStore";

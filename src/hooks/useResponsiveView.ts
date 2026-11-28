@@ -1,25 +1,17 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
+import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import { useViewStore } from "@/lib/store";
 
-export function useResponsiveView() {
-  const { setView } = useViewStore();
+const DESKTOP_QUERY = "(min-width: 1024px)";
 
-  const updateView = useCallback((e?: MediaQueryListEvent) => {
-    setView(
-      e
-        ? e.matches
-          ? "list"
-          : "grid"
-        : window.innerWidth >= 1024
-        ? "list"
-        : "grid"
-    );
-  }, [setView]);
+// Vista por defecto según el ancho: lista desde 1024 px y cuadrícula por debajo, también al redimensionar.
+// El usuario puede cambiarla con el conmutador, así que la vista sigue en el store y aquí solo se sincroniza
+// cuando cambia el breakpoint (sistema externo → store), igual que hacía el efecto con matchMedia de antes.
+export function useResponsiveView() {
+  const setView = useViewStore((state) => state.setView);
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    updateView();
-    mediaQuery.addEventListener("change", updateView);
-    return () => mediaQuery.removeEventListener("change", updateView);
-  }, [updateView]);
+    setView(isDesktop ? "list" : "grid");
+  }, [isDesktop, setView]);
 }

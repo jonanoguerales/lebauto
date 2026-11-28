@@ -17,7 +17,7 @@ import {
 import { Badge } from "@/common/components/ui/badge";
 import { useResponsiveView } from "@/hooks/useResponsiveView";
 import { LoadingVehicles } from "./LoadingCars";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 
 export default function CatalogClient({
   allCars,

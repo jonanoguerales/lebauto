@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import Link from "next/link";
 import { Button } from "@/common/components/ui/button";
 import { Badge } from "@/common/components/ui/badge";

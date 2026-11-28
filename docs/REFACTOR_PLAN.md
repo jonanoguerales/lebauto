@@ -68,7 +68,7 @@ src/
   app/            → scenes (rutas finas: params → <XContainer/>), route groups (site)(dashboard)(auth)
   layouts/        → site (Navbar + Footer + chat), dashboard (Sidebar + Header), auth (centered)
   core/           → supabase/{server,browser,proxy}.ts · auth/get-user.ts (cache) · mail/ · ai/{embeddings,rag}.ts · env.ts (Zod) — todo 'server-only'
-  common/         → components/ui (shadcn) · components/{SubmitButton,FormMessage,Pagination} · hooks/{useDebouncedValue,useMediaQuery} · helpers/{cn,slug,format-price}
+  common/         → components/ui (shadcn) · components/{SubmitButton,FormMessage,Pagination} · hooks/{useDebouncedRange,useMediaQuery,use-mobile} · helpers/{cn,slug,format-price}
   pods/
     home/ car-catalog/ car-detail/ charger-list/ charger-detail/ renting/ sell-car/ contact/ chatbot/
     sign-in/ dashboard-overview/ dashboard-vehicles/ dashboard-chargers/ dashboard-features/
@@ -80,7 +80,7 @@ Qué hay que mover, de forma representativa:
 - `src/app/actions/actions.ts` se reparte en los pods `sell-car/api`, `contact/api`, `chatbot/api` y `sign-in/api`. El transporter de nodemailer, que se crea 5 veces, pasa a un único `core/mail`. Las plantillas de email van a su propio fichero.
 - `src/features/*` → `pods/*`. `features/header` → `layouts/site`.
 - `src/utils/mappers.ts` → los `*.mappers.ts` de cada pod.
-- Los 3 hooks de debounce se unifican en `useDebouncedValue`, y los 3 hooks responsive en `useMediaQuery`.
+- Los 3 hooks de debounce se unifican en `useDebouncedRange` (hecho en T-05d), y los 3 hooks responsive en `useMediaQuery`.
 - Se parten los ficheros gigantes:
   - `VehicleFormDialog` (879 líneas): secciones del formulario más un esquema Zod compartido.
   - `CarFilters` (659 líneas): un componente por filtro, con el estado en la URL.
@@ -173,7 +173,7 @@ Al terminar cada fase:
 - [x] T-02c Enlaces internos sin 404 (AC-33)
 - [x] T-03 Tailwind 4
 - [x] T-04 shadcn para React 19 + nuevos alias
-- [ ] T-05 core/ (supabase, auth, mail, env) y common/ (helpers, hooks unificados)
+- [x] T-05 core/ (supabase, auth, mail, env) y common/ (helpers, hooks unificados)
 - [ ] T-06 layouts/ (site, dashboard, auth)
 - [ ] T-07 pod car-catalog (filtros por componente, estado en URL)
 - [ ] T-08 pod car-detail

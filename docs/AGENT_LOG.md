@@ -104,3 +104,9 @@ Una entrada por tarea `T-NN` (formato en `CLAUDE.md`).
 - Vuelta 2 · Develop: `ContactButtons` vuelve a `src/components/` sin cambios (su destino se decide en T-11); el Orquestador lo quita de `common/` en el plan · Testing: PASS
 - Observaciones: `Pagination` sin usos → usarlo en T-14 o borrarlo; `safeInternalPath` puede subir a `core/auth` en T-17; JSX comentado de `ContactButtons` en `(site)/page.tsx:60` → T-11.
 - Commit: 2d567fd
+
+## T-05d · Hooks unificados en common/hooks
+- Spec: specs/001-lebauto.md (AC-4 y vista del catálogo)
+- Vuelta 1 · Develop: `useMediaQuery` a `common/hooks` (sin `"use client"`, igual que `use-mobile`); los 3 hooks de debounce pasan a `useDebouncedRange` (genérico, con la lógica pura separada y 500 ms), y lo de dominio va a `carFilterRanges.ts` junto a `CarFilters`; `useResponsiveView` se apoya en `useMediaQuery` y se queda en `src/hooks/` (depende de `useViewStore`) · Testing: PASS (los 6 casos de rango idénticos en texto, corrección, URL y orden; sin salto en escritorio)
+- Observaciones: el retardo del hook sin test con timers (falta jsdom/`@testing-library/react`) → con los e2e del catálogo; salto de lista a cuadrícula al hidratar en móvil (de antes) y `CarFilters` de 634 líneas → T-07.
+- Commit: (ver siguiente)
